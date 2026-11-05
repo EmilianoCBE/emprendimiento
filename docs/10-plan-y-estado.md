@@ -12,6 +12,7 @@
 | I3 | Frontend: sistema de diseño, portada, búsqueda, ficha, flujos de cada rol | ✅ |
 | I4 | Endurecimiento: revisión de seguridad, CI, Docker, recorrido en navegador | ✅ Lo verificable en local; ver abajo |
 | I5 | Referencia AmberStudent: lista para mudarte, ayuda, zonas, cómo funciona | ✅ |
+| I6 | Rediseño de interfaz, dirección Señalética: tokens, controles propios, todas las pantallas, fotos modestas | ✅ |
 
 ## Qué está comprobado
 
@@ -45,4 +46,5 @@
 
 | Fecha | Qué pasó |
 | --- | --- |
+| 2026-11-05 | I6. Corregidos también: acceso a Mensajes y Solicitudes en móvil, botón de solicitar en viviendas no solicitables, pines del mapa que dependían del color y encabezados. |
 | 2026-11-04 | I0 a I5. Plugin `security-guidance` instalado a nivel de proyecto. Corregidos, tras verlos en navegador: pantalla en blanco por `scrollTo`, alerta de precio que comparaba cuartos con departamentos, mapa de CARTO que pedía llave y límite de frecuencia que bloqueaba la carga de la página. |

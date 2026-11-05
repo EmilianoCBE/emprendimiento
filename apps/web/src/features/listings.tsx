@@ -240,7 +240,7 @@ export function ListingPage() {
       </div>
 
       <div className="detail">
-        <div>
+        <div className="detail__head">
           <p className="detail__kind">
             {KIND_LABEL[l.kind]} en {l.zoneName}
           </p>
@@ -255,6 +255,9 @@ export function ListingPage() {
             </div>
           )}
 
+        </div>
+
+        <div className="detail__main">
           <dl className="facts">
             <div><dt>Caminando al campus</dt><dd>{l.minutesWalk} min</dd></div>
             <div><dt>En transporte</dt><dd>{l.minutesTransit} min</dd></div>

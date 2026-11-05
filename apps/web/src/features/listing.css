@@ -7,7 +7,9 @@
 .gallery--one { grid-template-columns: minmax(0, 1fr); }
 .gallery--one .gallery__main { aspect-ratio: 21 / 8; }
 
-.detail { display: grid; grid-template-columns: minmax(0, 1fr) 21.5rem; gap: var(--space-12); margin-top: var(--space-6); align-items: start; }
+.detail { display: grid; grid-template-columns: minmax(0, 1fr) 21.5rem; grid-template-areas: 'head aside' 'main aside'; gap: 0 var(--space-12); margin-top: var(--space-6); align-items: start; }
+.detail__head { grid-area: head; }
+.detail__main { grid-area: main; }
 .detail__kind { color: var(--color-ink-muted); }
 .detail__title { margin-top: var(--space-1); }
 .detail__alert { margin-top: var(--space-4); }
@@ -15,7 +17,7 @@
 .detail__section { padding-top: var(--space-8); margin-top: var(--space-8); border-top: var(--border); }
 .detail__section > h2 { margin-bottom: var(--space-4); }
 
-.aside { position: sticky; top: calc(var(--topbar-height) + var(--space-4)); background: var(--color-surface); border: var(--border); border-radius: var(--radius-md); padding: var(--space-5); display: grid; gap: var(--space-4); }
+.aside { grid-area: aside; position: sticky; top: calc(var(--topbar-height) + var(--space-4)); background: var(--color-surface); border: var(--border); border-radius: var(--radius-md); padding: var(--space-5); display: grid; gap: var(--space-4); }
 .aside__top { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--space-3); }
 .aside__price { font-size: var(--display-md); }
 .aside__score { display: inline-flex; align-items: center; gap: var(--space-1); font-size: var(--text-sm); line-height: var(--leading-sm); font-weight: 600; }
@@ -33,9 +35,9 @@
 .review p { margin-top: var(--space-1); max-width: 68ch; }
 
 @media (max-width: 64rem) {
-  .detail { grid-template-columns: minmax(0, 1fr); gap: var(--space-6); }
-  /* En móvil, precio y acción antes del detalle. */
-  .aside { position: static; order: -1; }
+  /* En móvil: nombre, luego precio y acción, luego el detalle. */
+  .detail { grid-template-columns: minmax(0, 1fr); grid-template-areas: 'head' 'aside' 'main'; row-gap: var(--space-4); }
+  .aside { position: static; }
 }
 @media (max-width: 47.5rem) {
   .detail .facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }

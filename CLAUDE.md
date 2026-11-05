@@ -61,7 +61,9 @@ npm run build
 
 **Diseño**
 - Seguir `docs/09-ux-e-identidad.md`. Usar la skill `frontend-design` al crear pantallas.
-- Sin mayúsculas sostenidas, degradados ni flechas en botones. Añil solo para verificación y enlaces.
+- Sin mayúsculas sostenidas, degradados ni flechas en botones. Cempasúchil es el único acento.
+- Todo valor visual sale de `apps/web/src/design/tokens.css`; cada pantalla tiene su `.css`. Estilos en línea solo para valores calculados.
+- Una acción que no se puede completar no se muestra como acción principal.
 
 **Git**
 - Hacer commit o push solo cuando el usuario lo pida. El repositorio aún no está conectado a GitHub.
