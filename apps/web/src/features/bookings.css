@@ -1,0 +1,9 @@
+/* Solicitudes de vivienda. */
+.booking__ref { margin-left: var(--space-2); }
+.timeline-panel__title { margin-bottom: var(--space-4); }
+.timeline { display: grid; }
+.timeline li { position: relative; padding: 0 0 var(--space-4) var(--space-5); border-left: 2px solid var(--color-ink); margin-left: var(--space-1); }
+.timeline li:last-child { border-left-color: transparent; padding-bottom: 0; }
+.timeline li::before { content: ''; position: absolute; left: -7px; top: var(--space-1); width: 0.75rem; height: 0.75rem; border-radius: var(--radius-full); background: var(--color-ink); }
+.timeline li:last-child::before { background: var(--color-accent); box-shadow: 0 0 0 2px var(--color-ink); }
+.timeline__status { font-weight: 600; }

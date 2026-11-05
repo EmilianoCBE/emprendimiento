@@ -1,3 +1,4 @@
+import './bookings.css'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
@@ -30,12 +31,13 @@ export function BookingsPage() {
           {!isLandlord && <LinkButton to="/viviendas" variant="secondary">Buscar vivienda</LinkButton>}
         </Empty>
       )}
+      {data && data.length > 0 && <h2 className="sr-only">Lista de solicitudes</h2>}
       <div className="rowlist">
         {data?.map((b) => (
           <Link key={b.id} to={`/solicitudes/${b.id}`} className="rowcard">
             {b.listing.photo ? <img src={b.listing.photo.url} alt="" /> : <div className="rowcard__ph" />}
             <div>
-              <h3>{b.listing.title}</h3>
+              <h3 className="rowcard__title">{b.listing.title}</h3>
               <p className="muted small">
                 {isLandlord ? `${b.studentName}, ` : ''}
                 {dateOnly(b.startDate)} al {dateOnly(b.endDate)}
@@ -79,7 +81,7 @@ export function BookingPage() {
     onSettled: () => client.invalidateQueries({ queryKey: ['booking', id] }),
   })
   if (isLoading) return <div className="page"><Loading /></div>
-  if (error || !b) return <div className="page page--narrow"><Empty title="No encontramos esta solicitud"><LinkButton to="/solicitudes" variant="secondary">Ver mis solicitudes</LinkButton></Empty></div>
+  if (error || !b) return <div className="page page--narrow"><Empty as="h1" title="No encontramos esta solicitud"><LinkButton to="/solicitudes" variant="secondary">Ver mis solicitudes</LinkButton></Empty></div>
 
   const asStudent = me?.role === 'student'
   const next = NEXT_STEP[b.status]
@@ -88,17 +90,17 @@ export function BookingPage() {
       <div className="twocol">
         <div className="stack">
           <div className="panel stack">
-            <div className="btnrow" style={{ justifyContent: 'space-between' }}>
+            <div className="split-row">
               <span>
                 <span className={`chip ${CHIP[b.status]}`}>{STATUS_LABEL[b.status]}</span>
-                <span className="small muted" style={{ marginLeft: 10 }}>Referencia {b.reference}</span>
+                <span className="small muted booking__ref">Referencia {b.reference}</span>
               </span>
               <Link to={`/viviendas/${b.listing.id}`} className="small">Ver la vivienda</Link>
             </div>
             {next && <p>{asStudent ? next.student : next.landlord}</p>}
             {b.tourAt && <Note title="Videollamada">{dateTime(b.tourAt)}. La hacen por el medio que acuerden en el chat.</Note>}
             {b.exactAddress ? <Note tone="ok" title="Dirección exacta">{b.exactAddress}</Note> : <p className="small muted">La dirección exacta aparece cuando el arrendador acepta.</p>}
-            <dl className="facts" style={{ marginTop: 0 }}>
+            <dl className="facts">
               <div><dt>Estudiante</dt><dd>{b.studentName}</dd></div>
               <div><dt>Arrendador</dt><dd>{b.landlordName}</dd></div>
               <div><dt>Entrada</dt><dd>{dateOnly(b.startDate)}</dd></div>
@@ -142,16 +144,15 @@ export function BookingPage() {
           {asStudent && !['rejected', 'cancelled', 'completed'].includes(b.status) && (
             <section className="panel stack">
               <div>
-                <h2 style={{ fontSize: '1.8rem' }}>Lista para mudarte</h2>
+                <h2>Lista para mudarte</h2>
                 <p className="small muted">{b.steps.filter((s) => s.done).length} de {b.steps.length} listos. Solo marcas tu avance: aquí no se suben documentos.</p>
               </div>
-              <div className="tasks" style={{ marginTop: 0 }}>
+              <div className="tasks">
                 {b.steps.map((s) => (
-                  <label key={s.id} className={`task task--bare ${s.done ? 'is-done' : ''}`}>
+                  <label key={s.id} className={`task ${s.done ? 'is-done' : ''}`}>
                     <input type="checkbox" checked={s.done} onChange={(e) => toggleStep.mutate({ step: s.id, done: e.target.checked })} />
                     <span>
                       <span className="task__title">{BOOKING_STEP_LABEL[s.id].title}</span>
-                      <br />
                       <span className="task__hint">{BOOKING_STEP_LABEL[s.id].hint}</span>
                     </span>
                   </label>
@@ -174,11 +175,11 @@ export function BookingPage() {
           )}
         </div>
         <aside className="panel">
-          <h2 style={{ fontSize: '1.8rem', marginBottom: 14 }}>Línea de tiempo</h2>
+          <h2 className="timeline-panel__title">Línea de tiempo</h2>
           <ol className="timeline">
             {b.events.map((e) => (
               <li key={e.id}>
-                <p><b>{STATUS_LABEL[e.toStatus]}</b></p>
+                <p className="timeline__status">{STATUS_LABEL[e.toStatus]}</p>
                 <p className="small muted">{dateTime(e.createdAt)}, {e.actorName}</p>
               </li>
             ))}
