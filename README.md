@@ -59,7 +59,7 @@ npm run test:e2e     # Recorrido en el navegador. Requiere Chrome y `npm run dem
 | [Patrones de diseño](docs/05-patrones-de-diseno.md) | [Base de datos](docs/06-base-de-datos.md) |
 | [API](docs/07-api.md) | [Seguridad](docs/08-seguridad.md) |
 | [UX e identidad](docs/09-ux-e-identidad.md) | [Plan y estado](docs/10-plan-y-estado.md) |
-| [Referencia: AmberStudent](docs/11-benchmark-amberstudent.md) | |
+| [Referencia: AmberStudent](docs/11-benchmark-amberstudent.md) | [Evaluación heurística (Nielsen)](docs/12-heuristicas-nielsen.md) |
 
 ## Stack
 

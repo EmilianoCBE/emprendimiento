@@ -1,22 +1,23 @@
 import './listing.css'
-import { Faders, MapTrifold, ListBullets, Star } from '@phosphor-icons/react'
+import { Faders, MapTrifold, ListBullets, Star, X } from '@phosphor-icons/react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import L from 'leaflet'
 import { type FormEvent, useEffect, useMemo, useRef, useState } from 'react'
-import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
-import { LISTING_KINDS, REPORT_REASONS, REPORT_REASON_LABEL, type ListingCard, type ListingDetail, type Paged, type ReportReason, type Zone } from '@aterriza/contracts'
+import { Link, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
+import { LISTING_KINDS, type ListingKind, REPORT_REASONS, REPORT_REASON_LABEL, type ListingCard, type ListingDetail, type Paged, type ReportReason, type Zone } from '@aterriza/contracts'
 import { Seal } from '../design/brand'
-import { Button, CriteriaList, Empty, ErrorNote, LinkButton, Loading, Note, PriceAlertNote, Select, TextArea, TextInput, Toggle } from '../design/ui'
+import { BackLink, Button, CriteriaList, Empty, ErrorNote, LinkButton, Loading, Note, PriceAlertNote, Select, TextArea, TextInput, Toggle, usePageTitle } from '../design/ui'
 import { api } from '../lib/api'
 import { KIND_LABEL, dateOnly, money } from '../lib/format'
 import { useSession } from '../lib/session'
+import { useToast } from '../lib/toast'
 import { MentorCardView } from './community-card'
 import { ListingCardView, ListingGridSkeleton } from './listings-card'
 
 // ---------- Mapa ----------
 const TEC: [number, number] = [25.6515, -100.2895]
 
-function ResultsMap({ items, active }: { items: ListingCard[]; active: string | null }) {
+function ResultsMap({ items, active, from }: { items: ListingCard[]; active: string | null; from: string }) {
   const ref = useRef<HTMLDivElement>(null)
   const map = useRef<L.Map | null>(null)
   const layer = useRef<L.LayerGroup | null>(null)
@@ -60,10 +61,10 @@ function ResultsMap({ items, active }: { items: ListingCard[]; active: string | 
         title: `${l.title}, ${money(l.monthlyRentMxn)}, ${l.metCount} de 4 revisiones${danger ? ', precio sospechoso' : ''}`,
         zIndexOffset: active === l.id ? 1000 : 0,
       })
-      marker.on('click', () => navigate(`/viviendas/${l.id}`))
+      marker.on('click', () => navigate(`/viviendas/${l.id}`, { state: { from } }))
       marker.addTo(group)
     }
-  }, [items, active, navigate])
+  }, [items, active, navigate, from])
 
   return (
     <div className="mapwrap">
@@ -85,7 +86,9 @@ export function SearchPage() {
   const [filtersOpen, setFiltersOpen] = useState(false)
   const zones = useQuery({ queryKey: ['zones'], queryFn: () => api.get<Zone[]>('/zones') })
   const queryString = params.toString()
-  const { data, isLoading, error } = useQuery({
+  usePageTitle('Viviendas')
+  const location = useLocation()
+  const { data, isLoading, isFetching, error, refetch } = useQuery({
     queryKey: ['listings', queryString],
     queryFn: () => api.get<Paged<ListingCard>>(`/listings?pageSize=24&${queryString}`),
     placeholderData: (prev) => prev,
@@ -103,6 +106,18 @@ export function SearchPage() {
   const selectedZone = zones.data?.find((z) => z.slug === params.get('zone'))
 
   const activeFilters = [...params.keys()].filter((k) => k !== 'sort').length
+  // Lo que está filtrando, visible aunque el panel esté cerrado (heurística 6).
+  const FLAG_LABEL: Record<string, string> = { verifiedOnly: 'Con 4 revisiones', semester: 'Contrato por semestre', furnished: 'Amueblada', utilities: 'Servicios incluidos' }
+  const chips = [...params.entries()].flatMap(([key, value]): [string, string][] => {
+    if (key === 'zone') return [[key, selectedZone?.name ?? value]]
+    if (key === 'maxRent') return [[key, `Hasta ${money(Number(value))}`]]
+    if (key === 'maxMinutes') return [[key, `Hasta ${value} min al campus`]]
+    if (key === 'kind') return [[key, KIND_LABEL[value as ListingKind] ?? value]]
+    if (FLAG_LABEL[key]) return [[key, FLAG_LABEL[key]]]
+    return []
+  })
+  const sort = params.get('sort')
+  const clearAll = () => setParams(sort ? { sort } : {}, { replace: true })
 
   return (
     <div className="searchview" data-view={view} data-filters={filtersOpen ? 'open' : 'closed'}>
@@ -153,6 +168,19 @@ export function SearchPage() {
           </div>
         </div>
 
+        {chips.length > 0 && (
+          <div className="activefilters" aria-label="Filtros activos" role="group">
+            {chips.map(([key, label]) => (
+              <button key={key} type="button" className="activefilter" onClick={() => set(key, '')}>
+                {label}
+                <X size={14} weight="bold" aria-hidden />
+                <span className="sr-only">, quitar filtro</span>
+              </button>
+            ))}
+            <Button variant="quiet" onClick={clearAll}>Quitar todos</Button>
+          </div>
+        )}
+
         {selectedZone && (
           <div className="mt-4">
             <Note title={`Sobre ${selectedZone.name}`}>
@@ -163,7 +191,12 @@ export function SearchPage() {
 
         <div className="results__bar">
           <p aria-live="polite">
-            <b>{data?.total ?? 0}</b> {data?.total === 1 ? 'vivienda' : 'viviendas'}
+            {!data ? 'Buscando…' : (
+              <>
+                <b>{data.total}</b> {data.total === 1 ? 'vivienda' : 'viviendas'}
+                {isFetching && <span className="muted">, actualizando…</span>}
+              </>
+            )}
           </p>
           <div className="results__sort">
             <label className="sr-only" htmlFor="sort">
@@ -178,13 +211,13 @@ export function SearchPage() {
           </div>
         </div>
 
-        <ErrorNote error={error} />
+        <ErrorNote error={error} onRetry={() => void refetch()} />
         {isLoading && <ListingGridSkeleton />}
         {data?.items.length === 0 && (
           <Empty title="Ninguna vivienda cumple con estos filtros">
             <p className="empty__body">Prueba a subir tu renta máxima o a quitar un filtro.</p>
             {hasFilters && (
-              <Button variant="secondary" onClick={() => setParams({}, { replace: true })}>
+              <Button variant="secondary" onClick={clearAll}>
                 Quitar filtros
               </Button>
             )}
@@ -193,11 +226,11 @@ export function SearchPage() {
         {data && data.items.length > 0 && <h2 className="sr-only">Resultados</h2>}
         <div className="grid">
           {data?.items.map((l) => (
-            <ListingCardView key={l.id} listing={l} onHover={setHovered} />
+            <ListingCardView key={l.id} listing={l} onHover={setHovered} from={location.pathname + location.search} />
           ))}
         </div>
       </div>
-      <ResultsMap items={data?.items ?? []} active={hovered} />
+      <ResultsMap items={data?.items ?? []} active={hovered} from={location.pathname + location.search} />
     </div>
   )
 }
@@ -210,6 +243,7 @@ export function ListingPage() {
     queryKey: ['listing', id, me?.id],
     queryFn: () => api.get<ListingDetail>(`/listings/${id}`),
   })
+  usePageTitle(l?.title ?? (error ? 'Vivienda no disponible' : null))
   const included = useMemo(() => l?.costItems.filter((c) => c.included) ?? [], [l])
   const excluded = useMemo(() => l?.costItems.filter((c) => !c.included) ?? [], [l])
 
@@ -228,6 +262,7 @@ export function ListingPage() {
   const [main, ...rest] = l.photos
   return (
     <div className="page">
+      <BackLink to="/viviendas">Volver a resultados</BackLink>
       <div className={`gallery ${rest.length === 0 ? 'gallery--one' : ''}`}>
         {main && <img className="gallery__main" src={main.url} alt={main.alt} />}
         {rest.length > 0 && (
@@ -271,6 +306,9 @@ export function ListingPage() {
 
           <section className="detail__section">
             <h2>Qué revisamos</h2>
+            <p className="small muted mb-3">
+              Cada revisión la hace una persona del equipo. <Link to="/ayuda#sello">¿Qué significa el sello?</Link>
+            </p>
             <CriteriaList criteria={l.verification.criteria} columns />
           </section>
 
@@ -287,7 +325,9 @@ export function ListingPage() {
                   <p className="total__l">Un mes típico estimado</p>
                 </div>
               </div>
-              <p className="small muted mt-4">Calculado para alguien que llega de otro país en agosto. Lo que no viene del anuncio es una estimación.</p>
+              <p className="small muted mt-4">
+                Calculado para alguien que llega de otro país en agosto. Lo que no viene del anuncio es una estimación. <Link to="/ayuda#estimaciones">¿De dónde salen?</Link>
+              </p>
               <div className="mt-4">
                 <LinkButton to={`/presupuesto?vivienda=${l.id}`} variant="secondary">Ajustar a mi caso</LinkButton>
               </div>
@@ -349,6 +389,7 @@ export function ListingPage() {
             </div>
             <Seal met={l.verification.metCount} size={80} stamp={l.verification.level === 'verified'} />
           </div>
+          <p className="small"><Link to="/ayuda#sello">Qué significa el sello</Link></p>
           {l.rating !== null && (
             <p className="aside__score">
               <Star weight="fill" size={16} aria-hidden /> {l.rating} con {l.reviewCount} {l.reviewCount === 1 ? 'estancia comprobada' : 'estancias comprobadas'}
@@ -370,13 +411,20 @@ function BookingPanel({ listing: l }: { listing: ListingDetail }) {
   const [endDate, setEnd] = useState('2027-06-18')
   const [message, setMessage] = useState('')
   const [ack, setAck] = useState(false)
+  const [touched, setTouched] = useState(false)
+  const toast = useToast()
   const create = useMutation({
     mutationFn: () => api.post<{ id: string }>('/bookings', { listingId: l.id, startDate, endDate, message, fraudNoticeAck: ack }),
     onSuccess: ({ id }) => {
       void client.invalidateQueries({ queryKey: ['bookings'] })
+      toast('Solicitud enviada. Te avisaremos cuando responda.')
       navigate(`/solicitudes/${id}`)
     },
   })
+  const today = new Date().toISOString().slice(0, 10)
+  // Se valida antes de enviar: el servidor también lo rechaza, pero aquí el error queda junto al campo (heurística 5).
+  const startError = startDate && startDate < today ? 'La entrada no puede ser en el pasado.' : null
+  const endError = startDate && endDate && endDate <= startDate ? 'La salida debe ser después de la entrada.' : null
 
   if (l.viewer.isOwner) return <Note title="Esta es tu vivienda."><Link to="/mis-viviendas">Administrarla</Link></Note>
   if (l.viewer.activeBookingId) return <LinkButton to={`/solicitudes/${l.viewer.activeBookingId}`}>Ver mi solicitud</LinkButton>
@@ -418,13 +466,15 @@ function BookingPanel({ listing: l }: { listing: ListingDetail }) {
   }
   const submit = (e: FormEvent) => {
     e.preventDefault()
+    setTouched(true)
+    if (startError || endError) return
     create.mutate()
   }
   return (
     <form className="form" onSubmit={submit}>
       <div className="form__row">
-        <TextInput label="Entrada" type="date" value={startDate} onChange={(e) => setStart(e.target.value)} required />
-        <TextInput label="Salida" type="date" value={endDate} onChange={(e) => setEnd(e.target.value)} required />
+        <TextInput label="Entrada" type="date" min={today} value={startDate} onChange={(e) => setStart(e.target.value)} onBlur={() => setTouched(true)} error={touched ? startError : null} required />
+        <TextInput label="Salida" type="date" min={startDate || today} value={endDate} onChange={(e) => setEnd(e.target.value)} onBlur={() => setTouched(true)} error={touched ? endError : null} required />
       </div>
       <TextArea label="Preséntate" hint="Tu programa, cuándo llegas y qué te gustaría preguntar." value={message} onChange={(e) => setMessage(e.target.value)} required minLength={10} maxLength={800} />
       <Note tone="warning" title="Antes de solicitar">
@@ -432,9 +482,13 @@ function BookingPanel({ listing: l }: { listing: ListingDetail }) {
       </Note>
       <Toggle label="Entiendo y no voy a pagar por fuera sin contrato." checked={ack} onChange={(e) => setAck(e.target.checked)} />
       <ErrorNote error={create.error} />
-      <Button type="submit" busy={create.isPending} disabled={!ack}>
-        {create.isPending ? 'Enviando…' : 'Enviar solicitud'}
-      </Button>
+      <div className="btnrow">
+        <Button type="submit" busy={create.isPending} disabled={!ack}>
+          {create.isPending ? 'Enviando…' : 'Enviar solicitud'}
+        </Button>
+        <Button type="button" variant="quiet" onClick={() => setOpen(false)}>Cancelar</Button>
+      </div>
+      {!ack && <p className="small muted">Marca la casilla de arriba para poder enviar.</p>}
     </form>
   )
 }
@@ -443,10 +497,12 @@ function ReviewsSection({ listing: l }: { listing: ListingDetail }) {
   const client = useQueryClient()
   const [rating, setRating] = useState(5)
   const [comment, setComment] = useState('')
+  const toast = useToast()
   const submit = useMutation({
     mutationFn: () => api.post(`/listings/${l.id}/reviews`, { rating, comment }),
     onSuccess: () => {
       setComment('')
+      toast('Reseña publicada. Gracias por contar tu experiencia.')
       void client.invalidateQueries({ queryKey: ['listing', l.id] })
     },
   })
@@ -478,7 +534,7 @@ function ReviewsSection({ listing: l }: { listing: ListingDetail }) {
           <Select label="Calificación" value={rating} onChange={(e) => setRating(Number(e.target.value))}>
             {[5, 4, 3, 2, 1].map((n) => <option key={n} value={n}>{n} de 5</option>)}
           </Select>
-          <TextArea label="Tu experiencia" hint="Entre 20 y 600 caracteres. Cuéntalo tal cual fue." value={comment} onChange={(e) => setComment(e.target.value)} required minLength={20} maxLength={600} />
+          <TextArea label="Tu experiencia" hint={`Entre 20 y 600 caracteres. Llevas ${comment.trim().length}.`} value={comment} onChange={(e) => setComment(e.target.value)} required minLength={20} maxLength={600} />
           <ErrorNote error={submit.error} />
           <div><Button type="submit" busy={submit.isPending}>Publicar reseña</Button></div>
         </form>

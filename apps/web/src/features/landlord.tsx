@@ -4,9 +4,10 @@ import { type ChangeEvent, type FormEvent, useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { LISTING_KINDS, listingInputSchema, type ListingInput, type ListingStatus, type OwnedListing, type Zone } from '@aterriza/contracts'
 import { Seal } from '../design/brand'
-import { Button, CriteriaList, Empty, ErrorNote, LinkButton, Loading, Note, Page, Select, TextArea, TextInput, Toggle } from '../design/ui'
+import { BackLink, Button, ConfirmButton, CriteriaList, Empty, ErrorNote, LinkButton, Loading, Note, Page, Select, TextArea, TextInput, Toggle, usePageTitle } from '../design/ui'
 import { ApiError, api } from '../lib/api'
 import { KIND_LABEL, LISTING_STATUS_LABEL, money } from '../lib/format'
+import { useToast } from '../lib/toast'
 
 const STATUS_CHIP: Record<ListingStatus, string> = {
   draft: '',
@@ -19,10 +20,10 @@ const STATUS_CHIP: Record<ListingStatus, string> = {
 const useMine = () => useQuery({ queryKey: ['my-listings'], queryFn: () => api.get<OwnedListing[]>('/me/listings') })
 
 export function MyListingsPage() {
-  const { data, isLoading, error } = useMine()
+  const { data, isLoading, error, refetch } = useMine()
   return (
     <Page title="Mis viviendas" lead="Solo se publican después de que revisamos sus datos. Con las cuatro revisiones, los estudiantes podrán solicitarlas." actions={<LinkButton to="/mis-viviendas/nueva">Publicar una vivienda</LinkButton>}>
-      <ErrorNote error={error} />
+      <ErrorNote error={error} onRetry={() => void refetch()} />
       {isLoading && <Loading />}
       {data?.length === 0 && <Empty title="Aún no publicas ninguna vivienda"><p className="empty__body">Empieza con un borrador; no se publica nada hasta que lo revisemos.</p><LinkButton to="/mis-viviendas/nueva" variant="secondary">Publicar la primera</LinkButton></Empty>}
       {data && data.length > 0 && <h2 className="sr-only">Lista de viviendas</h2>}
@@ -73,10 +74,21 @@ export function ListingEditPage() {
   const existing = mine.data?.find((l) => l.id === id)
   const [form, setForm] = useState<ListingInput>(EMPTY)
   const [clientError, setClientError] = useState<string[] | null>(null)
+  const toast = useToast()
 
   useEffect(() => {
     if (existing) setForm(existing.input)
   }, [existing])
+
+  // Cambios sin guardar: se indican junto al botón y el navegador avisa antes de salir (heurísticas 1 y 3).
+  const dirty = JSON.stringify(form) !== JSON.stringify(existing?.input ?? EMPTY)
+  useEffect(() => {
+    if (!dirty) return
+    const warn = (e: BeforeUnloadEvent) => e.preventDefault()
+    window.addEventListener('beforeunload', warn)
+    return () => window.removeEventListener('beforeunload', warn)
+  }, [dirty])
+  usePageTitle(id && !mine.isLoading && !existing ? 'Vivienda no encontrada' : null)
 
   const put = <K extends keyof ListingInput>(key: K, value: ListingInput[K]) => setForm((f) => ({ ...f, [key]: value }))
   const refresh = () => client.invalidateQueries({ queryKey: ['my-listings'] })
@@ -85,14 +97,22 @@ export function ListingEditPage() {
     mutationFn: (input: ListingInput) => (id ? api.patch(`/listings/${id}`, input) : api.post<{ id: string }>('/listings', input)),
     onSuccess: async (res) => {
       await refresh()
+      toast(id ? 'Cambios guardados' : 'Borrador guardado. Ahora puedes subir fotos.')
       if (!id) navigate(`/mis-viviendas/${(res as { id: string }).id}`, { replace: true })
     },
   })
-  const submitForReview = useMutation({ mutationFn: () => api.post(`/listings/${id}/submit`), onSuccess: refresh })
+  const submitForReview = useMutation({
+    mutationFn: () => api.post(`/listings/${id}/submit`),
+    onSuccess: async () => {
+      await refresh()
+      toast('Enviada a revisión. Te avisaremos del resultado.')
+    },
+  })
   const archive = useMutation({
     mutationFn: () => api.post(`/listings/${id}/archive`),
     onSuccess: async () => {
       await refresh()
+      toast('Vivienda archivada')
       navigate('/mis-viviendas')
     },
   })
@@ -103,9 +123,18 @@ export function ListingEditPage() {
       body.append('file', file)
       return api.post(`/listings/${id}/photos`, body)
     },
-    onSuccess: refresh,
+    onSuccess: async () => {
+      await refresh()
+      toast('Foto agregada')
+    },
   })
-  const removePhoto = useMutation({ mutationFn: (photoId: string) => api.del(`/listings/${id}/photos/${photoId}`), onSuccess: refresh })
+  const removePhoto = useMutation({
+    mutationFn: (photoId: string) => api.del(`/listings/${id}/photos/${photoId}`),
+    onSuccess: async () => {
+      await refresh()
+      toast('Foto quitada')
+    },
+  })
 
   if (id && mine.isLoading) return <div className="page"><Loading /></div>
   if (id && !existing) return <div className="page page--narrow"><Empty as="h1" title="No encontramos esta vivienda"><LinkButton to="/mis-viviendas" variant="secondary">Ver mis viviendas</LinkButton></Empty></div>
@@ -134,7 +163,7 @@ export function ListingEditPage() {
   })
 
   return (
-    <Page title={existing ? existing.title : 'Publicar una vivienda'} lead={existing ? LISTING_STATUS_LABEL[existing.status] : 'Entre más clara la información, más rápido la revisamos.'}>
+    <Page back={<BackLink to="/mis-viviendas">Mis viviendas</BackLink>} title={existing ? existing.title : 'Publicar una vivienda'} lead={existing ? LISTING_STATUS_LABEL[existing.status] : 'Entre más clara la información, más rápido la revisamos.'}>
       <div className="twocol">
         <form className="panel form" onSubmit={onSave}>
           <fieldset className="form__section">
@@ -188,8 +217,12 @@ export function ListingEditPage() {
 
           {clientError && <Note tone="danger" title="Revisa los datos"><ul className="note__list">{clientError.map((m) => <li key={m}>{m}</li>)}</ul></Note>}
           <ErrorNote error={save.error} />
-          {save.isSuccess && id && <Note tone="ok" title="Cambios guardados">Si estaba publicada y cambiaste algo más que la fecha de disponibilidad, vuelve a revisión.</Note>}
-          <div><Button type="submit" busy={save.isPending}>{id ? 'Guardar cambios' : 'Guardar borrador'}</Button></div>
+          {existing?.status === 'active' && <p className="small muted">Si cambias algo más que la fecha de disponibilidad, la vivienda vuelve a revisión.</p>}
+          <div className="btnrow">
+            <Button type="submit" busy={save.isPending} disabled={Boolean(id) && !dirty}>{id ? 'Guardar cambios' : 'Guardar borrador'}</Button>
+            {dirty && id && <span className="small unsaved" role="status">Cambios sin guardar</span>}
+            {!dirty && id && save.isSuccess && <span className="small muted">Todo guardado</span>}
+          </div>
         </form>
 
         {existing ? (
@@ -216,7 +249,9 @@ export function ListingEditPage() {
                 {existing.photos.map((p) => (
                   <div className="photoedit__item" key={p.id}>
                     <img src={p.url} alt={p.alt} />
-                    <button type="button" onClick={() => removePhoto.mutate(p.id)} aria-label={`Quitar foto: ${p.alt}`}>Quitar</button>
+                    <ConfirmButton variant="secondary" question="¿Quitarla?" confirmLabel="Sí" busy={removePhoto.isPending && removePhoto.variables === p.id} onConfirm={() => removePhoto.mutate(p.id)}>
+                      Quitar<span className="sr-only"> foto: {p.alt}</span>
+                    </ConfirmButton>
                   </div>
                 ))}
               </div>
@@ -227,7 +262,7 @@ export function ListingEditPage() {
             {(existing.status === 'active' || existing.status === 'draft') && (
               <div>
                 <ErrorNote error={archive.error instanceof ApiError ? archive.error : null} />
-                <Button variant="danger" onClick={() => archive.mutate()} busy={archive.isPending}>Archivar vivienda</Button>
+                <ConfirmButton question="Deja de mostrarse a estudiantes." confirmLabel="Sí, archivar" onConfirm={() => archive.mutate()} busy={archive.isPending}>Archivar vivienda</ConfirmButton>
               </div>
             )}
           </aside>

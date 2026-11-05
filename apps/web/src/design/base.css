@@ -10,6 +10,7 @@ body {
   color: var(--color-ink);
   font: 400 var(--text-base) / var(--leading-base) var(--font-text);
   -webkit-font-smoothing: antialiased;
+  font-optical-sizing: auto;
 }
 #root { flex: 1; display: flex; flex-direction: column; }
 main { flex: 1; }
@@ -21,13 +22,15 @@ button, input, select, textarea { font: inherit; color: inherit; }
 a { color: inherit; text-decoration-thickness: 1px; text-underline-offset: 3px; }
 a:hover { text-decoration-thickness: 2px; }
 
-/* La fuente display es para títulos grandes y cifras. Lo pequeño se lee mejor en la de texto. */
-h1, h2 { font-family: var(--font-display); font-weight: 800; line-height: 1.05; text-wrap: balance; }
-h1 { font-size: var(--display-lg); }
+/* La fuente display es para títulos y cifras. Lo pequeño se lee mejor en la de texto. */
+h1, h2 { font-family: var(--font-display); font-weight: 800; line-height: var(--leading-display); letter-spacing: var(--tracking-display); text-wrap: balance; }
+h1 { font-size: var(--display-lg); letter-spacing: var(--tracking-display-lg); }
 h2 { font-size: var(--display-sm); }
-h3 { font: 600 var(--text-lg) / var(--leading-lg) var(--font-text); }
+h3 { font: 700 var(--text-lg) / var(--leading-lg) var(--font-text); }
 .title-sm { font: 700 var(--text-lg) / var(--leading-lg) var(--font-text); }
-.figure { font-family: var(--font-display); font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; }
+/* Cifras tabulares: los montos se alinean y no saltan al cambiar. */
+.figure { font-family: var(--font-display); font-weight: 800; line-height: 1.05; letter-spacing: var(--tracking-display); font-variant-numeric: tabular-nums; }
+p, li, dd { text-wrap: pretty; }
 
 :focus-visible { outline: 3px solid var(--color-ink); outline-offset: 2px; border-radius: 2px; }
 
@@ -49,7 +52,7 @@ h3 { font: 600 var(--text-lg) / var(--leading-lg) var(--font-text); }
 .page { width: 100%; max-width: calc(var(--content-max) + 2 * var(--gutter)); margin: 0 auto; padding: var(--space-10) var(--gutter) var(--space-16); }
 .page--narrow { max-width: calc(45rem + 2 * var(--gutter)); }
 .page__head { display: flex; justify-content: space-between; align-items: flex-end; gap: var(--space-6); flex-wrap: wrap; margin-bottom: var(--space-8); }
-.page__lead { margin-top: var(--space-2); max-width: 60ch; color: var(--color-ink-muted); }
+.page__lead { margin-top: var(--space-3); max-width: 60ch; font-size: var(--text-lg); line-height: var(--leading-lg); color: var(--color-ink-muted); }
 
 .panel { background: var(--color-surface); border: var(--border); border-radius: var(--radius-md); padding: var(--space-6); }
 .stack { display: grid; gap: var(--space-4); align-content: start; }

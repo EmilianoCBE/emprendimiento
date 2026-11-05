@@ -3,10 +3,11 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { BOOKING_STEP_LABEL, type Booking, type BookingAction, type BookingStatus } from '@aterriza/contracts'
-import { Button, Empty, ErrorNote, LinkButton, Loading, Note, Page, TextInput } from '../design/ui'
+import { BackLink, Button, ConfirmButton, Empty, ErrorNote, LinkButton, Loading, Note, Page, TextInput, usePageTitle } from '../design/ui'
 import { api } from '../lib/api'
 import { ACTION_LABEL, STATUS_LABEL, dateOnly, dateTime, money } from '../lib/format'
 import { useSession } from '../lib/session'
+import { useToast } from '../lib/toast'
 
 const CHIP: Record<BookingStatus, string> = {
   requested: 'chip--wait',
@@ -20,11 +21,11 @@ const CHIP: Record<BookingStatus, string> = {
 
 export function BookingsPage() {
   const { me } = useSession()
-  const { data, isLoading, error } = useQuery({ queryKey: ['bookings'], queryFn: () => api.get<Booking[]>('/bookings') })
+  const { data, isLoading, error, refetch } = useQuery({ queryKey: ['bookings'], queryFn: () => api.get<Booking[]>('/bookings') })
   const isLandlord = me?.role === 'landlord'
   return (
     <Page title={isLandlord ? 'Solicitudes recibidas' : 'Mis solicitudes'}>
-      <ErrorNote error={error} />
+      <ErrorNote error={error} onRetry={() => void refetch()} />
       {isLoading && <Loading />}
       {data?.length === 0 && (
         <Empty title={isLandlord ? 'Aún no recibes solicitudes' : 'Aún no has solicitado ninguna vivienda'}>
@@ -51,6 +52,22 @@ export function BookingsPage() {
   )
 }
 
+/** Lo que dice el aviso al terminar cada acción: el mismo verbo que el botón (heurísticas 1 y 4). */
+const DONE_LABEL: Record<BookingAction, string> = {
+  schedule_tour: 'Videollamada agendada',
+  accept: 'Solicitud aceptada. Ya puede ver la dirección.',
+  reject: 'Solicitud rechazada',
+  cancel: 'Solicitud cancelada',
+  confirm: 'Contrato confirmado. La vivienda deja de aparecer en la búsqueda.',
+  complete: 'Estancia marcada como concluida',
+}
+/** Acciones que no se pueden deshacer: piden confirmación (heurística 3). */
+const CONFIRM: Partial<Record<BookingAction, string>> = {
+  reject: 'Sí, rechazar',
+  cancel: 'Sí, cancelar solicitud',
+  complete: 'Sí, concluir estancia',
+}
+
 const NEXT_STEP: Partial<Record<BookingStatus, { student: string; landlord: string }>> = {
   requested: { student: 'El arrendador revisará tu solicitud. Pídele una videollamada por el chat.', landlord: 'Agenda una videollamada para mostrar el lugar, o responde a la solicitud.' },
   tour_scheduled: { student: 'En la videollamada, pide que te muestren el lugar en vivo. No pagues todavía.', landlord: 'Después de la videollamada, acepta o rechaza la solicitud.' },
@@ -65,11 +82,14 @@ export function BookingPage() {
   const client = useQueryClient()
   const [tourAt, setTourAt] = useState('')
   const [askTour, setAskTour] = useState(false)
+  const toast = useToast()
   const { data: b, isLoading, error } = useQuery({ queryKey: ['booking', id], queryFn: () => api.get<Booking>(`/bookings/${id}`) })
+  usePageTitle(b ? `Solicitud: ${b.listing.title}` : error ? 'Solicitud no encontrada' : null)
   const act = useMutation({
     mutationFn: (body: { action: BookingAction; tourAt?: string }) => api.post<Booking>(`/bookings/${id}/transitions`, body),
-    onSuccess: (updated) => {
+    onSuccess: (updated, body) => {
       client.setQueryData(['booking', id], updated)
+      toast(DONE_LABEL[body.action])
       setAskTour(false)
       void client.invalidateQueries({ queryKey: ['bookings'] })
     },
@@ -86,7 +106,7 @@ export function BookingPage() {
   const asStudent = me?.role === 'student'
   const next = NEXT_STEP[b.status]
   return (
-    <Page title={b.listing.title} lead={`${b.listing.zoneName}. ${money(b.listing.monthlyRentMxn)} al mes.`}>
+    <Page back={<BackLink to="/solicitudes">{asStudent ? 'Mis solicitudes' : 'Solicitudes recibidas'}</BackLink>} title={b.listing.title} lead={`${b.listing.zoneName}. ${money(b.listing.monthlyRentMxn)} al mes.`}>
       <div className="twocol">
         <div className="stack">
           <div className="panel stack">
@@ -98,6 +118,7 @@ export function BookingPage() {
               <Link to={`/viviendas/${b.listing.id}`} className="small">Ver la vivienda</Link>
             </div>
             {next && <p>{asStudent ? next.student : next.landlord}</p>}
+            <p className="small"><Link to="/ayuda#estados">Qué significa cada estado</Link></p>
             {b.tourAt && <Note title="Videollamada">{dateTime(b.tourAt)}. La hacen por el medio que acuerden en el chat.</Note>}
             {b.exactAddress ? <Note tone="ok" title="Dirección exacta">{b.exactAddress}</Note> : <p className="small muted">La dirección exacta aparece cuando el arrendador acepta.</p>}
             <dl className="facts">
@@ -114,10 +135,10 @@ export function BookingPage() {
                   act.mutate({ action: 'schedule_tour', tourAt: new Date(tourAt).toISOString() })
                 }}
               >
-                <TextInput label="Fecha y hora de la videollamada" type="datetime-local" value={tourAt} onChange={(e) => setTourAt(e.target.value)} required />
+                <TextInput label="Fecha y hora de la videollamada" type="datetime-local" min={new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 16)} value={tourAt} onChange={(e) => setTourAt(e.target.value)} required />
                 <div className="btnrow">
                   <Button type="submit" busy={act.isPending}>Confirmar videollamada</Button>
-                  <Button type="button" variant="quiet" onClick={() => setAskTour(false)}>Cancelar</Button>
+                  <Button type="button" variant="quiet" onClick={() => setAskTour(false)}>No agendar todavía</Button>
                 </div>
               </form>
             )}
@@ -126,6 +147,14 @@ export function BookingPage() {
               <div className="btnrow">
                 {b.allowedActions.map((action) => {
                   const danger = action === 'reject' || action === 'cancel'
+                  const confirmLabel = CONFIRM[action]
+                  if (confirmLabel) {
+                    return (
+                      <ConfirmButton key={action} variant={danger ? 'danger' : 'secondary'} busy={act.isPending} confirmLabel={confirmLabel} question="No se puede deshacer." onConfirm={() => act.mutate({ action })}>
+                        {ACTION_LABEL[action]}
+                      </ConfirmButton>
+                    )
+                  }
                   return (
                     <Button
                       key={action}

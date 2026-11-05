@@ -3,7 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Fragment, useEffect, useState, type ReactNode } from 'react'
 import { Link, useParams, useSearchParams } from 'react-router-dom'
 import type { BudgetEstimate, ChecklistItem, Guide, ListingDetail } from '@aterriza/contracts'
-import { Empty, ErrorNote, LinkButton, Loading, Note, Page, Select, TextInput, Toggle } from '../design/ui'
+import { BackLink, Empty, ErrorNote, LinkButton, Loading, Note, Page, Select, TextInput, Toggle, usePageTitle } from '../design/ui'
 import { api } from '../lib/api'
 import { MONTHS, dateOnly, money } from '../lib/format'
 import { useSession } from '../lib/session'
@@ -116,7 +116,7 @@ export function BudgetPage() {
 
 export function GuidesPage() {
   const { me } = useSession()
-  const { data, isLoading, error } = useQuery({ queryKey: ['guides'], queryFn: () => api.get<Guide[]>('/guides') })
+  const { data, isLoading, error, refetch } = useQuery({ queryKey: ['guides'], queryFn: () => api.get<Guide[]>('/guides') })
   const categories = [...new Set(data?.map((g) => g.category))]
   return (
     <Page
@@ -124,7 +124,7 @@ export function GuidesPage() {
       lead="Todo en un solo lugar, en vez de buscarlo en diez grupos de WhatsApp."
       actions={me ? <LinkButton to="/checklist">Ver mi checklist</LinkButton> : undefined}
     >
-      <ErrorNote error={error} />
+      <ErrorNote error={error} onRetry={() => void refetch()} />
       {isLoading && <Loading />}
       <div className="guides">
         {categories.map((cat) => (
@@ -173,10 +173,11 @@ function Prose({ text }: { text: string }) {
 export function GuidePage() {
   const { slug } = useParams()
   const { data, isLoading, error } = useQuery({ queryKey: ['guide', slug], queryFn: () => api.get<Guide>(`/guides/${slug}`) })
+  usePageTitle(error ? 'Guía no encontrada' : null)
   if (isLoading) return <div className="page"><Loading /></div>
   if (error || !data) return <div className="page page--narrow"><Empty as="h1" title="No encontramos esta guía"><LinkButton to="/guias" variant="secondary">Ver todas las guías</LinkButton></Empty></div>
   return (
-    <Page narrow title={data.title} lead={data.summary}>
+    <Page narrow back={<BackLink to="/guias">Todas las guías</BackLink>} title={data.title} lead={data.summary}>
       <Prose text={data.body} />
       <p className="small muted mt-8">Última revisión: {dateOnly(data.reviewedOn)}. Contenido de orientación general.</p>
       <p className="mt-4"><Link to="/guias">Volver a las guías</Link></p>
@@ -186,7 +187,7 @@ export function GuidePage() {
 
 export function ChecklistPage() {
   const client = useQueryClient()
-  const { data, isLoading, error } = useQuery({ queryKey: ['checklist'], queryFn: () => api.get<ChecklistItem[]>('/checklist') })
+  const { data, isLoading, error, refetch } = useQuery({ queryKey: ['checklist'], queryFn: () => api.get<ChecklistItem[]>('/checklist') })
   const toggle = useMutation({
     mutationFn: ({ id, done }: { id: string; done: boolean }) => api.put(`/checklist/${id}`, { done }),
     onMutate: ({ id, done }) => client.setQueryData<ChecklistItem[]>(['checklist'], (prev) => prev?.map((t) => (t.id === id ? { ...t, done } : t))),
@@ -197,7 +198,7 @@ export function ChecklistPage() {
   const phases: ['before' | 'week1', string][] = [['before', 'Antes de viajar'], ['week1', 'Tu primera semana']]
   return (
     <Page narrow title="Mi checklist" lead="Lo que tienes que resolver antes de llegar y en tus primeros días.">
-      <ErrorNote error={error ?? toggle.error} />
+      <ErrorNote error={error ?? toggle.error} onRetry={error ? () => void refetch() : undefined} />
       {isLoading && <Loading />}
       {total > 0 && (
         <div className="stack stack--lg">

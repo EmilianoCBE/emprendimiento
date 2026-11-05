@@ -24,6 +24,7 @@ Web app para que estudiantes foráneos e internacionales del Tec de Monterrey co
 | `docs/09-ux-e-identidad.md` | Identidad visual y voz |
 | `docs/10-plan-y-estado.md` | **Estado vivo** |
 | `docs/11-benchmark-amberstudent.md` | Referencia de producto que pidió el usuario |
+| `docs/12-heuristicas-nielsen.md` | Evaluación con las 10 heurísticas y componentes de usabilidad (`Toast`, `ConfirmButton`, `BackLink`) |
 
 ## Comandos
 

@@ -24,8 +24,10 @@
 .popover__empty { padding: var(--space-4); color: var(--color-ink-muted); }
 .notif { display: block; padding: var(--space-3) var(--space-4); border-bottom: var(--border); text-decoration: none; }
 a.notif:hover { background: var(--color-bg); }
-.notif.is-unread { box-shadow: inset 4px 0 0 var(--color-accent); }
-.notif__title { font-weight: 600; }
+/* Sin leer: barra de tinta (14:1) y título en negrita. El cempasúchil sobre blanco no llega a 3:1. */
+.notif.is-unread { box-shadow: inset 4px 0 0 var(--color-ink); }
+.notif.is-unread .notif__title { font-weight: 700; }
+.notif__title { font-weight: 500; }
 .notif__body { font-size: var(--text-sm); line-height: var(--leading-sm); color: var(--color-ink-muted); }
 
 .tabbar { display: none; }
@@ -54,3 +56,20 @@ a.notif:hover { background: var(--color-bg); }
   .tabbar a.active { color: var(--color-accent); }
   .footer__in { grid-template-columns: minmax(0, 1fr); }
 }
+
+/* Aviso flotante: abajo a la izquierda, sobre la barra de pestañas en móvil. */
+.toastregion { position: fixed; left: var(--edge); bottom: var(--space-6); z-index: 1200; pointer-events: none; }
+.toast {
+  display: flex; align-items: center; gap: var(--space-3); max-width: min(28rem, calc(100vw - 2 * var(--gutter)));
+  padding: var(--space-3) var(--space-2) var(--space-3) var(--space-4); border-radius: var(--radius-md);
+  background: var(--color-ink); color: var(--color-on-ink); box-shadow: var(--shadow-overlay); pointer-events: auto;
+  animation: toast-in 180ms ease-out;
+}
+.toast > svg { flex: none; color: var(--color-accent); }
+.toast p { flex: 1; font-weight: 600; }
+.toast__close { flex: none; display: grid; place-items: center; width: 2.25rem; height: 2.25rem; border: 0; border-radius: var(--radius-sm); background: none; color: inherit; cursor: pointer; }
+.toast__close:hover { background: rgb(255 255 255 / 0.12); }
+.toast :focus-visible { outline-color: var(--color-accent); }
+@keyframes toast-in { from { transform: translateY(0.5rem); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .toast { animation: none; } }
+@media (max-width: 47.5rem) { .toastregion { left: var(--gutter); bottom: calc(4.5rem + env(safe-area-inset-bottom)); } }

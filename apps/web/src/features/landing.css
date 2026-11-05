@@ -1,7 +1,7 @@
 /* Portada. El único movimiento no solicitado de la app: el sello cae al cargar. */
 .hero { background: var(--color-bg); overflow: hidden; }
 .hero__sky { position: relative; padding: var(--space-10) var(--edge) 0; }
-.hero__title { font-size: var(--display-hero); line-height: 0.92; max-width: 14ch; text-wrap: initial; }
+.hero__title { font-size: var(--display-hero); font-weight: 900; line-height: var(--leading-display-tight); letter-spacing: var(--tracking-display-lg); max-width: 15ch; text-wrap: balance; }
 .hero__sub { margin-top: var(--space-4); max-width: 44ch; font-size: var(--text-lg); line-height: var(--leading-lg); color: var(--color-ink-muted); }
 .hero__stamp { position: absolute; right: var(--edge); top: var(--space-12); width: clamp(9rem, 20vw, 16rem); height: auto; animation: stamp-down 620ms cubic-bezier(0.2, 0.9, 0.3, 1) 350ms both; }
 @keyframes stamp-down {
@@ -18,7 +18,7 @@
 .band { padding: clamp(var(--space-12), 7vw, var(--space-24)) var(--edge); }
 .band--surface { background: var(--color-surface); }
 .band--dark { background: var(--color-ink); color: var(--color-on-ink); }
-.band__head { font-size: var(--display-xl); line-height: 1; max-width: 18ch; margin-bottom: var(--space-6); }
+.band__head { font-size: var(--display-xl); line-height: var(--leading-display); letter-spacing: var(--tracking-display-lg); max-width: 20ch; margin-bottom: var(--space-6); }
 .band__lead { max-width: 56ch; font-size: var(--text-lg); line-height: var(--leading-lg); color: var(--color-ink-muted); margin: calc(-1 * var(--space-2)) 0 var(--space-6); }
 .band__more { margin-top: var(--space-8); }
 
@@ -30,9 +30,9 @@
 .steps li::before { content: counter(paso); display: block; font: 800 var(--display-md) / 1 var(--font-display); margin-bottom: var(--space-2); }
 .steps h3 { margin-bottom: var(--space-2); }
 
-.zonetable tbody th { font: 800 var(--display-sm) / 1.1 var(--font-display); white-space: nowrap; }
+.zonetable tbody th { font: 800 var(--text-lg) / var(--leading-lg) var(--font-display); white-space: nowrap; }
 
-.quote { font: 800 var(--display-xl) / 1.02 var(--font-display); max-width: 22ch; }
+.quote { font: 800 var(--display-lg) / var(--leading-display) var(--font-display); letter-spacing: var(--tracking-display); max-width: 26ch; }
 .quote__by { margin-top: var(--space-4); color: var(--color-on-ink-muted); }
 
 .costs { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(var(--space-6), 5vw, var(--space-16)); align-items: center; }
@@ -51,7 +51,7 @@
 }
 @media (max-width: 47.5rem) {
   .hero__sky { padding-top: var(--space-6); }
-  .hero__title { font-size: 2.875rem; max-width: 12ch; }
+  .hero__title { font-size: 2.375rem; max-width: 13ch; }
   .hero__sub { font-size: var(--text-base); line-height: var(--leading-base); max-width: 34ch; }
   .hero__stamp { width: 4.75rem; top: auto; bottom: calc(-1 * var(--space-16)); right: var(--gutter); }
   .hero__search { grid-template-columns: minmax(0, 1fr); gap: var(--space-3); }

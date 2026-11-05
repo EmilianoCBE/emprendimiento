@@ -1,9 +1,14 @@
 /* Publicar y administrar viviendas. */
 .costrow { display: grid; grid-template-columns: minmax(0, 2fr) auto minmax(5.5rem, 1fr) auto; gap: var(--space-2) var(--space-3); align-items: center; }
 .photoedit { display: flex; flex-wrap: wrap; gap: var(--space-2); }
-.photoedit__item { position: relative; }
+.photoedit__item { display: grid; gap: var(--space-1); width: 8rem; align-content: start; }
 .photoedit__item img { width: 8rem; height: 6rem; object-fit: cover; border-radius: var(--radius-sm); }
-.photoedit__item button { position: absolute; top: var(--space-1); right: var(--space-1); background: var(--color-surface); border: 0; border-radius: var(--radius-sm); padding: 2px var(--space-2); cursor: pointer; font-size: var(--text-xs); line-height: var(--leading-xs); font-weight: 600; }
+/* La acción va debajo de la foto: así cabe la confirmación sin taparla. */
+.photoedit__item .btn, .photoedit__item .confirm { min-height: 2rem; font-size: var(--text-sm); }
+.photoedit__item .btn { padding: 0 var(--space-2); }
+.photoedit__item .confirm { gap: var(--space-1); }
+.photoedit__item .confirm__q { width: 100%; font-size: var(--text-sm); }
+.unsaved { font-weight: 700; color: var(--color-warn); }
 .listing-side__head { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--space-3); }
 .pending-count { color: var(--color-ink); font-weight: 600; }
 @media (max-width: 47.5rem) { .costrow { grid-template-columns: minmax(0, 1fr) auto; } }

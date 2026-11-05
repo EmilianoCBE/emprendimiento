@@ -6,10 +6,11 @@ import { Seal } from '../design/brand'
 import { PriceAlertNote } from '../design/ui'
 import { KIND_LABEL, money } from '../lib/format'
 
-export function ListingCardView({ listing: l, onHover }: { listing: ListingCard; onHover?: (id: string | null) => void }) {
+/** `from` guarda la búsqueda con sus filtros para que "Volver a resultados" regrese a ella. */
+export function ListingCardView({ listing: l, onHover, from }: { listing: ListingCard; onHover?: (id: string | null) => void; from?: string }) {
   const nearest = Math.min(l.minutesWalk, l.minutesTransit)
   return (
-    <Link to={`/viviendas/${l.id}`} className="card" onMouseEnter={() => onHover?.(l.id)} onMouseLeave={() => onHover?.(null)}>
+    <Link to={`/viviendas/${l.id}`} state={from ? { from } : undefined} className="card" onMouseEnter={() => onHover?.(l.id)} onMouseLeave={() => onHover?.(null)}>
       <div className="card__media">
         {l.photo && <img src={l.photo.url} alt={l.photo.alt} loading="lazy" />}
         <div className="card__seal">

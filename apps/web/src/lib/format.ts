@@ -39,3 +39,7 @@ export const LISTING_STATUS_LABEL: Record<ListingStatus, string> = {
   archived: 'Archivada',
 }
 export const MONTHS = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
+
+/** Temas e idiomas de mentores: los mismos al llenar el perfil y al filtrar la búsqueda. */
+export const MENTOR_TOPICS = ['Vivienda', 'Zonas', 'Transporte', 'Dinero', 'Visa', 'Salud', 'Cultura', 'Vida diaria']
+export const MENTOR_LANGUAGES = ['Español', 'Inglés', 'Francés', 'Coreano', 'Alemán', 'Portugués', 'Chino', 'Japonés']

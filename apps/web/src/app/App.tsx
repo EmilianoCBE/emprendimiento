@@ -1,11 +1,11 @@
 import './shell.css'
-import { Bell, BookOpenText, Buildings, Calculator, ChatsCircle, ClipboardText, Gauge, House, type Icon, UserCircle, UsersThree } from '@phosphor-icons/react'
+import { Bell, BookOpenText, Question, Buildings, Calculator, ChatsCircle, ClipboardText, Gauge, House, type Icon, UserCircle, UsersThree } from '@phosphor-icons/react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Component, Suspense, lazy, useEffect, useState, type ComponentType, type ReactNode } from 'react'
+import { Component, Suspense, lazy, useEffect, useRef, useState, type ComponentType, type ReactNode } from 'react'
 import { Link, NavLink, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import type { AppNotification, Role } from '@aterriza/contracts'
 import { Logo } from '../design/brand'
-import { Button, Loading, Empty, LinkButton } from '../design/ui'
+import { Button, Loading, Empty, LinkButton, usePageTitle } from '../design/ui'
 import { api } from '../lib/api'
 import { useLiveEvents, useSession } from '../lib/session'
 import { LandingPage } from '../features/landing'
@@ -57,7 +57,10 @@ class ErrorBoundary extends Component<{ children: ReactNode; resetKey: string },
       <div className="page page--narrow">
         <Empty title="Esta pantalla no se pudo mostrar">
           <p className="empty__body">Vuelve a cargarla. Si sigue igual, regresa al inicio.</p>
-          <LinkButton to="/" variant="secondary">Ir al inicio</LinkButton>
+          <div className="btnrow">
+            <Button onClick={() => window.location.reload()}>Volver a cargar</Button>
+            <LinkButton to="/" variant="secondary">Ir al inicio</LinkButton>
+          </div>
         </Empty>
       </div>
     )
@@ -93,12 +96,32 @@ function Notifications() {
     onSuccess: () => client.invalidateQueries({ queryKey: ['notifications'] }),
   })
   const location = useLocation()
+  const wrapRef = useRef<HTMLDivElement>(null)
+  const bellRef = useRef<HTMLButtonElement>(null)
   useEffect(() => {
     setOpen(false)
   }, [location.pathname])
+  // Escape o un clic fuera cierran el panel; con Escape el foco regresa a la campana.
+  useEffect(() => {
+    if (!open) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return
+      setOpen(false)
+      bellRef.current?.focus()
+    }
+    const onPointer = (e: PointerEvent) => {
+      if (!wrapRef.current?.contains(e.target as Node)) setOpen(false)
+    }
+    document.addEventListener('keydown', onKey)
+    document.addEventListener('pointerdown', onPointer)
+    return () => {
+      document.removeEventListener('keydown', onKey)
+      document.removeEventListener('pointerdown', onPointer)
+    }
+  }, [open])
   return (
-    <>
-      <button className="iconbtn" aria-label={`Notificaciones${data?.unread ? `: ${data.unread} sin leer` : ''}`} aria-expanded={open} onClick={() => setOpen((v) => !v)}>
+    <div ref={wrapRef} className="notifwrap">
+      <button ref={bellRef} className="iconbtn" aria-haspopup="true" aria-label={`Notificaciones${data?.unread ? `: ${data.unread} sin leer` : ''}`} aria-expanded={open} onClick={() => setOpen((v) => !v)}>
         <Bell size={24} />
         {data && data.unread > 0 && <span className="badge">{data.unread}</span>}
       </button>
@@ -117,7 +140,10 @@ function Notifications() {
             {data?.items.map((n) => {
               const body = (
                 <>
-                  <p className="notif__title">{n.title}</p>
+                  <p className="notif__title">
+                    {!n.readAt && <span className="sr-only">Sin leer: </span>}
+                    {n.title}
+                  </p>
                   <p className="notif__body">{n.body}</p>
                 </>
               )
@@ -134,7 +160,7 @@ function Notifications() {
           </div>
         </div>
       )}
-    </>
+    </div>
   )
 }
 
@@ -203,6 +229,9 @@ function Shell({ children }: { children: ReactNode }) {
             ))}
           </nav>
           <div className="topbar__end">
+            <Link to="/ayuda" className="iconbtn" aria-label="Ayuda" title="Ayuda">
+              <Question size={24} />
+            </Link>
             {me ? (
               <>
                 <Notifications />
@@ -268,6 +297,22 @@ function Shell({ children }: { children: ReactNode }) {
   )
 }
 
+function NotFound() {
+  usePageTitle('Página no encontrada')
+  return (
+    <div className="page page--narrow">
+      <Empty as="h1" title="No encontramos esta página">
+        <p className="empty__body">Puede que el enlace esté incompleto o que la página ya no exista.</p>
+        <div className="btnrow">
+          <LinkButton to="/viviendas">Ver viviendas</LinkButton>
+          <LinkButton to="/" variant="secondary">Ir al inicio</LinkButton>
+          <LinkButton to="/ayuda" variant="quiet">Ayuda</LinkButton>
+        </div>
+      </Empty>
+    </div>
+  )
+}
+
 export function App() {
   return (
     <Shell>
@@ -298,15 +343,7 @@ export function App() {
         <Route path="/admin/*" element={<RequireRole roles={['admin']}><AdminPage /></RequireRole>} />
         <Route
           path="*"
-          element={
-            <div className="page page--narrow">
-              <Empty as="h1" title="No encontramos esta página">
-                <LinkButton to="/viviendas" variant="secondary">
-                  Ver viviendas
-                </LinkButton>
-              </Empty>
-            </div>
-          }
+          element={<NotFound />}
         />
       </Routes>
     </Shell>

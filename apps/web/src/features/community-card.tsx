@@ -6,6 +6,7 @@ import type { MentorCard } from '@aterriza/contracts'
 import { Button, ErrorNote, TextArea } from '../design/ui'
 import { api } from '../lib/api'
 import { useSession } from '../lib/session'
+import { useToast } from '../lib/toast'
 
 /** La mayoría estudia en el mismo campus: solo se menciona la universidad cuando es otra. */
 const HOME_UNIVERSITY = 'Tec de Monterrey'
@@ -22,9 +23,13 @@ export function MentorCardView({ mentor: m, headingLevel: Heading = 'h2' }: { me
   const navigate = useNavigate()
   const [open, setOpen] = useState(false)
   const [intro, setIntro] = useState('')
+  const toast = useToast()
   const connect = useMutation({
     mutationFn: () => api.post<{ conversationId: string }>(`/mentors/${m.id}/connect`, { intro }),
-    onSuccess: ({ conversationId }) => navigate(`/mensajes/${conversationId}`),
+    onSuccess: ({ conversationId }) => {
+      toast(`Solicitud enviada a ${m.fullName}. Te avisaremos cuando responda.`)
+      navigate(`/mensajes/${conversationId}`)
+    },
   })
   const canConnect = me?.role === 'student' && me.studentStatus === 'verified'
   return (

@@ -24,13 +24,15 @@
 .guideitem:hover .guideitem__title { text-decoration: underline; text-underline-offset: 3px; }
 
 .prose { max-width: 66ch; }
+/* Ritmo de lectura: más aire antes de un título que después, para que el título pertenezca a lo que sigue. */
 .prose > p { margin-top: var(--space-4); }
-.prose > p:first-child { margin-top: 0; }
-.prose h2 { margin-top: var(--space-8); }
+.prose > :first-child { margin-top: 0; }
+.prose h2 { margin-top: var(--space-10); margin-bottom: calc(-1 * var(--space-1)); }
 .prose ul { list-style: disc; padding-left: var(--space-5); margin-top: var(--space-3); display: grid; gap: var(--space-2); }
+.prose li::marker { color: var(--color-ink-muted); }
 .prose .note { margin-bottom: var(--space-4); }
 
-.faq details { border-bottom: var(--border); padding: var(--space-3) 0; }
+.faq details { border-bottom: var(--border); padding: var(--space-3) 0; scroll-margin-top: calc(var(--topbar-height) + var(--space-4)); }
 .faq summary { display: flex; justify-content: space-between; gap: var(--space-3); font-weight: 600; cursor: pointer; list-style: none; }
 .faq summary::-webkit-details-marker { display: none; }
 .faq summary::after { content: ''; flex: none; width: 1rem; height: 1.5rem; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3.5 6l4.5 4.5L12.5 6' fill='none' stroke='%230f2f2e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 1rem no-repeat; transition: transform 120ms; }

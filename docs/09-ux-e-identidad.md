@@ -23,7 +23,7 @@ Definidos en `apps/web/src/design/tokens.css`. Ningún componente escribe colore
 | `--color-ink-muted` | `#4A5F5C` | Texto secundario (6.2:1 sobre fondo) |
 | `--color-accent` | `#FFB400` | **Único acento:** acción principal y estado activo, siempre con texto oscuro (8:1) |
 | `--color-ok`, `--color-warn`, `--color-danger` | `#125233`, `#6B4B00`, `#B3261E` | Solo estados, con ícono o texto |
-| `--color-chart-a`, `--color-chart-b` | `#00917C`, `#E89B00` | Solo la barra de la calculadora; validados con el script de `dataviz` |
+| `--color-chart-a`, `--color-chart-b` | `#00917C`, `#B87400` | Solo la barra de la calculadora; ≥ 3:1 sobre blanco y validados para daltonismo con el script de `dataviz` |
 
 **Espaciado:** múltiplos de 4 (`--space-1` a `--space-24`). **Radios:** 4 px en etiquetas y casillas, 6 px en controles, paneles y fotos. **Sombra:** una sola, para lo que flota.
 
@@ -31,10 +31,43 @@ Definidos en `apps/web/src/design/tokens.css`. Ningún componente escribe colore
 
 | Rol | Fuente | Regla |
 | --- | --- | --- |
-| Títulos grandes y cifras | **Big Shoulders Display** | Solo de 28 px hacia arriba; es condensada y en tamaños chicos cuesta leerla |
-| Todo lo demás | **Source Sans 3** | Escala 13, 15, 17 y 20 px. Nombres, títulos de tarjeta y estados vacíos van aquí |
+| Títulos y cifras | **Overpass** (800; 900 solo en la portada) | Basada en Highway Gothic, la letra de los señalamientos de carretera. De 20 px hacia arriba. Cifras tabulares |
+| Todo lo demás | **Atkinson Hyperlegible Next** | Del Braille Institute: distingue `Il1` y `0O`, útil para quien lee en su segundo idioma. Escala 13, 15, 17 y 20 px |
+
+Por qué combinan: las dos vienen de la información pública (señalamiento y lectura accesible). Overpass Black es ancha y pesada, y Atkinson es abierta y tranquila: el contraste es de peso y de papel, no de estilo.
+
+Descartadas por ser el default de páginas generadas: Inter, DM Sans, Space Grotesk, Fraunces, Instrument Serif y Playfair.
+
+**Reglas de texto**
+
+| Estilo | Tamaño / interlineado | Uso |
+| --- | --- | --- |
+| Portada | 40–76 px / 1.02, tracking −0.025em, peso 900 | Solo el titular de la portada |
+| `h1` | 32–42 px / 1.1, tracking −0.025em | Título de cada pantalla |
+| `h2` | 24 px / 1.1, tracking −0.015em | Secciones |
+| `h3` | 20 / 28 px, Atkinson 700 | Títulos de tarjeta y subsección |
+| Cuerpo | 17 / 26 px (1.53) | Párrafos; máximo 60 a 68 caracteres por línea |
+| Pequeño | 15 / 22 px | Ayudas, metadatos, etiquetas |
+| Mínimo | 13 / 18 px | Solo etiquetas de una línea |
+
+Espacio: un título lleva más aire antes que después (40 px antes y 12 px después en guías), para que pertenezca a lo que sigue. Párrafos separados por 16 px. Todo en múltiplos de 4.
 
 Se sirven desde el propio dominio (`@fontsource`), sin llamadas a terceros.
+
+## Contraste
+
+Revisado con el verificador de WebAIM (`webaim.org/resources/contrastchecker`). Texto ≥ 4.5:1 (AA); bordes, foco y gráficas ≥ 3:1 (WCAG 1.4.11). El cempasúchil nunca va como texto ni como única señal sobre blanco (1.78:1); sobre tinta da 8.03:1.
+
+| Par | Contraste |
+| --- | --- |
+| Tinta sobre fondo / blanco | 13.0 / 14.3 |
+| Tinta secundaria sobre fondo / blanco / hundido | 6.20 / 6.81 / 5.53 |
+| Cempasúchil sobre tinta; tinta sobre cempasúchil | 8.03 |
+| Texto claro del pie sobre tinta | 10.0 |
+| Correcto, espera y peligro sobre su fondo | 7.90 / 7.23 / 5.57 |
+| Peligro sobre blanco; blanco sobre peligro | 6.53 |
+| Bordes de campos sobre blanco / fondo | 4.06 / 3.70 |
+| Barras de la calculadora sobre blanco | 3.93 / 3.79 |
 
 ## Maquetación
 

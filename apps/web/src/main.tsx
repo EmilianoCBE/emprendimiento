@@ -1,5 +1,5 @@
-import '@fontsource-variable/big-shoulders-display'
-import '@fontsource-variable/source-sans-3'
+import '@fontsource-variable/overpass'
+import '@fontsource-variable/atkinson-hyperlegible-next'
 import 'leaflet/dist/leaflet.css'
 import './design/tokens.css'
 import './design/base.css'
@@ -11,6 +11,7 @@ import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import { App } from './app/App'
 import { SessionProvider } from './lib/session'
+import { ToastProvider } from './lib/toast'
 
 const client = new QueryClient({
   defaultOptions: { queries: { staleTime: 30_000, retry: 1, refetchOnWindowFocus: false } },
@@ -21,7 +22,9 @@ createRoot(document.getElementById('root')!).render(
     <QueryClientProvider client={client}>
       <SessionProvider>
         <BrowserRouter>
-          <App />
+          <ToastProvider>
+            <App />
+          </ToastProvider>
         </BrowserRouter>
       </SessionProvider>
     </QueryClientProvider>

@@ -3,20 +3,20 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { type FormEvent, useEffect, useRef, useState } from 'react'
 import { Link, NavLink, useParams, useSearchParams } from 'react-router-dom'
 import type { ChatMessage, Conversation, MentorCard, Zone } from '@aterriza/contracts'
-import { Button, Empty, ErrorNote, Loading, Note, Page, Select } from '../design/ui'
+import { Button, ConfirmButton, Empty, ErrorNote, Loading, Note, Page, Select } from '../design/ui'
 import { api } from '../lib/api'
-import { shortDateTime } from '../lib/format'
+import { MENTOR_LANGUAGES as LANGUAGES, MENTOR_TOPICS as TOPICS, shortDateTime } from '../lib/format'
 import { useSession } from '../lib/session'
+import { useToast } from '../lib/toast'
 import { MentorCardView } from './community-card'
 
-const TOPICS = ['Vivienda', 'Zonas', 'Transporte', 'Dinero', 'Visa', 'Salud', 'Cultura', 'Vida diaria']
-const LANGUAGES = ['Español', 'Inglés', 'Francés', 'Coreano']
 
 export function MentorsPage() {
   const [params, setParams] = useSearchParams()
   const zones = useQuery({ queryKey: ['zones'], queryFn: () => api.get<Zone[]>('/zones') })
   const q = params.toString()
-  const { data, isLoading, error } = useQuery({ queryKey: ['mentors', q], queryFn: () => api.get<MentorCard[]>(`/mentors?${q}`) })
+  const { data, isLoading, error, refetch } = useQuery({ queryKey: ['mentors', q], queryFn: () => api.get<MentorCard[]>(`/mentors?${q}`) })
+  const hasFilters = q.length > 0
   const set = (key: string, value: string) => {
     const next = new URLSearchParams(params)
     if (value) next.set(key, value)
@@ -44,7 +44,8 @@ export function MentorsPage() {
           {zones.data?.map((z) => <option key={z.id} value={z.slug}>{z.name}</option>)}
         </Select>
       </div>
-      <ErrorNote error={error} />
+      {hasFilters && <div className="mb-6"><Button variant="quiet" onClick={() => setParams({}, { replace: true })}>Quitar filtros</Button></div>}
+      <ErrorNote error={error} onRetry={() => void refetch()} />
       {isLoading && <Loading />}
       {data?.length === 0 && (
         <Empty title="Ningún mentor cumple con estos filtros">
@@ -62,10 +63,10 @@ export function MentorsPage() {
 
 export function MessagesPage() {
   const { id } = useParams()
-  const { data, isLoading, error } = useQuery({ queryKey: ['conversations'], queryFn: () => api.get<Conversation[]>('/conversations') })
+  const { data, isLoading, error, refetch } = useQuery({ queryKey: ['conversations'], queryFn: () => api.get<Conversation[]>('/conversations') })
   return (
     <Page title="Mensajes">
-      <ErrorNote error={error} />
+      <ErrorNote error={error} onRetry={() => void refetch()} />
       {isLoading && <Loading />}
       {data?.length === 0 && (
         <Empty title="Aún no tienes conversaciones">
@@ -117,9 +118,11 @@ function ConversationPane({ id }: { id: string }) {
       client.setQueryData<ChatMessage[]>(['messages', id], (prev) => [...(prev ?? []), message])
     },
   })
+  const toast = useToast()
   const respond = useMutation({
     mutationFn: (accept: boolean) => api.post(`/conversations/${id}/respond`, { accept }),
-    onSuccess: () => {
+    onSuccess: (_, accept) => {
+      toast(accept ? 'Aceptaste la conversación. Ya pueden escribirse.' : 'Le avisamos que ahora no puedes atenderle')
       void client.invalidateQueries({ queryKey: ['conversations'] })
       void client.invalidateQueries({ queryKey: ['messages', id] })
     },
@@ -145,8 +148,8 @@ function ConversationPane({ id }: { id: string }) {
           <Note title="Quiere hablar contigo">
             <p>{c.intro}</p>
             <div className="btnrow mt-3">
-              <Button busy={respond.isPending} onClick={() => respond.mutate(true)}>Aceptar</Button>
-              <Button variant="secondary" busy={respond.isPending} onClick={() => respond.mutate(false)}>Ahora no puedo</Button>
+              <Button busy={respond.isPending && respond.variables} disabled={respond.isPending} onClick={() => respond.mutate(true)}>Aceptar</Button>
+              <ConfirmButton variant="secondary" question="Le avisaremos que busque a otro mentor." confirmLabel="Sí, declinar" busy={respond.isPending && !respond.variables} disabled={respond.isPending} onConfirm={() => respond.mutate(false)}>Ahora no puedo</ConfirmButton>
             </div>
             <ErrorNote error={respond.error} />
           </Note>

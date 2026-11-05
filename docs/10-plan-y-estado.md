@@ -13,6 +13,7 @@
 | I4 | Endurecimiento: revisión de seguridad, CI, Docker, recorrido en navegador | ✅ Lo verificable en local; ver abajo |
 | I5 | Referencia AmberStudent: lista para mudarte, ayuda, zonas, cómo funciona | ✅ |
 | I6 | Rediseño de interfaz, dirección Señalética: tokens, controles propios, todas las pantallas, fotos modestas | ✅ |
+| I7 | Evaluación con las 10 heurísticas de Nielsen y correcciones (`12-heuristicas-nielsen.md`) | ✅ Falta revisar a 390 px |
 
 ## Qué está comprobado
 
@@ -46,6 +47,9 @@
 
 | Fecha | Qué pasó |
 | --- | --- |
+| 2026-11-05 | Contraste revisado con WebAIM: todos los pares funcionales pasan AA (texto) o 3:1 (gráficos). Corregidos la barra de la calculadora y las marcas de "sin leer". Tipografía nueva: Overpass (títulos y cifras) y Atkinson Hyperlegible Next (texto), con escala e interlineado documentados en `09-ux-e-identidad.md`. |
+| 2026-11-05 | I7. Avisos flotantes, confirmación en dos pasos para lo que no se deshace, filtros activos visibles, regreso con filtros, errores con salida (reintentar, volver a entrar), ayuda enlazable por pregunta. Recorrido en Chrome y 145 pruebas pasan. |
+| 2026-11-05 | La demo en Vercel falla con varias peticiones a la vez: cada instancia tiene su propia base en memoria (sesiones perdidas, IDs distintos). No compartir el enlace hasta usar una base compartida. |
 | 2026-11-05 | Repositorio en GitHub. Demo pública para Vercel: base en memoria y contraseña compartida. El primer despliegue real aún no se ha verificado. |
 | 2026-11-05 | I6. Corregidos también: acceso a Mensajes y Solicitudes en móvil, botón de solicitar en viviendas no solicitables, pines del mapa que dependían del color y encabezados. |
 | 2026-11-04 | I0 a I5. Plugin `security-guidance` instalado a nivel de proyecto. Corregidos, tras verlos en navegador: pantalla en blanco por `scrollTo`, alerta de precio que comparaba cuartos con departamentos, mapa de CARTO que pedía llave y límite de frecuencia que bloqueaba la carga de la página. |
