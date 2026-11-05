@@ -10,7 +10,7 @@
     "api": {
       "root": "apps/api",
       "framework": "fastify",
-      "entrypoint": "src/main.ts",
+      "entrypoint": "src/vercel.ts",
       "installCommand": "cd ../.. && npm ci"
     }
   },
