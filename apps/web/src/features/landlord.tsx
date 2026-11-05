@@ -1,3 +1,4 @@
+import './landlord.css'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { type ChangeEvent, type FormEvent, useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
@@ -23,16 +24,17 @@ export function MyListingsPage() {
     <Page title="Mis viviendas" lead="Solo se publican después de que revisamos sus datos. Con las cuatro revisiones, los estudiantes podrán solicitarlas." actions={<LinkButton to="/mis-viviendas/nueva">Publicar una vivienda</LinkButton>}>
       <ErrorNote error={error} />
       {isLoading && <Loading />}
-      {data?.length === 0 && <Empty title="Aún no publicas ninguna vivienda"><LinkButton to="/mis-viviendas/nueva" variant="secondary">Publicar la primera</LinkButton></Empty>}
+      {data?.length === 0 && <Empty title="Aún no publicas ninguna vivienda"><p className="empty__body">Empieza con un borrador; no se publica nada hasta que lo revisemos.</p><LinkButton to="/mis-viviendas/nueva" variant="secondary">Publicar la primera</LinkButton></Empty>}
+      {data && data.length > 0 && <h2 className="sr-only">Lista de viviendas</h2>}
       <div className="rowlist">
         {data?.map((l) => (
           <Link key={l.id} to={`/mis-viviendas/${l.id}`} className="rowcard">
             {l.photo ? <img src={l.photo.url} alt="" /> : <div className="rowcard__ph" />}
             <div>
-              <h3>{l.title}</h3>
+              <h3 className="rowcard__title">{l.title}</h3>
               <p className="muted small">
                 {l.zoneName}, {money(l.monthlyRentMxn)} al mes, {l.metCount} de 4 revisiones
-                {l.pendingBookings > 0 && <b style={{ color: 'var(--sierra)' }}>. {l.pendingBookings} {l.pendingBookings === 1 ? 'solicitud pendiente' : 'solicitudes pendientes'}</b>}
+                {l.pendingBookings > 0 && <span className="pending-count">. {l.pendingBookings} {l.pendingBookings === 1 ? 'solicitud pendiente' : 'solicitudes pendientes'}</span>}
               </p>
             </div>
             <span className={`chip ${STATUS_CHIP[l.status]}`}>{LISTING_STATUS_LABEL[l.status]}</span>
@@ -106,7 +108,7 @@ export function ListingEditPage() {
   const removePhoto = useMutation({ mutationFn: (photoId: string) => api.del(`/listings/${id}/photos/${photoId}`), onSuccess: refresh })
 
   if (id && mine.isLoading) return <div className="page"><Loading /></div>
-  if (id && !existing) return <div className="page page--narrow"><Empty title="No encontramos esta vivienda"><LinkButton to="/mis-viviendas" variant="secondary">Ver mis viviendas</LinkButton></Empty></div>
+  if (id && !existing) return <div className="page page--narrow"><Empty as="h1" title="No encontramos esta vivienda"><LinkButton to="/mis-viviendas" variant="secondary">Ver mis viviendas</LinkButton></Empty></div>
 
   const onSave = (e: FormEvent) => {
     e.preventDefault()
@@ -135,33 +137,44 @@ export function ListingEditPage() {
     <Page title={existing ? existing.title : 'Publicar una vivienda'} lead={existing ? LISTING_STATUS_LABEL[existing.status] : 'Entre más clara la información, más rápido la revisamos.'}>
       <div className="twocol">
         <form className="panel form" onSubmit={onSave}>
-          <Select label="Zona" value={form.zoneId} onChange={(e) => put('zoneId', e.target.value)} required>
-            <option value="" disabled>Elige una zona</option>
-            {zones.data?.map((z) => <option key={z.id} value={z.id}>{z.name}</option>)}
-          </Select>
-          <TextInput label="Título" value={form.title} onChange={(e) => put('title', e.target.value)} required maxLength={90} />
-          <TextArea label="Descripción" hint="Con quién se comparte, qué tiene y qué tan cerca queda del transporte." value={form.description} onChange={(e) => put('description', e.target.value)} required maxLength={2000} />
-          <TextInput label="Dirección exacta" hint="No se muestra hasta que aceptes una solicitud." value={form.exactAddress} onChange={(e) => put('exactAddress', e.target.value)} required maxLength={200} />
-          <div className="form__row">
+          <fieldset className="form__section">
+            <legend className="form__legend">Dónde está</legend>
+            <Select label="Zona" value={form.zoneId} onChange={(e) => put('zoneId', e.target.value)} required>
+              <option value="" disabled>Elige una zona</option>
+              {zones.data?.map((z) => <option key={z.id} value={z.id}>{z.name}</option>)}
+            </Select>
+            <TextInput label="Dirección exacta" placeholder="Calle, número y colonia" hint="No se muestra hasta que aceptes una solicitud." value={form.exactAddress} onChange={(e) => put('exactAddress', e.target.value)} required maxLength={200} />
+            <div className="form__row">
+              <TextInput label="Minutos a pie al campus" {...num('minutesWalk')} />
+              <TextInput label="Minutos en transporte" {...num('minutesTransit')} />
+            </div>
+          </fieldset>
+
+          <fieldset className="form__section">
+            <legend className="form__legend">Cómo es</legend>
+            <TextInput label="Título" placeholder="Por ejemplo: cuarto con baño propio a 10 minutos del campus" value={form.title} onChange={(e) => put('title', e.target.value)} required maxLength={90} />
+            <TextArea label="Descripción" hint="Con quién se comparte, qué tiene y qué tan cerca queda del transporte." value={form.description} onChange={(e) => put('description', e.target.value)} required maxLength={2000} />
             <Select label="Tipo" value={form.kind} onChange={(e) => put('kind', e.target.value as ListingInput['kind'])}>
               {LISTING_KINDS.map((k) => <option key={k} value={k}>{KIND_LABEL[k]}</option>)}
             </Select>
-            <TextInput label="Renta al mes (MXN)" step={100} {...num('monthlyRentMxn')} />
-            <TextInput label="Depósito (meses)" step={0.5} {...num('depositMonths')} />
-          </div>
-          <div className="form__row">
-            <TextInput label="Plazo mínimo (meses)" {...num('minMonths')} />
-            <TextInput label="Minutos a pie al campus" {...num('minutesWalk')} />
-            <TextInput label="Minutos en transporte" {...num('minutesTransit')} />
-            <TextInput label="Disponible desde" type="date" value={form.availableFrom} onChange={(e) => put('availableFrom', e.target.value)} />
-          </div>
-          <Toggle label="Contrato por semestre" checked={form.semesterContract} onChange={(e) => put('semesterContract', e.target.checked)} />
-          <Toggle label="Amueblada" checked={form.furnished} onChange={(e) => put('furnished', e.target.checked)} />
-          <Toggle label="Luz e internet incluidos en la renta" checked={form.utilitiesIncluded} onChange={(e) => put('utilitiesIncluded', e.target.checked)} />
-          <Toggle label="Tiene aire acondicionado" checked={form.airConditioning} onChange={(e) => put('airConditioning', e.target.checked)} />
+            <Toggle label="Amueblada" checked={form.furnished} onChange={(e) => put('furnished', e.target.checked)} />
+            <Toggle label="Tiene aire acondicionado" checked={form.airConditioning} onChange={(e) => put('airConditioning', e.target.checked)} />
+          </fieldset>
 
-          <fieldset style={{ border: 0, padding: 0, margin: 0 }} className="form">
-            <legend className="field__label" style={{ marginBottom: 8 }}>Qué incluye y qué se paga aparte</legend>
+          <fieldset className="form__section">
+            <legend className="form__legend">Renta y contrato</legend>
+            <div className="form__row">
+              <TextInput label="Renta al mes (MXN)" step={100} {...num('monthlyRentMxn')} />
+              <TextInput label="Depósito (meses)" step={0.5} {...num('depositMonths')} />
+              <TextInput label="Plazo mínimo (meses)" {...num('minMonths')} />
+              <TextInput label="Disponible desde" type="date" value={form.availableFrom} onChange={(e) => put('availableFrom', e.target.value)} />
+            </div>
+            <Toggle label="Contrato por semestre" checked={form.semesterContract} onChange={(e) => put('semesterContract', e.target.checked)} />
+          </fieldset>
+
+          <fieldset className="form__section">
+            <legend className="form__legend">Qué incluye la renta</legend>
+            <Toggle label="Luz e internet incluidos" checked={form.utilitiesIncluded} onChange={(e) => put('utilitiesIncluded', e.target.checked)} />
             {form.costItems.map((item, i) => (
               <div className="costrow" key={i}>
                 <input className="input" aria-label="Concepto" placeholder="Por ejemplo, agua" value={item.label} onChange={(e) => put('costItems', form.costItems.map((c, j) => (j === i ? { ...c, label: e.target.value } : c)))} />
@@ -182,8 +195,8 @@ export function ListingEditPage() {
         {existing ? (
           <aside className="stack">
             <div className="panel stack">
-              <div className="aside__top">
-                <h2 style={{ fontSize: '1.8rem' }}>Revisiones</h2>
+              <div className="listing-side__head">
+                <h2>Revisiones</h2>
                 <Seal met={existing.metCount} size={82} />
               </div>
               {existing.reviewNote && <Note tone="warning" title="Nota del equipo">{existing.reviewNote}</Note>}
@@ -198,7 +211,7 @@ export function ListingEditPage() {
               {existing.status === 'active' && <LinkButton to={`/viviendas/${existing.id}`} variant="secondary">Ver cómo se publica</LinkButton>}
             </div>
             <div className="panel stack">
-              <h2 style={{ fontSize: '1.8rem' }}>Fotos</h2>
+              <h2>Fotos</h2>
               <div className="photoedit">
                 {existing.photos.map((p) => (
                   <div className="photoedit__item" key={p.id}>
