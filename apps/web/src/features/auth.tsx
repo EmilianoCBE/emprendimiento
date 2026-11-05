@@ -1,3 +1,4 @@
+import './auth.css'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
@@ -60,13 +61,13 @@ export function LoginPage() {
         </p>
       </form>
       {config?.demoMode && (
-        <section className="stack" style={{ marginTop: 30, gap: 10 }}>
-          <h2 style={{ fontSize: '1.6rem' }}>Cuentas de demostración</h2>
+        <section className="stack stack--tight mt-8">
+          <h2>Cuentas de demostración</h2>
           <div className="demoaccounts">
             {DEMO_ACCOUNTS.map(([name, role]) => (
               <button key={name} type="button" onClick={() => login.mutate({ email: `${name}@demo.aterriza.mx`, password: config.demoPassword ?? '' })}>
-                <span>{name}@demo.aterriza.mx</span>
-                <span className="muted small">{role}</span>
+                <b>{role}</b>
+                <span className="muted small">{name}@demo.aterriza.mx</span>
               </button>
             ))}
           </div>
@@ -104,8 +105,8 @@ export function RegisterPage() {
           register.mutate()
         }}
       >
-        <fieldset className="rolepick" style={{ border: 0, padding: 0, margin: 0 }}>
-          <legend className="field__label" style={{ marginBottom: 8 }}>¿Para qué vas a usar Aterriza?</legend>
+        <fieldset className="rolepick">
+          <legend className="rolepick__legend">¿Para qué vas a usar Aterriza?</legend>
           {ROLES.map(([value, title, detail]) => (
             <label key={value}>
               <input type="radio" name="role" checked={role === value} onChange={() => setRole(value)} />
@@ -324,7 +325,7 @@ export function AccountPage() {
   if (!me) return null
   return (
     <Page narrow title={me.fullName} lead={me.email}>
-      <div className="stack--lg">
+      <div className="stack stack--lg">
         {me.role === 'student' && <section className="panel stack"><h2>Validación de estudiante</h2><StudentValidation me={me} /></section>}
         {me.role === 'student' && (
           <section className="panel stack">

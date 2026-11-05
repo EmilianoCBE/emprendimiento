@@ -1,0 +1,12 @@
+/* Acceso y cuenta. */
+.authwrap { width: 100%; max-width: calc(28rem + 2 * var(--gutter)); margin: 0 auto; padding: var(--space-10) var(--gutter) var(--space-16); }
+.authwrap h1 { margin-bottom: var(--space-5); }
+.demoaccounts { display: grid; gap: var(--space-2); }
+.demoaccounts button { display: grid; gap: 2px; padding: var(--space-2) var(--space-3); text-align: left; border: var(--border); background: var(--color-surface); border-radius: var(--radius-md); cursor: pointer; }
+.demoaccounts button:hover { border-color: var(--color-ink); }
+.demoaccounts b { font-weight: 600; }
+.rolepick { display: grid; gap: var(--space-2); }
+.rolepick__legend { font-weight: 600; font-size: var(--text-sm); line-height: var(--leading-sm); padding: 0; margin-bottom: var(--space-2); }
+.rolepick label { display: flex; gap: var(--space-3); padding: var(--space-3); background: var(--color-surface); border: 1px solid var(--color-line-strong); border-radius: var(--radius-md); cursor: pointer; }
+.rolepick label:has(input:checked) { border-color: var(--color-ink); box-shadow: inset 0 0 0 1px var(--color-ink); }
+.rolepick b { display: block; font-weight: 600; }
