@@ -239,6 +239,8 @@ export interface PublicConfig {
   demoMode: boolean
   /** Solo existe en modo demo; ese modo no puede arrancar en producción. */
   demoPassword?: string
+  /** Falso en la demo en línea: sus instancias no comparten disco. */
+  uploadsEnabled: boolean
   institutionalDomains: string[]
 }
 export interface Me {

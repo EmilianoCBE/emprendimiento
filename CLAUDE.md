@@ -36,6 +36,7 @@ npm test           # Todas las pruebas
 npm run typecheck
 npm run lint
 npm run db:reset   # Reinicia datos locales (con el servidor detenido)
+# Demo en Vercel (Neon): npx vercel env run -e production -- npm run db:reset-demo -w @aterriza/api -- --confirmar
 npm run test:e2e   # Recorrido en Chrome; requiere npm run demo con datos limpios
 npm run build
 ```

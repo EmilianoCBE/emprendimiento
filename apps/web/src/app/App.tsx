@@ -7,7 +7,7 @@ import type { AppNotification, Role } from '@aterriza/contracts'
 import { Logo } from '../design/brand'
 import { Button, Loading, Empty, LinkButton, usePageTitle } from '../design/ui'
 import { api } from '../lib/api'
-import { useLiveEvents, useSession } from '../lib/session'
+import { POLL_MS, useLiveEvents, useSession } from '../lib/session'
 import { LandingPage } from '../features/landing'
 
 const lazyNamed = <K extends string>(load: () => Promise<Record<K, ComponentType>>, name: K) => lazy(() => load().then((m) => ({ default: m[name] })))
@@ -90,7 +90,7 @@ function RequireRole({ roles, children }: { roles?: Role[]; children: ReactNode 
 function Notifications() {
   const [open, setOpen] = useState(false)
   const client = useQueryClient()
-  const { data } = useQuery({ queryKey: ['notifications'], queryFn: () => api.get<{ items: AppNotification[]; unread: number }>('/notifications') })
+  const { data } = useQuery({ queryKey: ['notifications'], queryFn: () => api.get<{ items: AppNotification[]; unread: number }>('/notifications'), refetchInterval: POLL_MS.notifications })
   const readAll = useMutation({
     mutationFn: () => api.post('/notifications/read-all'),
     onSuccess: () => client.invalidateQueries({ queryKey: ['notifications'] }),

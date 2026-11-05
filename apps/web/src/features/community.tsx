@@ -6,7 +6,7 @@ import type { ChatMessage, Conversation, MentorCard, Zone } from '@aterriza/cont
 import { Button, ConfirmButton, Empty, ErrorNote, Loading, Note, Page, Select } from '../design/ui'
 import { api } from '../lib/api'
 import { MENTOR_LANGUAGES as LANGUAGES, MENTOR_TOPICS as TOPICS, shortDateTime } from '../lib/format'
-import { useSession } from '../lib/session'
+import { POLL_MS, useSession } from '../lib/session'
 import { useToast } from '../lib/toast'
 import { MentorCardView } from './community-card'
 
@@ -63,7 +63,7 @@ export function MentorsPage() {
 
 export function MessagesPage() {
   const { id } = useParams()
-  const { data, isLoading, error, refetch } = useQuery({ queryKey: ['conversations'], queryFn: () => api.get<Conversation[]>('/conversations') })
+  const { data, isLoading, error, refetch } = useQuery({ queryKey: ['conversations'], queryFn: () => api.get<Conversation[]>('/conversations'), refetchInterval: POLL_MS.conversations })
   return (
     <Page title="Mensajes">
       <ErrorNote error={error} onRetry={() => void refetch()} />
@@ -101,8 +101,8 @@ function ConversationPane({ id }: { id: string }) {
   const client = useQueryClient()
   const [body, setBody] = useState('')
   const endRef = useRef<HTMLDivElement>(null)
-  const convo = useQuery({ queryKey: ['conversations', id], queryFn: () => api.get<Conversation>(`/conversations/${id}`) })
-  const messages = useQuery({ queryKey: ['messages', id], queryFn: () => api.get<ChatMessage[]>(`/conversations/${id}/messages`), staleTime: 0 })
+  const convo = useQuery({ queryKey: ['conversations', id], queryFn: () => api.get<Conversation>(`/conversations/${id}`), refetchInterval: POLL_MS.conversations })
+  const messages = useQuery({ queryKey: ['messages', id], queryFn: () => api.get<ChatMessage[]>(`/conversations/${id}/messages`), staleTime: 0, refetchInterval: POLL_MS.messages })
 
   const count = messages.data?.length ?? 0
   useEffect(() => {

@@ -12,9 +12,18 @@ export interface Booted extends AppHandle {
 export async function bootstrap(): Promise<Booted> {
   const config = loadConfig()
   const db = createDb(config.databaseUrl, { inMemory: config.publicDemo })
-  await migrate(db)
-  await seedBase(db)
-  if (config.demoMode) await seedDemo(db)
+  // Migrar y sembrar por la conexión directa y con candado: varias instancias pueden arrancar al mismo tiempo.
+  const separateSetup = config.setupDatabaseUrl && config.setupDatabaseUrl !== config.databaseUrl
+  const setupDb = separateSetup ? createDb(config.setupDatabaseUrl) : db
+  try {
+    await setupDb.exclusive(async (locked) => {
+      await migrate(locked)
+      await seedBase(locked)
+      if (config.demoMode) await seedDemo(locked)
+    })
+  } finally {
+    if (separateSetup) await setupDb.close()
+  }
   const handle = await createApp(config, db)
   return { ...handle, config, db }
 }

@@ -47,6 +47,12 @@ export function useSession(): SessionValue {
   return value
 }
 
+/**
+ * Respaldo de los eventos en vivo. En la demo en línea hay varias instancias y el aviso solo llega
+ * si quien escribe cayó en la misma; consultar cada pocos segundos lo cubre. Se pausa con la pestaña oculta.
+ */
+export const POLL_MS = { messages: 4_000, conversations: 10_000, booking: 10_000, notifications: 15_000 } as const
+
 /** Eventos en vivo: mensajes, notificaciones y cambios de solicitudes. */
 export function useLiveEvents(): void {
   const { me } = useSession()

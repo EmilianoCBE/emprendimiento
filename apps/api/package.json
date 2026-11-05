@@ -10,6 +10,7 @@
     "typecheck": "tsc --noEmit",
     "db:migrate": "tsx --env-file-if-exists=../../.env src/scripts/migrate.ts",
     "db:reset": "tsx --env-file-if-exists=../../.env src/scripts/reset.ts",
+    "db:reset-demo": "tsx src/scripts/reset-demo.ts",
     "demo": "DEMO_MODE=true SERVE_WEB=true PUBLIC_ORIGIN=http://localhost:4000 tsx --env-file-if-exists=../../.env src/main.ts"
   },
   "dependencies": {

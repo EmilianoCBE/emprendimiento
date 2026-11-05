@@ -54,6 +54,7 @@ export function registerRoutes(app: FastifyInstance, d: RouteDeps): void {
   })
   app.get('/config', async (): Promise<c.PublicConfig> => ({
     demoMode: d.config.demoMode,
+    uploadsEnabled: d.config.uploadsEnabled,
     institutionalDomains: d.config.institutionalDomains,
     ...(d.config.demoMode ? { demoPassword: DEMO_PASSWORD } : {}),
   }))
@@ -131,6 +132,7 @@ export function registerRoutes(app: FastifyInstance, d: RouteDeps): void {
   })
   app.post('/listings/:id/photos', { ...landlord, ...LIMITS.upload }, async (req, reply) => {
     const { id } = parse(idParam, req.params)
+    if (!d.config.uploadsEnabled) throw new DomainError('forbidden', 'uploads_disabled', 'En la demo en línea no se suben fotos. Usa la versión local para probarlo.')
     const file = await req.file()
     if (!file) throw new DomainError('bad_request', 'photo_required', 'Elige una foto.')
     const alt = (file.fields.alt as { value?: string } | undefined)?.value ?? ''

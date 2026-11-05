@@ -13,7 +13,15 @@ export interface Db extends Queryable {
   tx<T>(fn: (tx: Queryable) => Promise<T>): Promise<T>
   exec(sql: string): Promise<void>
   close(): Promise<void>
+  /**
+   * Corre `fn` con un candado que comparten todas las instancias: si varias arrancan a la vez,
+   * solo una migra y siembra, y las demás esperan y encuentran el trabajo hecho.
+   */
+  exclusive<T>(fn: (db: Db) => Promise<T>): Promise<T>
 }
+
+/** Número fijo del candado de arranque. Cualquier entero de 64 bits sirve mientras sea siempre el mismo. */
+const SETUP_LOCK = 7_204_190_311
 
 /** Adaptador para desarrollo, demo y pruebas: Postgres embebido, sin instalar nada. */
 export class PgliteDb implements Db {
@@ -36,15 +44,21 @@ export class PgliteDb implements Db {
   async close(): Promise<void> {
     await this.client.close()
   }
+  /** Un solo proceso usa esta base: no hace falta candado. */
+  exclusive<T>(fn: (db: Db) => Promise<T>): Promise<T> {
+    return fn(this)
+  }
 }
 
-/** Adaptador para Postgres gestionado (Supabase en producción). */
+/** Adaptador para Postgres gestionado (Neon en la demo, Supabase en producción). */
 export class PgDb implements Db {
   private readonly pool: pg.Pool
   constructor(connectionString: string, caCertPath?: string) {
     this.pool = new pg.Pool({
-      connectionString,
-      max: 10,
+      connectionString: withoutSslMode(connectionString),
+      // Cada instancia de Vercel tiene su pool: pocas conexiones por instancia, el pooler de Neon reparte el resto.
+      max: 5,
+      connectionTimeoutMillis: 10_000,
       idleTimeoutMillis: 30_000,
       // Sin desactivar la verificación de TLS. Supabase firma con su propia CA: descárgala de su panel.
       ssl: /localhost|127\.0\.0\.1/.test(connectionString)
@@ -76,6 +90,54 @@ export class PgDb implements Db {
   }
   async close(): Promise<void> {
     await this.pool.end()
+  }
+  /**
+   * Candado de sesión de Postgres sobre una sola conexión. Requiere conexión directa:
+   * a través de un pooler en modo transacción el candado podría quedar en otra sesión.
+   */
+  async exclusive<T>(fn: (db: Db) => Promise<T>): Promise<T> {
+    const client = await this.pool.connect()
+    const run = async <R>(sql: string, params: unknown[] = []) => (await client.query(sql, params)).rows as R[]
+    const onClient: Db = {
+      query: run,
+      exec: async (sql) => {
+        await client.query(sql)
+      },
+      tx: async (inner) => {
+        await client.query('BEGIN')
+        try {
+          const result = await inner({ query: run })
+          await client.query('COMMIT')
+          return result
+        } catch (err) {
+          await client.query('ROLLBACK')
+          throw err
+        }
+      },
+      close: async () => {},
+      exclusive: (inner) => inner(onClient),
+    }
+    try {
+      await client.query('SELECT pg_advisory_lock($1)', [SETUP_LOCK])
+      return await fn(onClient)
+    } finally {
+      await client.query('SELECT pg_advisory_unlock($1)', [SETUP_LOCK]).catch(() => {})
+      client.release()
+    }
+  }
+}
+
+/**
+ * Quita `sslmode` de la URL: si se queda, decide el TLS por encima de `ssl` y en `pg` 9 `require` dejará de
+ * verificar el certificado. Así siempre manda la configuración explícita de arriba, que sí lo verifica.
+ */
+function withoutSslMode(connectionString: string): string {
+  try {
+    const url = new URL(connectionString)
+    url.searchParams.delete('sslmode')
+    return url.toString()
+  } catch {
+    return connectionString
   }
 }
 

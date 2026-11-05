@@ -193,8 +193,14 @@ describe('configuración', () => {
       expect(() => loadConfig({ ...demo, DEMO_ACCESS_PASSWORD: undefined })).toThrow(/DEMO_ACCESS_PASSWORD/)
       expect(() => loadConfig({ ...demo, DEMO_ACCESS_PASSWORD: 'corta' })).toThrow(/DEMO_ACCESS_PASSWORD/)
     })
-    it('nunca se conecta a una base real', () => {
-      expect(() => loadConfig({ ...demo, DATABASE_URL: 'postgres://h/db' })).toThrow(/DATABASE_URL/)
+    it('no acepta una base sin declararla exclusiva de la demo', () => {
+      expect(() => loadConfig({ ...demo, DATABASE_URL: 'postgres://h/db', APP_SECRET: 'x'.repeat(32) })).toThrow(/DEMO_DATABASE/)
+    })
+    it('con base compartida exige un secreto común a todas las instancias', () => {
+      expect(() => loadConfig({ ...demo, DATABASE_URL: 'postgres://h/db', DEMO_DATABASE: 'dedicated' })).toThrow(/APP_SECRET/)
+      const c = loadConfig({ ...demo, DATABASE_URL: 'postgres://h/db', DATABASE_URL_UNPOOLED: 'postgres://d/db', DEMO_DATABASE: 'dedicated', APP_SECRET: 'x'.repeat(32) })
+      expect(c.setupDatabaseUrl).toBe('postgres://d/db')
+      expect(c.uploadsEnabled).toBe(false)
     })
     it('DEMO_MODE solo sigue prohibido en producción', () => {
       expect(() => loadConfig({ NODE_ENV: 'production', DEMO_MODE: 'true', APP_SECRET: 'x'.repeat(32), DATABASE_URL: 'postgres://h/db', PUBLIC_ORIGIN: 'https://a.mx' })).toThrow(/DEMO_MODE/)

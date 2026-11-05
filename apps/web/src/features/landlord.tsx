@@ -7,6 +7,7 @@ import { Seal } from '../design/brand'
 import { BackLink, Button, ConfirmButton, CriteriaList, Empty, ErrorNote, LinkButton, Loading, Note, Page, Select, TextArea, TextInput, Toggle, usePageTitle } from '../design/ui'
 import { ApiError, api } from '../lib/api'
 import { KIND_LABEL, LISTING_STATUS_LABEL, money } from '../lib/format'
+import { useSession } from '../lib/session'
 import { useToast } from '../lib/toast'
 
 const STATUS_CHIP: Record<ListingStatus, string> = {
@@ -75,6 +76,7 @@ export function ListingEditPage() {
   const [form, setForm] = useState<ListingInput>(EMPTY)
   const [clientError, setClientError] = useState<string[] | null>(null)
   const toast = useToast()
+  const { config } = useSession()
 
   useEffect(() => {
     if (existing) setForm(existing.input)
@@ -255,7 +257,11 @@ export function ListingEditPage() {
                   </div>
                 ))}
               </div>
+              {config?.uploadsEnabled === false ? (
+                <Note title="Fotos en la demo en línea">Aquí no se suben fotos nuevas. En la versión local sí puedes probarlo.</Note>
+              ) : (
               <TextInput label="Agregar foto" hint="JPG, PNG o WebP, hasta 5 MB. Si la vivienda está publicada, cambiar fotos la devuelve a revisión." type="file" accept="image/jpeg,image/png,image/webp" onChange={onFile} disabled={upload.isPending} />
+              )}
               {upload.isPending && <p className="small" role="status">Subiendo foto…</p>}
               <ErrorNote error={upload.error ?? removePhoto.error} />
             </div>

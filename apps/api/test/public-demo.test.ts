@@ -44,6 +44,10 @@ describe('barrera de la demo pública', () => {
     expect(res.statusCode).toBe(200)
     expect(res.json().total).toBeGreaterThan(5)
   })
+  it('no acepta fotos nuevas y lo anuncia en la configuración', async () => {
+    const auth = { authorization: basic('equipo', PASSWORD) }
+    expect((await handle.app.inject({ method: 'GET', url: '/api/v1/config', headers: auth })).json().uploadsEnabled).toBe(false)
+  })
   it('también protege mutaciones y fotos subidas', async () => {
     expect((await handle.app.inject({ method: 'POST', url: '/api/v1/auth/login', headers: { 'x-requested-with': 'aterriza' }, payload: {} })).statusCode).toBe(401)
     expect((await handle.app.inject({ method: 'GET', url: '/uploads/x.png' })).statusCode).toBe(401)

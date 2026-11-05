@@ -188,7 +188,7 @@ stateDiagram-v2
 | 4 | **Sesiones propias** en vez de Supabase Auth | Reglas de validación universitaria en el mismo dominio; revocación inmediata; sin dependencia para la demo | Asumimos la responsabilidad: Argon2id, bloqueo, recuperación. Migrar a Supabase Auth o agregar MFA antes de lanzar si el equipo lo prefiere |
 | 5 | SQL parametrizado sin ORM | Consultas transparentes y portables; patrón Repository | Mapeo manual |
 | 6 | **RLS activado sin políticas** en todas las tablas | Supabase expone `public` por PostgREST; esto lo bloquea por defecto. La API se conecta como propietaria | La API sigue siendo la única puerta. No hay que usar las llaves `anon` en el navegador |
-| 7 | **SSE** para tiempo real | Solo se necesita servidor → cliente; más simple que WebSocket | Bus en memoria = una instancia. Para varias, usar `LISTEN/NOTIFY` o Supabase Realtime |
+| 7 | **SSE** para tiempo real | Solo se necesita servidor → cliente; más simple que WebSocket | Bus en memoria = una instancia. En la demo con varias instancias, la web consulta cada pocos segundos como respaldo. Para producción, `LISTEN/NOTIFY` o Supabase Realtime |
 | 8 | Montos en MXN enteros | Evita errores de punto flotante | Otra moneda requiere un objeto `Money` |
 | 9 | La plataforma no mueve dinero | Ver alcance | El valor se concentra en verificar e informar |
 | 10 | Mismo origen en producción | La API sirve la SPA; simplifica CSP, cookies y CORS | Escalado conjunto |
@@ -208,16 +208,23 @@ stateDiagram-v2
 
 ## Demo pública en Vercel
 
-Para compartir el avance con el equipo, sin base de datos ni servicios externos. `vercel.json` despliega web y API juntas.
+Para compartir el avance con el equipo. `vercel.json` despliega web y API juntas. Vercel levanta varias instancias de la API en cuanto hay peticiones en paralelo, así que el estado no puede vivir en memoria: la base es un Postgres de **Neon**, plan gratuito en `iad1`, instalado desde el Marketplace de Vercel y exclusivo de la demo.
 
 | Variable | Valor |
 | --- | --- |
 | `PUBLIC_DEMO` | `true` |
 | `DEMO_ACCESS_PASSWORD` | Contraseña compartida, 12 caracteres o más. El usuario es `equipo` |
+| `DATABASE_URL`, `DATABASE_URL_UNPOOLED` | Las inyecta la integración de Neon (con pooler y directa) |
+| `DEMO_DATABASE` | `dedicated`: declara que la base solo tiene datos ficticios |
+| `APP_SECRET` | 64 caracteres aleatorios, común a todas las instancias (firma los códigos de verificación) |
 
-- La base vive en memoria y se reinicia sola: nada se conserva y no hay credenciales que robar.
-- La app se niega a arrancar si falta la contraseña o si hay una `DATABASE_URL`: las cuentas de demo jamás conviven con datos reales.
-- Puede haber varias instancias, cada una con su propia memoria. Con poco tráfico suele ser una; si hay más, se puede perder la sesión o dejar de verse un dato, y basta con volver a entrar.
+- **Arranque:** cada instancia migra y siembra por la conexión directa con un candado de Postgres (`pg_advisory_lock`). Si arrancan varias a la vez, una trabaja y las demás encuentran todo hecho. Comprobado con tres instancias simultáneas contra Neon.
+- **Consultas:** por el pooler de Neon, cinco conexiones como máximo por instancia, TLS 1.3 con certificado verificado.
+- **Sin `DEMO_DATABASE=dedicated` y `APP_SECRET`, la app no arranca:** las cuentas de demo, con contraseña conocida, jamás conviven con una base real.
+- **Tiempo real:** el aviso por SSE solo llega si quien escribe cayó en la misma instancia. Mensajes, solicitudes y notificaciones también se consultan cada 4 a 15 segundos mientras la pestaña está visible.
+- **Fotos:** no se aceptan fotos nuevas (`uploadsEnabled: false`), porque las instancias no comparten disco. Las fotos de demostración son estáticas.
+- **Límite de frecuencia:** cuenta por instancia, así que en la demo es más laxo que en un solo proceso. Aceptable con la barrera de contraseña.
+- **Reiniciar datos:** `npx vercel env run -e production -- npm run db:reset-demo -w @aterriza/api -- --confirmar`, desde una carpeta vinculada al proyecto. Solo actúa si la base tiene la cuenta de administración de demostración.
 
 **No es el despliegue de producción.** Para eso, ver la siguiente sección y los bloqueantes de `08-seguridad.md`.
 

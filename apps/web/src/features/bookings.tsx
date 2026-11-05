@@ -6,7 +6,7 @@ import { BOOKING_STEP_LABEL, type Booking, type BookingAction, type BookingStatu
 import { BackLink, Button, ConfirmButton, Empty, ErrorNote, LinkButton, Loading, Note, Page, TextInput, usePageTitle } from '../design/ui'
 import { api } from '../lib/api'
 import { ACTION_LABEL, STATUS_LABEL, dateOnly, dateTime, money } from '../lib/format'
-import { useSession } from '../lib/session'
+import { POLL_MS, useSession } from '../lib/session'
 import { useToast } from '../lib/toast'
 
 const CHIP: Record<BookingStatus, string> = {
@@ -21,7 +21,7 @@ const CHIP: Record<BookingStatus, string> = {
 
 export function BookingsPage() {
   const { me } = useSession()
-  const { data, isLoading, error, refetch } = useQuery({ queryKey: ['bookings'], queryFn: () => api.get<Booking[]>('/bookings') })
+  const { data, isLoading, error, refetch } = useQuery({ queryKey: ['bookings'], queryFn: () => api.get<Booking[]>('/bookings'), refetchInterval: POLL_MS.booking })
   const isLandlord = me?.role === 'landlord'
   return (
     <Page title={isLandlord ? 'Solicitudes recibidas' : 'Mis solicitudes'}>
@@ -83,7 +83,7 @@ export function BookingPage() {
   const [tourAt, setTourAt] = useState('')
   const [askTour, setAskTour] = useState(false)
   const toast = useToast()
-  const { data: b, isLoading, error } = useQuery({ queryKey: ['booking', id], queryFn: () => api.get<Booking>(`/bookings/${id}`) })
+  const { data: b, isLoading, error } = useQuery({ queryKey: ['booking', id], queryFn: () => api.get<Booking>(`/bookings/${id}`), refetchInterval: POLL_MS.booking })
   usePageTitle(b ? `Solicitud: ${b.listing.title}` : error ? 'Solicitud no encontrada' : null)
   const act = useMutation({
     mutationFn: (body: { action: BookingAction; tourAt?: string }) => api.post<Booking>(`/bookings/${id}/transitions`, body),

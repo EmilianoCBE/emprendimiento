@@ -23,7 +23,7 @@
 
 ## Qué NO está comprobado
 
-- Conexión real a Supabase: el adaptador `PgDb` está escrito, pero no se ha ejecutado contra un Postgres de red.
+- Conexión real a Supabase. El adaptador `PgDb` ya funciona contra Postgres de red (Neon, en la demo), pero Supabase pide su propia CA.
 - `Dockerfile` y GitHub Actions: escritos, nunca ejecutados.
 - Lector de pantalla y dispositivos móviles físicos.
 - Validación con estudiantes reales.
@@ -47,6 +47,7 @@
 
 | Fecha | Qué pasó |
 | --- | --- |
+| 2026-11-05 | Demo en Vercel con base compartida de Neon (Marketplace, plan gratuito). Candado de arranque probado con tres instancias simultáneas, sesiones válidas entre instancias, TLS verificado. Chat y avisos con consulta periódica de respaldo; fotos subidas desactivadas en la demo. |
 | 2026-11-05 | Contraste revisado con WebAIM: todos los pares funcionales pasan AA (texto) o 3:1 (gráficos). Corregidos la barra de la calculadora y las marcas de "sin leer". Tipografía nueva: Overpass (títulos y cifras) y Atkinson Hyperlegible Next (texto), con escala e interlineado documentados en `09-ux-e-identidad.md`. |
 | 2026-11-05 | I7. Avisos flotantes, confirmación en dos pasos para lo que no se deshace, filtros activos visibles, regreso con filtros, errores con salida (reintentar, volver a entrar), ayuda enlazable por pregunta. Recorrido en Chrome y 145 pruebas pasan. |
 | 2026-11-05 | La demo en Vercel falla con varias peticiones a la vez: cada instancia tiene su propia base en memoria (sesiones perdidas, IDs distintos). No compartir el enlace hasta usar una base compartida. |
