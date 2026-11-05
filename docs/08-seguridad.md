@@ -69,6 +69,10 @@ Los documentos de propiedad e identidad **no se suben** en el MVP. El administra
 11. **Proveedor de mapas**: el servidor público de OpenStreetMap solo sirve para uso ligero.
 12. **Imagen de Docker**: el `Dockerfile` aún no se ha construido ni ejecutado.
 
+## Demo pública
+
+La demo en Vercel tiene cuentas con contraseña conocida, incluida la de administración. Por eso la protege una contraseña compartida en toda la API y usa una base en memoria sin datos reales. **Nadie debe escribir datos personales reales ahí.** La portada y las fotos de demostración son estáticas y se ven sin contraseña; no contienen datos.
+
 ## Riesgos aceptados por ahora
 
 | Riesgo | Por qué se acepta | Revisar cuando |

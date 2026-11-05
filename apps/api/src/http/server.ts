@@ -1,3 +1,4 @@
+import { createHash, timingSafeEqual } from 'node:crypto'
 import { existsSync } from 'node:fs'
 import { join } from 'node:path'
 import cookie from '@fastify/cookie'
@@ -108,6 +109,18 @@ export async function buildServer(opts: ServerOptions): Promise<FastifyInstance>
   }
 
   app.decorateRequest('actor', null)
+
+  // Barrera de la demo pública: sin la contraseña compartida no se llega a ninguna parte de la API.
+  if (config.demoAccessPassword) {
+    const expected = createHash('sha256').update(`equipo:${config.demoAccessPassword}`).digest()
+    app.addHook('onRequest', async (req, reply) => {
+      if (!req.url.startsWith(API_PREFIX) && !req.url.startsWith('/uploads')) return
+      const [scheme, encoded] = (req.headers.authorization ?? '').split(' ')
+      const given = createHash('sha256').update(scheme === 'Basic' && encoded ? Buffer.from(encoded, 'base64').toString() : '').digest()
+      if (timingSafeEqual(given, expected)) return
+      return reply.status(401).header('WWW-Authenticate', 'Basic realm="Demo de Aterriza", charset="UTF-8"').send({ error: { code: 'demo_access', message: 'Esta demo es privada.' } })
+    })
+  }
 
   // Anti-CSRF: encabezado que un formulario externo no puede enviar + origen permitido.
   app.addHook('onRequest', async (req) => {

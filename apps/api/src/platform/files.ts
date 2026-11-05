@@ -5,7 +5,8 @@ import { basename, join } from 'node:path'
 import type { FileStore } from './kernel.ts'
 import { API_ROOT } from './db.ts'
 
-export const UPLOADS_DIR = join(API_ROOT, 'uploads')
+// En Vercel solo se puede escribir en /tmp: las fotos subidas en la demo duran lo que dure la instancia.
+export const UPLOADS_DIR = process.env.VERCEL ? '/tmp/aterriza-uploads' : join(API_ROOT, 'uploads')
 
 /** Adaptador local. En producción se sustituye por Supabase Storage con el mismo puerto. */
 export class LocalFileStore implements FileStore {

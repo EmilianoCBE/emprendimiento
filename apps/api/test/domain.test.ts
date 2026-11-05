@@ -182,5 +182,23 @@ describe('configuración', () => {
   it('acepta producción segura', () => expect(loadConfig(secure).isProduction).toBe(true))
   it('rechaza modo demo en producción', () => expect(() => loadConfig({ ...secure, DEMO_MODE: 'true' })).toThrow(/DEMO_MODE/))
   it('rechaza secreto corto', () => expect(() => loadConfig({ ...secure, APP_SECRET: 'corto' })).toThrow(/APP_SECRET/))
+  describe('demo pública', () => {
+    const demo = { NODE_ENV: 'production', PUBLIC_DEMO: 'true', DEMO_ACCESS_PASSWORD: 'una-clave-larga-1', VERCEL_URL: 'a.vercel.app' }
+    it('arranca con base en memoria y barrera', () => {
+      const c = loadConfig(demo)
+      expect(c.publicDemo && c.demoMode).toBe(true)
+      expect(c.allowedOrigins).toContain('https://a.vercel.app')
+    })
+    it('exige contraseña de al menos 12 caracteres', () => {
+      expect(() => loadConfig({ ...demo, DEMO_ACCESS_PASSWORD: undefined })).toThrow(/DEMO_ACCESS_PASSWORD/)
+      expect(() => loadConfig({ ...demo, DEMO_ACCESS_PASSWORD: 'corta' })).toThrow(/DEMO_ACCESS_PASSWORD/)
+    })
+    it('nunca se conecta a una base real', () => {
+      expect(() => loadConfig({ ...demo, DATABASE_URL: 'postgres://h/db' })).toThrow(/DATABASE_URL/)
+    })
+    it('DEMO_MODE solo sigue prohibido en producción', () => {
+      expect(() => loadConfig({ NODE_ENV: 'production', DEMO_MODE: 'true', APP_SECRET: 'x'.repeat(32), DATABASE_URL: 'postgres://h/db', PUBLIC_ORIGIN: 'https://a.mx' })).toThrow(/DEMO_MODE/)
+    })
+  })
   it('rechaza http en producción', () => expect(() => loadConfig({ ...secure, PUBLIC_ORIGIN: 'http://a.mx' })).toThrow(/https/))
 })

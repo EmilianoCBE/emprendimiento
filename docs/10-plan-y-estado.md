@@ -46,5 +46,6 @@
 
 | Fecha | Qué pasó |
 | --- | --- |
+| 2026-11-05 | Repositorio en GitHub. Demo pública para Vercel: base en memoria y contraseña compartida. El primer despliegue real aún no se ha verificado. |
 | 2026-11-05 | I6. Corregidos también: acceso a Mensajes y Solicitudes en móvil, botón de solicitar en viviendas no solicitables, pines del mapa que dependían del color y encabezados. |
 | 2026-11-04 | I0 a I5. Plugin `security-guidance` instalado a nivel de proyecto. Corregidos, tras verlos en navegador: pantalla en blanco por `scrollTo`, alerta de precio que comparaba cuartos con departamentos, mapa de CARTO que pedía llave y límite de frecuencia que bloqueaba la carga de la página. |

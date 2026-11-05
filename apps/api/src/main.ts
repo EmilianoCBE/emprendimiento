@@ -4,7 +4,7 @@ import { createDb, migrate } from './platform/db.ts'
 import { seedBase, seedDemo } from './seed/seed.ts'
 
 const config = loadConfig()
-const db = createDb(config.databaseUrl)
+const db = createDb(config.databaseUrl, { inMemory: config.publicDemo })
 await migrate(db)
 await seedBase(db)
 if (config.demoMode) await seedDemo(db)

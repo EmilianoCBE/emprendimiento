@@ -25,7 +25,7 @@ export interface AppHandle {
 }
 
 export function createMailer(config: AppConfig, log: (msg: string) => void): Mailer {
-  if (config.isProduction) {
+  if (config.isProduction && !config.demoMode) {
     throw new Error('Falta configurar un proveedor de correo: implementa el puerto Mailer antes de ir a producción (docs/08-seguridad.md).')
   }
   return new ConsoleMailer(log)

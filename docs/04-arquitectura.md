@@ -206,6 +206,21 @@ stateDiagram-v2
 | Pruebas | Vitest (dominio e integración sobre PGlite en memoria) |
 | Entrega | Docker, GitHub Actions |
 
+## Demo pública en Vercel
+
+Para compartir el avance con el equipo, sin base de datos ni servicios externos. `vercel.json` despliega web y API juntas.
+
+| Variable | Valor |
+| --- | --- |
+| `PUBLIC_DEMO` | `true` |
+| `DEMO_ACCESS_PASSWORD` | Contraseña compartida, 12 caracteres o más. El usuario es `equipo` |
+
+- La base vive en memoria y se reinicia sola: nada se conserva y no hay credenciales que robar.
+- La app se niega a arrancar si falta la contraseña o si hay una `DATABASE_URL`: las cuentas de demo jamás conviven con datos reales.
+- Puede haber varias instancias, cada una con su propia memoria. Con poco tráfico suele ser una; si hay más, se puede perder la sesión o dejar de verse un dato, y basta con volver a entrar.
+
+**No es el despliegue de producción.** Para eso, ver la siguiente sección y los bloqueantes de `08-seguridad.md`.
+
 ## Pasar a Supabase
 
 Lo que hará falta de ti cuando llegue el momento:

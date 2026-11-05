@@ -35,6 +35,10 @@ Para volver a los datos iniciales, detén el servidor y corre `npm run db:reset`
 6. **Como Marcela**, acepta. Lucía ya ve la dirección exacta.
 7. **Como administración**, aprueba "Cuarto nuevo esperando revisión" marcando sus criterios.
 
+## Demo en Vercel
+
+Importa el repositorio en Vercel y define `PUBLIC_DEMO=true` y `DEMO_ACCESS_PASSWORD` (12 caracteres o más). Al abrir el sitio, el navegador pide usuario `equipo` y esa contraseña. Detalles en [Arquitectura](docs/04-arquitectura.md).
+
 ## Desarrollo
 
 ```bash

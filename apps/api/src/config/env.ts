@@ -9,6 +9,12 @@ const envSchema = z.object({
   APP_SECRET: z.string().optional(),
   PUBLIC_ORIGIN: z.string().default('http://localhost:5173'),
   DEMO_MODE: z.string().optional(),
+  PUBLIC_DEMO: z.string().optional(),
+  DEMO_ACCESS_PASSWORD: z.string().optional(),
+  VERCEL: z.string().optional(),
+  VERCEL_URL: z.string().optional(),
+  VERCEL_BRANCH_URL: z.string().optional(),
+  VERCEL_PROJECT_PRODUCTION_URL: z.string().optional(),
   SERVE_WEB: z.string().optional(),
   TRUST_PROXY: z.string().optional(),
   INSTITUTIONAL_DOMAINS: z.string().default('tec.mx,itesm.mx'),
@@ -23,6 +29,9 @@ export interface AppConfig {
   appSecret: string
   allowedOrigins: string[]
   demoMode: boolean
+  /** Demo en internet: base en memoria y contraseña compartida. Nunca guarda nada real. */
+  publicDemo: boolean
+  demoAccessPassword: string | null
   serveWeb: boolean
   trustProxy: boolean
   institutionalDomains: string[]
@@ -32,10 +41,16 @@ export interface AppConfig {
 export function loadConfig(source: Record<string, string | undefined> = process.env): AppConfig {
   const e = envSchema.parse(source)
   const isProduction = e.NODE_ENV === 'production'
-  const demoMode = e.DEMO_MODE === 'true'
+  const publicDemo = e.PUBLIC_DEMO === 'true'
+  const demoMode = publicDemo || e.DEMO_MODE === 'true'
+  const accessPassword = e.DEMO_ACCESS_PASSWORD || null
   const problems: string[] = []
 
-  if (isProduction) {
+  if (publicDemo) {
+    // Las cuentas de demo tienen contraseña conocida: nunca junto a una base real, y nunca sin barrera.
+    if (e.DATABASE_URL) problems.push('PUBLIC_DEMO no admite DATABASE_URL: la demo pública solo usa una base en memoria.')
+    if (!accessPassword || accessPassword.length < 12) problems.push('DEMO_ACCESS_PASSWORD debe tener al menos 12 caracteres.')
+  } else if (isProduction) {
     if (demoMode) problems.push('DEMO_MODE no se permite en producción: crea cuentas con contraseña conocida.')
     if (!e.APP_SECRET || e.APP_SECRET.length < 32) problems.push('APP_SECRET debe tener al menos 32 caracteres.')
     if (!e.DATABASE_URL) problems.push('DATABASE_URL es obligatoria en producción.')
@@ -45,9 +60,10 @@ export function loadConfig(source: Record<string, string | undefined> = process.
     throw new Error(`Configuración insegura:\n- ${problems.join('\n- ')}`)
   }
 
+  const vercelOrigins = [e.VERCEL_URL, e.VERCEL_BRANCH_URL, e.VERCEL_PROJECT_PRODUCTION_URL].filter(Boolean).map((host) => `https://${host}`)
   const allowedOrigins = isProduction
-    ? [e.PUBLIC_ORIGIN]
-    : [...new Set([e.PUBLIC_ORIGIN, 'http://localhost:5173', 'http://localhost:4000', 'http://127.0.0.1:4000', 'http://127.0.0.1:5173'])]
+    ? [e.PUBLIC_ORIGIN, ...vercelOrigins]
+    : [...vercelOrigins, ...new Set([e.PUBLIC_ORIGIN, 'http://localhost:5173', 'http://localhost:4000', 'http://127.0.0.1:4000', 'http://127.0.0.1:5173'])]
 
   return {
     env: e.NODE_ENV,
@@ -58,8 +74,11 @@ export function loadConfig(source: Record<string, string | undefined> = process.
     appSecret: e.APP_SECRET || randomBytes(32).toString('hex'),
     allowedOrigins,
     demoMode,
+    publicDemo,
+    demoAccessPassword: publicDemo ? accessPassword : null,
     serveWeb: isProduction || e.SERVE_WEB === 'true',
-    trustProxy: e.TRUST_PROXY === 'true',
+    // Detrás del proxy de Vercel, la IP real viene en una cabecera que él mismo fija.
+    trustProxy: e.TRUST_PROXY === 'true' || e.VERCEL === '1',
     institutionalDomains: e.INSTITUTIONAL_DOMAINS.split(',').map((d) => d.trim().toLowerCase()).filter(Boolean),
   }
 }

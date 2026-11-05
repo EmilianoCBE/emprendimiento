@@ -5,7 +5,7 @@ import { mkdirSync } from 'node:fs'
 const S=process.argv[2]||'e2e/capturas'; mkdirSync(S,{recursive:true}); const base=process.env.BASE_URL||'http://localhost:4000'
 const b=await chromium.launch({channel:'chrome',headless:true})
 const issues=[]
-async function open(name,who,w=1440,h=900){ const c=await b.newContext({viewport:{width:w,height:h}}); const p=await c.newPage();
+async function open(name,who,w=1440,h=900){ const c=await b.newContext({viewport:{width:w,height:h},...(process.env.DEMO_ACCESS_PASSWORD?{httpCredentials:{username:'equipo',password:process.env.DEMO_ACCESS_PASSWORD}}:{})}); const p=await c.newPage();
  p.on('console',m=>{ if(m.type()==='error'&&!/401|422|409|403/.test(m.text())) issues.push(name+': '+m.text().slice(0,200)) }); p.on('pageerror',e=>issues.push(name+' PAGEERROR: '+String(e).slice(0,200)));
  if(who){ await p.goto(base+'/entrar'); await p.getByRole('button',{name:new RegExp(who)}).click(); await p.waitForURL(u=>!u.pathname.includes('entrar')) } return p }
 const step=(s)=>console.log('ok  ',s)
