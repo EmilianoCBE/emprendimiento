@@ -5,7 +5,7 @@ export function Logo({ size = 30 }: { size?: number }) {
     <span className="logo" style={{ fontSize: size }}>
       <svg viewBox="0 0 40 24" width={size * 1.3} height={size * 0.8} aria-hidden>
         {/* Trayectoria de aterrizaje sobre la pista */}
-        <path d="M2 3 Q 16 5 26 16" fill="none" stroke="var(--cempasuchil)" strokeWidth="3" strokeLinecap="round" />
+        <path d="M2 3 Q 16 5 26 16" fill="none" strokeWidth="3" strokeLinecap="round" />
         <path d="M18 21h20" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
       </svg>
       aterriza
@@ -32,6 +32,8 @@ export function Seal({ met, total = 4, size = 88, stamp = false, label }: { met:
     return { d: `M${x1} ${y1} A${r} ${r} 0 0 1 ${x2} ${y2}`, on: i < met }
   })
   const full = met >= total
+  // Por debajo de este tamaño la palabra sería ilegible; el texto equivalente sigue en aria-label.
+  const showWord = size >= 110
   const text = label ?? (full ? 'verificada' : met >= 2 ? 'revisión parcial' : 'sin revisar')
   return (
     <svg
@@ -42,20 +44,23 @@ export function Seal({ met, total = 4, size = 88, stamp = false, label }: { met:
       role="img"
       aria-label={`${text}: ${met} de ${total} revisiones`}
     >
+      <circle cx="50" cy="50" r="48" className="seal__bg" />
       <circle cx="50" cy="50" r="48" className="seal__ring" />
       <circle cx="50" cy="50" r="43" className="seal__ring seal__ring--thin" />
-      <path id={`${id}-t`} d="M50 50 m-38.5 0 a38.5 38.5 0 1 1 77 0" fill="none" />
+      {showWord && <path id={`${id}-t`} d="M50 50 m-38.5 0 a38.5 38.5 0 1 1 77 0" fill="none" />}
       {arcs.map((a, i) => (
         <path key={i} d={a.d} className={a.on ? 'seal__seg is-on' : 'seal__seg'} />
       ))}
       <text className="seal__count" x="50" y="60" textAnchor="middle">
         {met}/{total}
       </text>
-      <text className="seal__word">
-        <textPath href={`#${id}-t`} startOffset="50%" textAnchor="middle">
-          {text}
-        </textPath>
-      </text>
+      {showWord && (
+        <text className="seal__word">
+          <textPath href={`#${id}-t`} startOffset="50%" textAnchor="middle">
+            {text}
+          </textPath>
+        </text>
+      )}
     </svg>
   )
 }
@@ -64,7 +69,7 @@ export function Seal({ met, total = 4, size = 88, stamp = false, label }: { met:
 export function Ridge() {
   return (
     <svg className="ridge" viewBox="0 0 1440 234" preserveAspectRatio="xMidYMax slice" aria-hidden>
-      <circle cx="782" cy="100" r="60" fill="var(--cempasuchil)" />
+      <circle cx="782" cy="100" r="60" className="ridge__sun" />
       <g transform="scale(1 0.65)">
         <path
           className="ridge__far"

@@ -1,0 +1,88 @@
+/*
+ * Tokens de Aterriza, dirección "Señalética" (docs/09-ux-e-identidad.md).
+ * Todo color, tamaño, espacio, radio y sombra de la interfaz sale de aquí.
+ */
+:root {
+  color-scheme: light;
+
+  /* Neutros */
+  --color-bg: #f3f5f1;
+  --color-surface: #ffffff;
+  --color-sunken: #e4e9e2;
+  --color-line: #d5dcd3;
+  --color-line-strong: #6f827e; /* Bordes de controles: 4:1 sobre blanco */
+  --color-ink: #0f2f2e;
+  --color-ink-muted: #4a5f5c;
+  --color-on-ink: #ffffff;
+  --color-on-ink-muted: #cfdbce;
+
+  /* El único acento: acción principal y estado activo */
+  --color-accent: #ffb400;
+  --color-accent-hover: #e9a400;
+  --color-on-accent: #0f2f2e;
+
+  /* Semánticos: siempre acompañados de ícono o texto */
+  --color-ok: #125233;
+  --color-ok-bg: #e3f1e9;
+  --color-warn: #6b4b00;
+  --color-warn-bg: #fff3d6;
+  --color-warn-line: #e9a400;
+  --color-danger: #b3261e;
+  --color-danger-bg: #fbe9e7;
+
+  /* Datos: solo la barra de la calculadora; validados con el script de dataviz */
+  --color-chart-a: #00917c;
+  --color-chart-b: #e89b00;
+
+  /* Ilustración del Cerro de la Silla */
+  --color-ridge-far: #7b9690;
+
+  /* Tipografía */
+  --font-display: 'Big Shoulders Display Variable', 'Arial Narrow', sans-serif;
+  --font-text: 'Source Sans 3 Variable', system-ui, sans-serif;
+
+  --text-xs: 0.8125rem; /* 13 */
+  --text-sm: 0.9375rem; /* 15 */
+  --text-base: 1.0625rem; /* 17 */
+  --text-lg: 1.25rem; /* 20 */
+  --leading-xs: 1rem;
+  --leading-sm: 1.25rem;
+  --leading-base: 1.5rem;
+  --leading-lg: 1.75rem;
+
+  /* Solo con la fuente display: títulos de sección, páginas y cifras */
+  --display-sm: 1.75rem; /* 28 */
+  --display-md: 2.25rem; /* 36 */
+  --display-lg: clamp(2.5rem, 4.5vw, 3.25rem); /* 40 a 52 */
+  --display-xl: clamp(2.75rem, 6vw, 4.5rem); /* 44 a 72 */
+  --display-hero: clamp(3.25rem, 7.4vw, 6.75rem); /* 52 a 108 */
+
+  /* Espaciado: múltiplos de 4 */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-24: 6rem;
+
+  /* Forma */
+  --radius-sm: 4px; /* Etiquetas, casillas */
+  --radius-md: 6px; /* Controles, paneles, fotos */
+  --radius-full: 999px;
+  --border: 1px solid var(--color-line);
+  --shadow-overlay: 0 8px 24px rgb(15 47 46 / 0.18); /* Solo lo que flota */
+
+  /* Controles */
+  --control-height: 2.75rem; /* 44 px */
+
+  /* Maquetación */
+  --gutter: clamp(1rem, 3vw, 2rem);
+  --content-max: 77.5rem; /* 1240 */
+  --edge: max(var(--gutter), calc((100vw - var(--content-max)) / 2));
+  --topbar-height: 4rem;
+}

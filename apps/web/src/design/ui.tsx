@@ -1,14 +1,13 @@
-import { Warning, WarningOctagon } from '@phosphor-icons/react'
+import { Check, Warning, WarningOctagon, X } from '@phosphor-icons/react'
 import { type ButtonHTMLAttributes, type InputHTMLAttributes, type ReactNode, type SelectHTMLAttributes, type TextareaHTMLAttributes, useId } from 'react'
 import { Link } from 'react-router-dom'
 import type { PriceAlert, Criterion, VerificationSummary } from '@aterriza/contracts'
 import { CRITERIA, CRITERION_LABEL } from '@aterriza/contracts'
-import { Check, X } from '@phosphor-icons/react'
 import { ApiError } from '../lib/api'
 
 export function Button({ variant = 'primary', busy, children, className = '', ...rest }: ButtonHTMLAttributes<HTMLButtonElement> & { variant?: 'primary' | 'secondary' | 'quiet' | 'danger'; busy?: boolean }) {
   return (
-    <button className={`btn btn--${variant} ${className}`} disabled={busy || rest.disabled} {...rest}>
+    <button className={`btn btn--${variant} ${className}`} disabled={busy || rest.disabled} aria-busy={busy || undefined} {...rest}>
       {children}
     </button>
   )
@@ -99,18 +98,22 @@ export function Note({ tone = 'info', title, children }: { tone?: 'info' | 'warn
   )
 }
 
+/** Reserva el espacio del contenido para que la página no salte al terminar de cargar. */
 export function Loading({ label = 'Cargando' }: { label?: string }) {
   return (
-    <div className="loading" role="status">
-      {label}…
+    <div className="skeleton" role="status" aria-busy="true">
+      <span className="sr-only">{label}…</span>
+      <div className="skeleton__line" aria-hidden />
+      <div className="skeleton__line" aria-hidden />
+      <div className="skeleton__line" aria-hidden />
     </div>
   )
 }
 
-export function Empty({ title, children }: { title: string; children?: ReactNode }) {
+export function Empty({ title, children, as: Heading = 'h2' }: { title: string; children?: ReactNode; as?: 'h1' | 'h2' }) {
   return (
     <div className="empty">
-      <h3 className="empty__title">{title}</h3>
+      <Heading className="empty__title">{title}</Heading>
       {children}
     </div>
   )
@@ -149,10 +152,10 @@ export function PriceAlertNote({ alert, compact }: { alert: PriceAlert; compact?
   )
 }
 
-export function CriteriaList({ criteria }: { criteria: VerificationSummary['criteria'] }) {
+export function CriteriaList({ criteria, columns }: { criteria: VerificationSummary['criteria']; columns?: boolean }) {
   const byId = new Map(criteria.map((c) => [c.id, c]))
   return (
-    <ul className="criteria">
+    <ul className={`criteria ${columns ? 'criteria--two' : ''}`}>
       {CRITERIA.map((id: Criterion) => {
         const c = byId.get(id)
         const met = c?.met ?? false

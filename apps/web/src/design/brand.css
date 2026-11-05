@@ -1,0 +1,21 @@
+/* Marca: logotipo, sello y Cerro de la Silla. */
+.logo { display: inline-flex; align-items: center; gap: var(--space-2); font-family: var(--font-display); font-weight: 800; line-height: 1; color: inherit; }
+.logo path:first-child { stroke: var(--color-accent); }
+
+/* El sello es el dato: cada segmento es una revisión. */
+.seal { flex: none; overflow: visible; }
+.seal__bg { fill: var(--color-surface); }
+.seal__ring { fill: none; stroke: var(--color-ink); stroke-width: 2.4; }
+.seal__ring--thin { stroke-width: 0.8; }
+.seal__seg { fill: none; stroke: var(--color-ink); stroke-width: 8; opacity: 0.14; }
+.seal__seg.is-on { opacity: 1; }
+.seal__count { font: 800 27px var(--font-display); fill: var(--color-ink); }
+.seal__word { font: 700 9.5px var(--font-display); fill: var(--color-ink); letter-spacing: 0.04em; }
+.seal--part .seal__ring, .seal--part .seal__seg { stroke: var(--color-ink-muted); }
+.seal--part .seal__count, .seal--part .seal__word { fill: var(--color-ink-muted); }
+.seal--stamp { transform: rotate(-9deg); }
+
+.ridge { display: block; width: 100%; height: max(7.5rem, 16.25vw); }
+.ridge__sun { fill: var(--color-accent); }
+.ridge__far { fill: var(--color-ridge-far); }
+.ridge__near { fill: var(--color-ink); }
