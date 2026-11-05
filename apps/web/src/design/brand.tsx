@@ -17,7 +17,7 @@ export function Logo({ size = 30 }: { size?: number }) {
  * El sello de pasaporte: cada segmento es un criterio de verificación.
  * No decora, es el dato. Siempre incluye un texto equivalente.
  */
-export function Seal({ met, total = 4, size = 88, stamp = false, label }: { met: number; total?: number; size?: number; stamp?: boolean; label?: string }) {
+export function Seal({ met, total = 4, size = 88, stamp = false, label, className = '' }: { met: number; total?: number; size?: number; stamp?: boolean; label?: string; className?: string }) {
   const id = useId()
   const r = 33
   const cx = 50
@@ -40,7 +40,7 @@ export function Seal({ met, total = 4, size = 88, stamp = false, label }: { met:
       viewBox="0 0 100 100"
       width={size}
       height={size}
-      className={`seal ${full ? 'seal--full' : 'seal--part'} ${stamp ? 'seal--stamp' : ''}`}
+      className={`seal ${full ? 'seal--full' : 'seal--part'} ${stamp ? 'seal--stamp' : ''} ${className}`}
       role="img"
       aria-label={`${text}: ${met} de ${total} revisiones`}
     >

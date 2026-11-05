@@ -1,3 +1,4 @@
+import './landing.css'
 import { useQuery } from '@tanstack/react-query'
 import { type FormEvent, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
@@ -26,7 +27,6 @@ export function LandingPage() {
     queryFn: () => api.post<BudgetEstimate>('/budget/estimate', { monthlyRent: EXAMPLE_RENT, depositMonths: 1, minutesTransit: 8, arrivalMonth: 8, usesAc: true, international: true }),
     staleTime: Infinity,
   })
-  const hero = featured.data?.items[0]
 
   const submit = (e: FormEvent) => {
     e.preventDefault()
@@ -43,16 +43,7 @@ export function LandingPage() {
         <div className="hero__sky">
           <h1 className="hero__title">Llega a Monterrey sabiendo dónde vas a vivir</h1>
           <p className="hero__sub">Vivienda que una persona ya revisó y estudiantes que pasaron por lo mismo, antes de que transfieras un solo peso.</p>
-          {hero && hero.photo && (
-            <figure className="hero__pass">
-              <img className="hero__photo" src={hero.photo.url} alt={hero.photo.alt} width={400} height={500} />
-              <Seal met={4} size={118} stamp />
-              <figcaption className="hero__caption">
-                <span>{hero.zoneName}</span>
-                <b>{money(hero.monthlyRentMxn)}</b>
-              </figcaption>
-            </figure>
-          )}
+          <Seal met={4} size={256} stamp className="hero__stamp" />
         </div>
         <Ridge />
         <div className="hero__ground">
@@ -77,8 +68,8 @@ export function LandingPage() {
         </div>
       </section>
 
-      <section className="band band--paper">
-        <div className="band__in explain">
+      <section className="band band--surface">
+        <div className="explain">
           <div className="explain__seal">
             <Seal met={4} size={380} stamp />
           </div>
@@ -91,14 +82,14 @@ export function LandingPage() {
       </section>
 
       <section className="band">
-        <div className="band__in">
+        <div>
           <h2 className="band__head">Viviendas con sus cuatro revisiones</h2>
           <div className="grid">
             {featured.data?.items.map((l) => (
               <ListingCardView key={l.id} listing={l} />
             ))}
           </div>
-          <div className="btnrow" style={{ marginTop: 32 }}>
+          <div className="btnrow band__more">
             <LinkButton to="/viviendas" variant="secondary">
               Ver todas las viviendas
             </LinkButton>
@@ -106,8 +97,8 @@ export function LandingPage() {
         </div>
       </section>
 
-      <section className="band band--paper">
-        <div className="band__in">
+      <section className="band band--surface">
+        <div>
           <h2 className="band__head">De tu país a tu cuarto, en tres pasos</h2>
           <ol className="steps">
             <li>
@@ -127,10 +118,10 @@ export function LandingPage() {
       </section>
 
       <section className="band">
-        <div className="band__in">
+        <div>
           <h2 className="band__head">Elige zona sin haberla pisado</h2>
           <div className="tablewrap">
-            <table className="zonetable">
+            <table className="table zonetable">
               <thead>
                 <tr>
                   <th scope="col">Zona</th>
@@ -155,7 +146,7 @@ export function LandingPage() {
       </section>
 
       <section className="band band--dark">
-        <div className="band__in">
+        <div>
           <blockquote>
             <p className="quote">"Da mucho miedo llegar a la ciudad con las maletas y no tener un lugar seguro donde dormir."</p>
             <footer className="quote__by">Estudiante internacional de intercambio en el Tec, entrevista del proyecto</footer>
@@ -163,8 +154,8 @@ export function LandingPage() {
         </div>
       </section>
 
-      <section className="band band--paper">
-        <div className="band__in costs">
+      <section className="band band--surface">
+        <div className="costs">
           <div>
             <h2 className="band__head">La renta no es lo que vas a pagar</h2>
             <p className="band__lead">Depósito, luz con aire acondicionado, transporte y comisiones de tu banco. Calcula tu primer mes real antes de decidir.</p>
@@ -173,33 +164,30 @@ export function LandingPage() {
           <div className="costs__pair">
             <div>
               <p className="costs__label">Lo que dice el anuncio</p>
-              <p className="costs__rent costs__rent--old">{money(EXAMPLE_RENT)}</p>
+              <p className="figure costs__rent costs__rent--old">{money(EXAMPLE_RENT)}</p>
             </div>
             <div>
               <p className="costs__label">Un primer mes estimado, llegando en agosto</p>
-              <p className="costs__rent">{example.data ? money(example.data.firstMonthTotalMxn) : ' '}</p>
+              <p className="figure costs__rent">{example.data ? money(example.data.firstMonthTotalMxn) : ' '}</p>
             </div>
           </div>
         </div>
       </section>
 
       <section className="band">
-        <div className="band__in">
+        <div>
           <h2 className="band__head">Pregúntale a quien ya vivió ahí</h2>
-          <p className="band__lead">Mentores de tu universidad, con la zona donde vivieron a la vista, para que el consejo sí aplique a tu caso.</p>
-          <div className="mentorstrip">
+          <p className="band__lead">Mentores que conocen tu campus y tu zona, para que el consejo sí aplique a tu caso.</p>
+          <ul className="mentorstrip">
             {mentors.data?.slice(0, 3).map((m) => (
-              <div key={m.id} className="mentor mentor--flat">
-                <h3 className="mentor__name">{m.fullName}</h3>
-                <p className="mentor__head">{m.headline}</p>
-                <p className="mentor__where">
-                  {m.university}
-                  {m.zoneName ? `. Vivió en ${m.zoneName}.` : ''}
-                </p>
-              </div>
+              <li key={m.id}>
+                <h3>{m.fullName}</h3>
+                <p>{m.headline}</p>
+                <p className="small muted mt-1">{m.homeCountry ? `De ${m.homeCountry}.` : ''}{m.zoneName ? ` Conoce ${m.zoneName}.` : ''}</p>
+              </li>
             ))}
-          </div>
-          <div className="btnrow" style={{ marginTop: 32 }}>
+          </ul>
+          <div className="btnrow band__more">
             <LinkButton to="/mentores" variant="secondary">
               Conocer a los mentores
             </LinkButton>
