@@ -1,18 +1,19 @@
 import { createHash, timingSafeEqual } from 'node:crypto'
 import { existsSync } from 'node:fs'
+import { readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import cookie from '@fastify/cookie'
 import helmet from '@fastify/helmet'
 import multipart from '@fastify/multipart'
 import rateLimit from '@fastify/rate-limit'
-import fastifyStatic from '@fastify/static'
+import type {} from '@fastify/static'
 import Fastify, { type FastifyInstance, type FastifyRequest, type preHandlerHookHandler } from 'fastify'
 import { ZodError, type ZodType } from 'zod'
 import type { ApiErrorBody, Role } from '@aterriza/contracts'
 import type { AppConfig } from '../config/env.ts'
 import { API_ROOT } from '../platform/db.ts'
 import { UPLOADS_DIR } from '../platform/files.ts'
-import { type Actor, DomainError } from '../platform/kernel.ts'
+import { type Actor, DomainError, notFound } from '../platform/kernel.ts'
 import { MAX_PHOTO_BYTES } from '../modules/listings/service.ts'
 
 declare module 'fastify' {
@@ -23,6 +24,7 @@ declare module 'fastify' {
 
 export const API_PREFIX = '/api/v1'
 const MUTATING = new Set(['POST', 'PUT', 'PATCH', 'DELETE'])
+const UPLOAD_TYPES: Record<string, string> = { jpg: 'image/jpeg', png: 'image/png', webp: 'image/webp' }
 
 export const sessionCookieName = (config: AppConfig) => (config.isProduction ? '__Host-aterriza_session' : 'aterriza_session')
 
@@ -157,11 +159,21 @@ export async function buildServer(opts: ServerOptions): Promise<FastifyInstance>
     return reply.status(500).send(body('internal_error', 'Algo falló de nuestro lado. Vuelve a intentar.'))
   })
 
-  await app.register(fastifyStatic, { root: UPLOADS_DIR, prefix: '/uploads/', decorateReply: false, dotfiles: 'deny', index: false, list: false })
+  // Solo nombres generados por LocalFileStore: el patrón impide salir de la carpeta.
+  app.get('/uploads/:file', async (req, reply) => {
+    const match = /^[0-9a-f-]{36}\.(jpg|png|webp)$/.exec((req.params as { file: string }).file)
+    if (!match) throw notFound('La foto')
+    const bytes = await readFile(join(UPLOADS_DIR, match[0])).catch(() => {
+      throw notFound('La foto')
+    })
+    return reply.type(UPLOAD_TYPES[match[1]!]!).header('Cache-Control', 'private, max-age=3600').send(bytes)
+  })
 
   const webDist = join(API_ROOT, '..', 'web', 'dist')
   const serveWeb = config.serveWeb && existsSync(join(webDist, 'index.html'))
   if (serveWeb) {
+    // Carga diferida: en Vercel la web la sirve el CDN, y este plugin no arranca en ese entorno (ERR_REQUIRE_ESM).
+    const { default: fastifyStatic } = await import('@fastify/static')
     await app.register(fastifyStatic, { root: webDist, prefix: '/', wildcard: false, index: 'index.html', dotfiles: 'deny' })
   }
 

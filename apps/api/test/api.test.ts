@@ -457,6 +457,13 @@ describe('arrendador y revisión', () => {
     const ok = await upload(png, '../../evil.png', 'image/png')
     expect(ok.statusCode).toBe(201)
     expect(ok.json().url).toMatch(/^\/uploads\/[0-9a-f-]{36}\.png$/)
+    const served = await app.inject({ method: 'GET', url: ok.json().url })
+    expect(served.statusCode).toBe(200)
+    expect(served.headers['content-type']).toBe('image/png')
+    expect(served.headers['x-content-type-options']).toBe('nosniff')
+    for (const bad of ['/uploads/..%2f..%2f.env', '/uploads/../package.json', '/uploads/passwd', '/uploads/00000000-0000-0000-0000-000000000000.png']) {
+      expect((await app.inject({ method: 'GET', url: bad })).statusCode).toBe(404)
+    }
   })
   it('flujo de revisión: enviar, marcar criterios y aprobar', async () => {
     expect((await api(`/listings/${listingId}/submit`, { method: 'POST', cookie: marcela })).status).toBe(200)
