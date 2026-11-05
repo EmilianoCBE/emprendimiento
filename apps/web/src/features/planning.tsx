@@ -19,7 +19,9 @@ export function BudgetPage() {
   const [utilities, setUtilities] = useState(false)
   const [near, setNear] = useState(false)
 
-  const estimate = useMutation({ mutationFn: (body: object) => api.post<BudgetEstimate>('/budget/estimate', body) })
+  // El último resultado se queda en pantalla mientras llega el nuevo: así no parpadea al cambiar un dato.
+  const [e, setResult] = useState<BudgetEstimate | null>(null)
+  const estimate = useMutation({ mutationFn: (body: object) => api.post<BudgetEstimate>('/budget/estimate', body), onSuccess: setResult })
   const { mutate } = estimate
   const rentNumber = Math.max(0, Number(rent) || 0)
   useEffect(() => {
@@ -30,7 +32,6 @@ export function BudgetPage() {
     return () => clearTimeout(handle)
   }, [listingId, rentNumber, arrivalMonth, usesAc, international, utilities, near, mutate])
 
-  const e = estimate.data
   const fromListing = e ? e.firstMonthTotalMxn - e.estimatedShareMxn : 0
   return (
     <Page title="Tu primer mes, sin sorpresas" lead="Lo que nadie te avisa: el depósito, la luz con aire acondicionado, los traslados y las comisiones de tu banco.">

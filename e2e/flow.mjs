@@ -44,7 +44,7 @@ await lucia.getByRole('button',{name:'Ya firmé el contrato'}).click(); await lu
 
 // Calculadora
 await lucia.goto(base+'/presupuesto'); await lucia.getByText('Primer mes, con depósito').waitFor(); await lucia.waitForTimeout(600); await shot(lucia,'budget',true)
-const before=await lucia.locator('.total__n').first().innerText(); await lucia.getByLabel('Mes de llegada').selectOption('1'); await lucia.waitForFunction(v=>document.querySelector('.total__n').innerText!==v,before); step('calculadora reacciona: '+before+' -> '+await lucia.locator('.total__n').first().innerText())
+const before=await lucia.locator('.total__n').first().innerText(); await lucia.getByLabel('Mes de llegada').selectOption('1'); await lucia.waitForFunction(v=>document.querySelector('.total__n')?.innerText!==v,before); step('calculadora reacciona: '+before+' -> '+await lucia.locator('.total__n').first().innerText())
 await lucia.goto(base+'/checklist'); await lucia.getByText('Calcula tu presupuesto').click(); await lucia.waitForTimeout(400); await lucia.getByText('1 de 14').waitFor(); await lucia.reload(); await lucia.getByText('1 de 14').waitFor(); step('checklist persiste')
 await lucia.goto(base+'/mentores'); await lucia.getByRole('heading',{name:'Mentores'}).waitFor(); await lucia.waitForTimeout(500); await shot(lucia,'mentors')
 
