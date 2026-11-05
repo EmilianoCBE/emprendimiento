@@ -142,3 +142,8 @@ h3 { font: 600 var(--text-lg) / var(--leading-lg) var(--font-text); }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; animation-delay: 0ms !important; transition-duration: 0.01ms !important; }
 }
+
+/* ---------- Cifras destacadas ---------- */
+.totals { display: grid; grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr)); gap: var(--space-5); }
+.total__n { font-size: var(--display-lg); }
+.total__l { color: var(--color-ink-muted); font-size: var(--text-sm); line-height: var(--leading-sm); margin-top: var(--space-1); }

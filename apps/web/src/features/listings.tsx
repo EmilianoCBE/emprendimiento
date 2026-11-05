@@ -1,4 +1,5 @@
-import { Star } from '@phosphor-icons/react'
+import './listing.css'
+import { Faders, MapTrifold, ListBullets, Star } from '@phosphor-icons/react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import L from 'leaflet'
 import { type FormEvent, useEffect, useMemo, useRef, useState } from 'react'
@@ -10,7 +11,7 @@ import { api } from '../lib/api'
 import { KIND_LABEL, dateOnly, money } from '../lib/format'
 import { useSession } from '../lib/session'
 import { MentorCardView } from './community-card'
-import { ListingCardView } from './listings-card'
+import { ListingCardView, ListingGridSkeleton } from './listings-card'
 
 // ---------- Mapa ----------
 const TEC: [number, number] = [25.6515, -100.2895]
@@ -49,13 +50,14 @@ function ResultsMap({ items, active }: { items: ListingCard[]; active: string | 
     group.clearLayers()
     for (const l of items) {
       const span = document.createElement('span')
-      const tone = l.priceAlert?.severity === 'danger' ? 'mappin--alert' : l.level === 'verified' ? 'mappin--ok' : ''
+      const danger = l.priceAlert?.severity === 'danger'
+      const tone = danger ? 'mappin--alert' : l.level === 'verified' ? '' : 'mappin--part'
       span.className = `mappin ${tone} ${active === l.id ? 'is-active' : ''}`
       // textContent: nunca interpretar datos como HTML.
-      span.textContent = money(l.monthlyRentMxn)
+      span.textContent = `${danger ? '! ' : ''}${money(l.monthlyRentMxn)}`
       const marker = L.marker([l.approxLat, l.approxLng], {
         icon: L.divIcon({ className: '', html: span, iconSize: [0, 0] }),
-        title: `${l.title}, ${money(l.monthlyRentMxn)}`,
+        title: `${l.title}, ${money(l.monthlyRentMxn)}, ${l.metCount} de 4 revisiones${danger ? ', precio sospechoso' : ''}`,
         zIndexOffset: active === l.id ? 1000 : 0,
       })
       marker.on('click', () => navigate(`/viviendas/${l.id}`))
@@ -65,7 +67,12 @@ function ResultsMap({ items, active }: { items: ListingCard[]; active: string | 
 
   return (
     <div className="mapwrap">
-      <div ref={ref} role="region" aria-label="Mapa con la ubicación aproximada de las viviendas" />
+      <div ref={ref} className="mapwrap__map" role="region" aria-label="Mapa con la ubicación aproximada de las viviendas" />
+      <div className="maplegend">
+        <span><i aria-hidden>$</i> 4 revisiones</span>
+        <span><i className="part" aria-hidden>$</i> Revisión incompleta</span>
+        <span><i className="alert" aria-hidden>!</i> Precio sospechoso</span>
+      </div>
     </div>
   )
 }
@@ -75,6 +82,7 @@ export function SearchPage() {
   const [params, setParams] = useSearchParams()
   const [view, setView] = useState<'list' | 'map'>('list')
   const [hovered, setHovered] = useState<string | null>(null)
+  const [filtersOpen, setFiltersOpen] = useState(false)
   const zones = useQuery({ queryKey: ['zones'], queryFn: () => api.get<Zone[]>('/zones') })
   const queryString = params.toString()
   const { data, isLoading, error } = useQuery({
@@ -94,45 +102,59 @@ export function SearchPage() {
   const hasFilters = [...params.keys()].some((k) => k !== 'sort')
   const selectedZone = zones.data?.find((z) => z.slug === params.get('zone'))
 
+  const activeFilters = [...params.keys()].filter((k) => k !== 'sort').length
+
   return (
-    <div className="searchview" data-view={view}>
+    <div className="searchview" data-view={view} data-filters={filtersOpen ? 'open' : 'closed'}>
       <div className="results">
-        <h1 className="results__title">Viviendas cerca del campus</h1>
-        <div className="filters">
-          <Select label="Zona" value={params.get('zone') ?? ''} onChange={(e) => set('zone', e.target.value)}>
-            <option value="">Todas</option>
-            {zones.data?.map((z) => (
-              <option key={z.id} value={z.slug}>
-                {z.name}
-                {z.medianRentMxn ? `, mediana ${money(z.medianRentMxn)}` : ''}
-              </option>
-            ))}
-          </Select>
-          <TextInput label="Renta máxima" type="number" min={0} step={500} placeholder="Sin límite" value={params.get('maxRent') ?? ''} onChange={(e) => set('maxRent', e.target.value)} />
-          <Select label="Al campus" value={params.get('maxMinutes') ?? ''} onChange={(e) => set('maxMinutes', e.target.value)}>
-            <option value="">Sin importar</option>
-            <option value="10">Hasta 10 min</option>
-            <option value="15">Hasta 15 min</option>
-            <option value="25">Hasta 25 min</option>
-          </Select>
-          <Select label="Tipo" value={params.get('kind') ?? ''} onChange={(e) => set('kind', e.target.value)}>
-            <option value="">Todos</option>
-            {LISTING_KINDS.map((k) => (
-              <option key={k} value={k}>
-                {KIND_LABEL[k]}
-              </option>
-            ))}
-          </Select>
+        <h1>Viviendas cerca del campus</h1>
+
+        <div className="results__toolbar">
+          <Button variant="secondary" aria-expanded={filtersOpen} onClick={() => setFiltersOpen((v) => !v)}>
+            <Faders size={20} aria-hidden /> Filtros{activeFilters > 0 ? ` (${activeFilters})` : ''}
+          </Button>
+          <Button variant="secondary" onClick={() => setView(view === 'list' ? 'map' : 'list')}>
+            {view === 'list' ? <MapTrifold size={20} aria-hidden /> : <ListBullets size={20} aria-hidden />} {view === 'list' ? 'Ver mapa' : 'Ver lista'}
+          </Button>
         </div>
-        <div className="filters__flags">
-          <Toggle label="Solo con 4 revisiones" checked={flag('verifiedOnly')} onChange={(e) => set('verifiedOnly', e.target.checked)} />
-          <Toggle label="Contrato por semestre" checked={flag('semester')} onChange={(e) => set('semester', e.target.checked)} />
-          <Toggle label="Amueblada" checked={flag('furnished')} onChange={(e) => set('furnished', e.target.checked)} />
-          <Toggle label="Servicios incluidos" checked={flag('utilities')} onChange={(e) => set('utilities', e.target.checked)} />
+
+        <div className="filters__panel">
+          <div className="filters">
+            <Select label="Zona" value={params.get('zone') ?? ''} onChange={(e) => set('zone', e.target.value)}>
+              <option value="">Todas</option>
+              {zones.data?.map((z) => (
+                <option key={z.id} value={z.slug}>
+                  {z.name}
+                  {z.medianRentMxn ? `, mediana ${money(z.medianRentMxn)}` : ''}
+                </option>
+              ))}
+            </Select>
+            <TextInput label="Renta máxima" type="number" min={0} step={500} placeholder="Sin límite" value={params.get('maxRent') ?? ''} onChange={(e) => set('maxRent', e.target.value)} />
+            <Select label="Al campus" value={params.get('maxMinutes') ?? ''} onChange={(e) => set('maxMinutes', e.target.value)}>
+              <option value="">Sin importar</option>
+              <option value="10">Hasta 10 min</option>
+              <option value="15">Hasta 15 min</option>
+              <option value="25">Hasta 25 min</option>
+            </Select>
+            <Select label="Tipo" value={params.get('kind') ?? ''} onChange={(e) => set('kind', e.target.value)}>
+              <option value="">Todos</option>
+              {LISTING_KINDS.map((k) => (
+                <option key={k} value={k}>
+                  {KIND_LABEL[k]}
+                </option>
+              ))}
+            </Select>
+          </div>
+          <div className="filters__flags">
+            <Toggle label="Solo con 4 revisiones" checked={flag('verifiedOnly')} onChange={(e) => set('verifiedOnly', e.target.checked)} />
+            <Toggle label="Contrato por semestre" checked={flag('semester')} onChange={(e) => set('semester', e.target.checked)} />
+            <Toggle label="Amueblada" checked={flag('furnished')} onChange={(e) => set('furnished', e.target.checked)} />
+            <Toggle label="Servicios incluidos" checked={flag('utilities')} onChange={(e) => set('utilities', e.target.checked)} />
+          </div>
         </div>
 
         {selectedZone && (
-          <div style={{ marginTop: 18 }}>
+          <div className="mt-4">
             <Note title={`Sobre ${selectedZone.name}`}>
               {selectedZone.transitNote} {selectedZone.lifeNote}
             </Note>
@@ -143,33 +165,24 @@ export function SearchPage() {
           <p aria-live="polite">
             <b>{data?.total ?? 0}</b> {data?.total === 1 ? 'vivienda' : 'viviendas'}
           </p>
-          <div className="btnrow">
-            <div style={{ minWidth: 180 }}>
-              <label className="sr-only" htmlFor="sort">
-                Ordenar por
-              </label>
-              <select id="sort" className="input" value={params.get('sort') ?? 'trust'} onChange={(e) => set('sort', e.target.value)}>
-                <option value="trust">Más revisadas primero</option>
-                <option value="price_asc">Menor renta</option>
-                <option value="price_desc">Mayor renta</option>
-                <option value="distance">Más cerca del campus</option>
-              </select>
-            </div>
-            <span className="viewtoggle">
-              <Button variant="secondary" onClick={() => setView(view === 'list' ? 'map' : 'list')}>
-                {view === 'list' ? 'Ver mapa' : 'Ver lista'}
-              </Button>
-            </span>
+          <div className="results__sort">
+            <label className="sr-only" htmlFor="sort">
+              Ordenar por
+            </label>
+            <select id="sort" className="input" value={params.get('sort') ?? 'trust'} onChange={(e) => set('sort', e.target.value)}>
+              <option value="trust">Más revisadas primero</option>
+              <option value="price_asc">Menor renta</option>
+              <option value="price_desc">Mayor renta</option>
+              <option value="distance">Más cerca del campus</option>
+            </select>
           </div>
         </div>
 
         <ErrorNote error={error} />
-        {isLoading && <Loading label="Buscando viviendas" />}
+        {isLoading && <ListingGridSkeleton />}
         {data?.items.length === 0 && (
           <Empty title="Ninguna vivienda cumple con estos filtros">
-            <p className="muted" style={{ marginBottom: 12 }}>
-              Prueba a subir tu renta máxima o a quitar un filtro.
-            </p>
+            <p className="empty__body">Prueba a subir tu renta máxima o a quitar un filtro.</p>
             {hasFilters && (
               <Button variant="secondary" onClick={() => setParams({}, { replace: true })}>
                 Quitar filtros
@@ -177,6 +190,7 @@ export function SearchPage() {
             )}
           </Empty>
         )}
+        {data && data.items.length > 0 && <h2 className="sr-only">Resultados</h2>}
         <div className="grid">
           {data?.items.map((l) => (
             <ListingCardView key={l.id} listing={l} onHover={setHovered} />
@@ -199,12 +213,12 @@ export function ListingPage() {
   const included = useMemo(() => l?.costItems.filter((c) => c.included) ?? [], [l])
   const excluded = useMemo(() => l?.costItems.filter((c) => !c.included) ?? [], [l])
 
-  if (isLoading) return <div className="page"><Loading /></div>
+  if (isLoading) return <div className="page"><div className="skeleton__media" /><Loading /></div>
   if (error || !l) {
     return (
       <div className="page page--narrow">
-        <Empty title="Esta vivienda no está disponible">
-          <p className="muted" style={{ marginBottom: 12 }}>Puede estar en revisión o ya no publicarse.</p>
+        <Empty as="h1" title="Esta vivienda no está disponible">
+          <p className="empty__body">Puede estar en revisión o ya no publicarse.</p>
           <LinkButton to="/viviendas" variant="secondary">Ver otras viviendas</LinkButton>
         </Empty>
       </div>
@@ -227,15 +241,15 @@ export function ListingPage() {
 
       <div className="detail">
         <div>
-          <p className="muted">
+          <p className="detail__kind">
             {KIND_LABEL[l.kind]} en {l.zoneName}
           </p>
           <h1 className="detail__title">{l.title}</h1>
 
           {l.priceAlert && (
-            <div style={{ marginTop: 18 }}>
+            <div className="detail__alert">
               <PriceAlertNote alert={l.priceAlert} />
-              <p className="small muted" style={{ marginTop: 6 }}>
+              <p className="small muted mt-2">
                 Mediana {l.priceAlert.scope === 'zone' ? 'de la zona' : 'de la ciudad'}: {money(l.priceAlert.medianMxn)} al mes.
               </p>
             </div>
@@ -253,14 +267,28 @@ export function ListingPage() {
           </dl>
 
           <section className="detail__section">
-            <h2>Sobre este lugar</h2>
-            <p style={{ maxWidth: '68ch' }}>{l.description}</p>
-            <p className="muted small" style={{ marginTop: 10 }}>Publicada por {l.landlordName}.</p>
+            <h2>Qué revisamos</h2>
+            <CriteriaList criteria={l.verification.criteria} columns />
           </section>
 
           <section className="detail__section">
-            <h2>Qué revisamos</h2>
-            <CriteriaList criteria={l.verification.criteria} />
+            <h2>Tu costo real</h2>
+            <div className="costbox">
+              <div className="totals">
+                <div>
+                  <p className="figure total__n">{money(l.budget.firstMonthTotalMxn)}</p>
+                  <p className="total__l">Primer mes estimado, con depósito e instalación</p>
+                </div>
+                <div>
+                  <p className="figure total__n">{money(l.budget.typicalMonthTotalMxn)}</p>
+                  <p className="total__l">Un mes típico estimado</p>
+                </div>
+              </div>
+              <p className="small muted mt-4">Calculado para alguien que llega de otro país en agosto. Lo que no viene del anuncio es una estimación.</p>
+              <div className="mt-4">
+                <LinkButton to={`/presupuesto?vivienda=${l.id}`} variant="secondary">Ajustar a mi caso</LinkButton>
+              </div>
+            </div>
           </section>
 
           <section className="detail__section">
@@ -289,21 +317,9 @@ export function ListingPage() {
           </section>
 
           <section className="detail__section">
-            <h2>Tu costo real</h2>
-            <div className="totals">
-              <div>
-                <p className="total__n">{money(l.budget.firstMonthTotalMxn)}</p>
-                <p className="total__l">Primer mes estimado, con depósito e instalación</p>
-              </div>
-              <div>
-                <p className="total__n">{money(l.budget.typicalMonthTotalMxn)}</p>
-                <p className="total__l">Un mes típico estimado</p>
-              </div>
-            </div>
-            <p className="small muted" style={{ marginTop: 10 }}>Calculado para alguien que llega de otro país en agosto. Lo que no viene del anuncio es una estimación.</p>
-            <div style={{ marginTop: 14 }}>
-              <LinkButton to={`/presupuesto?vivienda=${l.id}`} variant="secondary">Ajustar a mi caso</LinkButton>
-            </div>
+            <h2>Sobre este lugar</h2>
+            <p className="measure">{l.description}</p>
+            <p className="muted small mt-2">Publicada por {l.landlordName}.</p>
           </section>
 
           <ReviewsSection listing={l} />
@@ -311,9 +327,9 @@ export function ListingPage() {
           {l.mentors.length > 0 && (
             <section className="detail__section">
               <h2>Pregúntale a quien conoce {l.zoneName}</h2>
-              <div className="mentors">
+              <div className="mentors mentors--stacked">
                 {l.mentors.map((m) => (
-                  <MentorCardView key={m.id} mentor={m} />
+                  <MentorCardView key={m.id} mentor={m} headingLevel="h3" />
                 ))}
               </div>
             </section>
@@ -325,14 +341,14 @@ export function ListingPage() {
         <aside className="aside" aria-label="Solicitar esta vivienda">
           <div className="aside__top">
             <div>
-              <p className="aside__price">{money(l.monthlyRentMxn)}</p>
-              <p className="muted small">al mes</p>
+              <p className="figure aside__price">{money(l.monthlyRentMxn)}</p>
+              <p className="muted small mt-1">al mes</p>
             </div>
-            <Seal met={l.verification.metCount} size={92} stamp={l.verification.level === 'verified'} />
+            <Seal met={l.verification.metCount} size={80} stamp={l.verification.level === 'verified'} />
           </div>
           {l.rating !== null && (
-            <p className="review__stars">
-              <Star weight="fill" aria-hidden /> {l.rating} con {l.reviewCount} {l.reviewCount === 1 ? 'estancia comprobada' : 'estancias comprobadas'}
+            <p className="aside__score">
+              <Star weight="fill" size={16} aria-hidden /> {l.rating} con {l.reviewCount} {l.reviewCount === 1 ? 'estancia comprobada' : 'estancias comprobadas'}
             </p>
           )}
           <BookingPanel listing={l} />
@@ -362,11 +378,20 @@ function BookingPanel({ listing: l }: { listing: ListingDetail }) {
   if (l.viewer.isOwner) return <Note title="Esta es tu vivienda."><Link to="/mis-viviendas">Administrarla</Link></Note>
   if (l.viewer.activeBookingId) return <LinkButton to={`/solicitudes/${l.viewer.activeBookingId}`}>Ver mi solicitud</LinkButton>
   if (l.exactAddress) return <Note title="Dirección">{l.exactAddress}</Note>
+  const missing = 4 - l.verification.metCount
+  if (missing > 0 || l.occupied) {
+    return (
+      <Note tone="warning" title="Aún no se puede solicitar">
+        <p>{l.occupied ? 'Esta vivienda está ocupada en este momento.' : `Le ${missing === 1 ? 'falta 1 revisión' : `faltan ${missing} revisiones`} de las 4 que pedimos.`}</p>
+        <p className="mt-2"><Link to="/viviendas?verifiedOnly=true">Ver viviendas con las 4 revisiones</Link></p>
+      </Note>
+    )
+  }
   if (!me) {
     return (
       <>
-        <LinkButton to={`/entrar?volver=/viviendas/${l.id}`}>Entra para solicitarla</LinkButton>
-        <p className="small muted">Valida tu matrícula y podrás solicitar viviendas y hablar con mentores.</p>
+        <LinkButton to={`/entrar?volver=/viviendas/${l.id}`}>Inicia sesión para solicitarla</LinkButton>
+        <p className="small muted">Solicitar no tiene costo. Valida tu matrícula y también podrás hablar con mentores.</p>
       </>
     )
   }
@@ -376,7 +401,7 @@ function BookingPanel({ listing: l }: { listing: ListingDetail }) {
         <ul className="note__list">
           {l.viewer.blockers.map((b) => <li key={b}>{b}</li>)}
         </ul>
-        {me.role === 'student' && me.studentStatus !== 'verified' && <p style={{ marginTop: 8 }}><Link to="/cuenta">Validar mi matrícula</Link></p>}
+        {me.role === 'student' && me.studentStatus !== 'verified' && <p className="mt-2"><Link to="/cuenta">Validar mi matrícula</Link></p>}
       </Note>
     )
   }
@@ -429,9 +454,9 @@ function ReviewsSection({ listing: l }: { listing: ListingDetail }) {
       {l.reviews.map((r) => (
         <article key={r.id} className="review">
           <div className="review__head">
-            <span className="review__stars">
-              <Star weight="fill" aria-hidden /> {r.rating}<span className="sr-only"> de 5</span>
-              <span style={{ marginLeft: 8 }}>{r.authorName}</span>
+            <span className="review__who">
+              <span className="aside__score"><Star weight="fill" size={16} aria-hidden /> {r.rating}<span className="sr-only"> de 5</span></span>
+              {r.authorName}
             </span>
             <span className="review__stay">Estancia comprobada, {r.stayLabel}</span>
           </div>
@@ -440,8 +465,7 @@ function ReviewsSection({ listing: l }: { listing: ListingDetail }) {
       ))}
       {l.viewer.canReview && (
         <form
-          className="form panel"
-          style={{ marginTop: 18 }}
+          className="form panel mt-4"
           onSubmit={(e) => {
             e.preventDefault()
             submit.mutate()
