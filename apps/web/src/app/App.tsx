@@ -1,7 +1,8 @@
-import { Bell, BookOpenText, Buildings, Calculator, ChatsCircle, House, SignOut, UserCircle } from '@phosphor-icons/react'
+import './shell.css'
+import { Bell, BookOpenText, Buildings, Calculator, ChatsCircle, ClipboardText, Gauge, House, type Icon, UserCircle, UsersThree } from '@phosphor-icons/react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Component, Suspense, lazy, useEffect, useState, type ComponentType, type ReactNode } from 'react'
-import { Link, NavLink, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
+import { Link, NavLink, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import type { AppNotification, Role } from '@aterriza/contracts'
 import { Logo } from '../design/brand'
 import { Button, Loading, Empty, LinkButton } from '../design/ui'
@@ -55,7 +56,7 @@ class ErrorBoundary extends Component<{ children: ReactNode; resetKey: string },
     return (
       <div className="page page--narrow">
         <Empty title="Esta pantalla no se pudo mostrar">
-          <p className="muted" style={{ marginBottom: 12 }}>Vuelve a cargarla. Si sigue igual, regresa al inicio.</p>
+          <p className="empty__body">Vuelve a cargarla. Si sigue igual, regresa al inicio.</p>
           <LinkButton to="/" variant="secondary">Ir al inicio</LinkButton>
         </Empty>
       </div>
@@ -112,7 +113,7 @@ function Notifications() {
             )}
           </div>
           <div className="popover__list">
-            {data?.items.length === 0 && <p className="muted" style={{ padding: 16 }}>Aquí verás lo que te toca hacer.</p>}
+            {data?.items.length === 0 && <p className="popover__empty">Aquí verás lo que te toca hacer.</p>}
             {data?.items.map((n) => {
               const body = (
                 <>
@@ -137,76 +138,69 @@ function Notifications() {
   )
 }
 
-function navFor(role: Role | undefined) {
-  if (role === 'landlord') {
-    return [
-      { to: '/mis-viviendas', label: 'Mis viviendas', Icon: Buildings },
-      { to: '/solicitudes', label: 'Solicitudes', Icon: House },
-      { to: '/mensajes', label: 'Mensajes', Icon: ChatsCircle },
-      { to: '/guias', label: 'Guías', Icon: BookOpenText },
-    ]
-  }
-  if (role === 'admin') {
-    return [
-      { to: '/admin', label: 'Operación', Icon: Buildings },
-      { to: '/viviendas', label: 'Viviendas', Icon: House },
-      { to: '/mentores', label: 'Mentores', Icon: ChatsCircle },
-      { to: '/guias', label: 'Guías', Icon: BookOpenText },
-    ]
-  }
-  if (role === 'mentor') {
-    return [
-      { to: '/mensajes', label: 'Mensajes', Icon: ChatsCircle },
-      { to: '/mentores', label: 'Mentores', Icon: UserCircle },
-      { to: '/viviendas', label: 'Viviendas', Icon: House },
-      { to: '/guias', label: 'Guías', Icon: BookOpenText },
-    ]
-  }
-  return [
-    { to: '/viviendas', label: 'Viviendas', Icon: House },
-    { to: '/mentores', label: 'Mentores', Icon: ChatsCircle },
-    { to: '/presupuesto', label: 'Presupuesto', Icon: Calculator },
-    { to: '/guias', label: 'Guías', Icon: BookOpenText },
-  ]
+interface NavItem {
+  to: string
+  label: string
+  Icon: Icon
 }
 
+const VIVIENDAS: NavItem = { to: '/viviendas', label: 'Viviendas', Icon: House }
+const MENTORES: NavItem = { to: '/mentores', label: 'Mentores', Icon: UsersThree }
+const PRESUPUESTO: NavItem = { to: '/presupuesto', label: 'Presupuesto', Icon: Calculator }
+const GUIAS: NavItem = { to: '/guias', label: 'Guías', Icon: BookOpenText }
+const MENSAJES: NavItem = { to: '/mensajes', label: 'Mensajes', Icon: ChatsCircle }
+const SOLICITUDES: NavItem = { to: '/solicitudes', label: 'Solicitudes', Icon: ClipboardText }
+const MIS_VIVIENDAS: NavItem = { to: '/mis-viviendas', label: 'Mis viviendas', Icon: Buildings }
+const ADMIN: NavItem = { to: '/admin', label: 'Administración', Icon: Gauge }
+const CUENTA: NavItem = { to: '/cuenta', label: 'Cuenta', Icon: UserCircle }
+const ENTRAR: NavItem = { to: '/entrar', label: 'Entrar', Icon: UserCircle }
+
+/** Escritorio: todo a la vista. Móvil: cinco pestañas con lo más usado; lo demás, desde Cuenta. */
+function navFor(role: Role | undefined): { desktop: NavItem[]; tabs: NavItem[] } {
+  switch (role) {
+    case 'student':
+      return { desktop: [VIVIENDAS, MENTORES, PRESUPUESTO, GUIAS, SOLICITUDES, MENSAJES], tabs: [VIVIENDAS, MENTORES, MENSAJES, SOLICITUDES, CUENTA] }
+    case 'landlord':
+      return { desktop: [MIS_VIVIENDAS, SOLICITUDES, MENSAJES, GUIAS], tabs: [MIS_VIVIENDAS, SOLICITUDES, MENSAJES, GUIAS, CUENTA] }
+    case 'mentor':
+      return { desktop: [MENSAJES, MENTORES, VIVIENDAS, GUIAS], tabs: [MENSAJES, MENTORES, VIVIENDAS, GUIAS, CUENTA] }
+    case 'admin':
+      return { desktop: [ADMIN, VIVIENDAS, MENTORES, GUIAS], tabs: [ADMIN, VIVIENDAS, MENTORES, GUIAS, CUENTA] }
+    default:
+      return { desktop: [VIVIENDAS, MENTORES, PRESUPUESTO, GUIAS], tabs: [VIVIENDAS, MENTORES, PRESUPUESTO, GUIAS, ENTRAR] }
+  }
+}
+
+/** Pantallas de trabajo: llevan un pie discreto en vez del pie de la portada. */
+const WORK_AREAS = ['/mensajes', '/solicitudes', '/mis-viviendas', '/admin', '/cuenta', '/checklist']
+
 function Shell({ children }: { children: ReactNode }) {
-  const { me, config, setMe } = useSession()
-  const navigate = useNavigate()
+  const { me, config } = useSession()
   const location = useLocation()
   useLiveEvents()
   useEffect(() => {
     // Chrome ya devuelve una promesa aquí; un efecto no debe devolverla.
     window.scrollTo(0, 0)
   }, [location.pathname])
-  const logout = useMutation({
-    mutationFn: () => api.post('/auth/logout'),
-    onSuccess: () => {
-      setMe(null)
-      navigate('/')
-    },
-  })
-  const items = navFor(me?.role)
-  const tabItems = [...items, me ? { to: '/cuenta', label: 'Cuenta', Icon: UserCircle } : { to: '/entrar', label: 'Entrar', Icon: UserCircle }]
+  const { desktop, tabs } = navFor(me?.role)
+  const slimFooter = WORK_AREAS.some((area) => location.pathname.startsWith(area))
   return (
     <>
       <a href="#contenido" className="skip">
         Saltar al contenido
       </a>
-      {config?.demoMode && <div className="demobar">Demostración: las viviendas, personas y precios son ficticios.</div>}
+      {config?.demoMode && <div className="demobar">Demostración: viviendas, personas y precios ficticios.</div>}
       <header className="topbar">
         <div className="topbar__in">
           <Link to="/" className="topbar__brand" aria-label="Aterriza, ir al inicio">
             <Logo />
           </Link>
           <nav className="nav" aria-label="Principal">
-            {items.map(({ to, label }) => (
+            {desktop.map(({ to, label }) => (
               <NavLink key={to} to={to}>
                 {label}
               </NavLink>
             ))}
-            {me?.role === 'student' && <NavLink to="/solicitudes">Solicitudes</NavLink>}
-            {me?.role === 'student' && <NavLink to="/mensajes">Mensajes</NavLink>}
           </nav>
           <div className="topbar__end">
             {me ? (
@@ -215,13 +209,10 @@ function Shell({ children }: { children: ReactNode }) {
                 <Link to="/cuenta" className="iconbtn" aria-label="Mi cuenta">
                   <UserCircle size={26} />
                 </Link>
-                <button className="iconbtn" aria-label="Cerrar sesión" onClick={() => logout.mutate()}>
-                  <SignOut size={24} />
-                </button>
               </>
             ) : (
               <>
-                <Link to="/entrar" className="btn btn--quiet topbar__login" style={{ color: 'inherit' }}>
+                <Link to="/entrar" className="btn btn--quiet topbar__login">
                   Entrar
                 </Link>
                 <LinkButton to="/registro">Crear cuenta</LinkButton>
@@ -235,27 +226,40 @@ function Shell({ children }: { children: ReactNode }) {
           <Suspense fallback={<div className="page"><Loading /></div>}>{children}</Suspense>
         </ErrorBoundary>
       </main>
-      <footer className="footer">
-        <div className="footer__in">
-          <div>
-            <Logo size={26} />
-            <p>
-              Proyecto estudiantil independiente. No está afiliado ni respaldado por el Tecnológico de Monterrey. Aterriza no procesa pagos: nunca
-              transfieras dinero sin ver el lugar y sin un contrato firmado.
-            </p>
+      {slimFooter ? (
+        <footer className="footer footer--slim">
+          <div className="footer__in">
+            <p>Proyecto estudiantil independiente. Aterriza no procesa pagos.</p>
+            <div className="footer__links">
+              <Link to="/ayuda">Ayuda</Link>
+              <Link to="/privacidad">Privacidad</Link>
+              <Link to="/terminos">Términos</Link>
+            </div>
           </div>
-          <div className="footer__links">
-            <Link to="/ayuda">Ayuda</Link>
-            <Link to="/guias/como-reconocer-una-estafa">Reconocer una estafa</Link>
-            <Link to="/privacidad">Privacidad</Link>
-            <Link to="/terminos">Términos</Link>
+        </footer>
+      ) : (
+        <footer className="footer">
+          <div className="footer__in">
+            <div>
+              <Logo size={26} />
+              <p>
+                Proyecto estudiantil independiente. No está afiliado ni respaldado por el Tecnológico de Monterrey. Aterriza no procesa pagos: nunca
+                transfieras dinero sin ver el lugar y sin un contrato firmado.
+              </p>
+            </div>
+            <div className="footer__links">
+              <Link to="/ayuda">Ayuda</Link>
+              <Link to="/guias/como-reconocer-una-estafa">Reconocer una estafa</Link>
+              <Link to="/privacidad">Privacidad</Link>
+              <Link to="/terminos">Términos</Link>
+            </div>
           </div>
-        </div>
-      </footer>
+        </footer>
+      )}
       <nav className="tabbar" aria-label="Principal, móvil">
-        {tabItems.map(({ to, label, Icon }) => (
+        {tabs.map(({ to, label, Icon: TabIcon }) => (
           <NavLink key={to} to={to}>
-            <Icon size={23} aria-hidden />
+            <TabIcon size={24} aria-hidden />
             {label}
           </NavLink>
         ))}
@@ -296,7 +300,7 @@ export function App() {
           path="*"
           element={
             <div className="page page--narrow">
-              <Empty title="No encontramos esta página">
+              <Empty as="h1" title="No encontramos esta página">
                 <LinkButton to="/viviendas" variant="secondary">
                   Ver viviendas
                 </LinkButton>

@@ -300,6 +300,13 @@ export function AccountPage() {
   const navigate = useNavigate()
   const [password, setPassword] = useState('')
   const [confirmDelete, setConfirmDelete] = useState(false)
+  const logout = useMutation({
+    mutationFn: () => api.post('/auth/logout'),
+    onSuccess: () => {
+      setMe(null)
+      navigate('/')
+    },
+  })
   const logoutAll = useMutation({
     mutationFn: () => api.post('/auth/logout-all'),
     onSuccess: () => {
@@ -319,11 +326,21 @@ export function AccountPage() {
     <Page narrow title={me.fullName} lead={me.email}>
       <div className="stack--lg">
         {me.role === 'student' && <section className="panel stack"><h2>Validación de estudiante</h2><StudentValidation me={me} /></section>}
-        {me.role === 'student' && <section className="panel stack"><h2>Tu llegada</h2><p>Sigue los pasos antes de viajar y en tu primera semana.</p><div><LinkButton to="/checklist" variant="secondary">Abrir mi checklist</LinkButton></div></section>}
+        {me.role === 'student' && (
+          <section className="panel stack">
+            <h2>Planea tu llegada</h2>
+            <div className="btnrow">
+              <LinkButton to="/checklist" variant="secondary">Mi checklist</LinkButton>
+              <LinkButton to="/presupuesto" variant="secondary">Calculadora de presupuesto</LinkButton>
+              <LinkButton to="/guias" variant="secondary">Guías</LinkButton>
+            </div>
+          </section>
+        )}
         {me.role === 'mentor' && <section className="panel stack"><h2>Tu perfil de mentor</h2><MentorProfile /></section>}
         <section className="panel stack">
           <h2>Tu cuenta y tus datos</h2>
           <div className="btnrow">
+            <Button variant="secondary" busy={logout.isPending} onClick={() => logout.mutate()}>Cerrar sesión</Button>
             <a className="btn btn--secondary" href="/api/v1/me/export" download>Descargar mis datos</a>
             <Button variant="secondary" busy={logoutAll.isPending} onClick={() => logoutAll.mutate()}>Cerrar sesión en todos mis dispositivos</Button>
           </div>

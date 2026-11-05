@@ -5,32 +5,6 @@
   --chart-a: var(--color-chart-a); --chart-b: var(--color-chart-b); --display: var(--font-display); --text: var(--font-text); --max: var(--content-max);
 }
 /* Aterriza. Identidad en docs/09-ux-e-identidad.md. */
-/* ---------- Barra de demo y navegación ---------- */
-.demobar { background: var(--cempasuchil); color: var(--sierra); padding: 6px var(--edge); font-size: 0.875rem; font-weight: 600; }
-.topbar { background: var(--sierra); color: var(--papel); position: sticky; top: 0; z-index: 1000; }
-.topbar__in { max-width: var(--max); margin: 0 auto; padding: 0 var(--gutter); height: 64px; display: flex; align-items: center; gap: 28px; }
-.logo { display: inline-flex; align-items: center; gap: 8px; font-family: var(--display); font-weight: 800; line-height: 1; color: inherit; }
-.topbar__brand { color: inherit; text-decoration: none; }
-.nav { display: flex; gap: 4px; flex: 1; }
-.nav a { color: #d7e2d6; text-decoration: none; padding: 8px 12px; border-radius: 6px; font-weight: 600; font-size: 1rem; }
-.nav a:hover { color: #fff; background: rgb(255 255 255 / 0.08); }
-.nav a.active { color: var(--cempasuchil); }
-.topbar__end { display: flex; align-items: center; gap: 8px; margin-left: auto; }
-.iconbtn { position: relative; display: inline-grid; place-items: center; width: 44px; height: 44px; border-radius: 6px; background: none; border: 0; color: inherit; cursor: pointer; text-decoration: none; }
-.iconbtn:hover { background: rgb(255 255 255 / 0.08); }
-.badge { position: absolute; top: 4px; right: 2px; min-width: 18px; height: 18px; padding: 0 4px; border-radius: 9px; background: var(--cempasuchil); color: var(--sierra); font-size: 0.75rem; font-weight: 700; line-height: 18px; text-align: center; }
-.tabbar { display: none; }
-main { min-height: 60vh; }
-
-.popover { position: absolute; right: var(--gutter); top: 60px; width: min(380px, calc(100vw - 32px)); background: var(--papel); color: var(--sierra); border-radius: 8px; border: 1px solid var(--sierra-line); box-shadow: 0 18px 40px rgb(15 47 46 / 0.25); z-index: 1100; overflow: hidden; }
-.popover__head { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-bottom: 1px solid var(--agave-deep); }
-.popover__list { max-height: 420px; overflow: auto; }
-.notif { display: block; padding: 12px 16px; border-bottom: 1px solid var(--agave); color: inherit; text-decoration: none; }
-.notif:hover { background: var(--agave); }
-.notif.is-unread { border-left: 4px solid var(--cempasuchil); }
-.notif__title { font-weight: 700; }
-.notif__body { font-size: 0.9375rem; color: var(--sierra-soft); }
-
 /* ---------- Portada ---------- */
 .hero { position: relative; background: var(--agave); overflow: hidden; }
 .hero__sky { max-width: var(--max); margin: 0 auto; padding: clamp(28px, 5vw, 60px) var(--gutter) 0; position: relative; z-index: 2; }
@@ -271,11 +245,6 @@ main { min-height: 60vh; }
   .hero__search > .btn { grid-column: 1 / -1; }
 }
 @media (max-width: 760px) {
-  body { padding-bottom: 66px; }
-  .nav { display: none; }
-  .tabbar { display: grid; grid-template-columns: repeat(5, 1fr); position: fixed; left: 0; right: 0; bottom: 0; z-index: 1000; background: var(--sierra); padding-bottom: env(safe-area-inset-bottom); }
-  .tabbar a { display: grid; place-items: center; gap: 1px; min-height: 58px; color: #cfdbce; text-decoration: none; font-size: 0.75rem; font-weight: 600; }
-  .tabbar a.active { color: var(--cempasuchil); }
   .explain, .costs, .guides__cat { grid-template-columns: minmax(0, 1fr); }
   .explain__seal .seal { max-width: 220px; }
   .chat { grid-template-columns: minmax(0, 1fr); height: calc(100vh - 240px); }
@@ -284,13 +253,9 @@ main { min-height: 60vh; }
   .gallery { grid-template-columns: 1fr; max-height: none; }
   .gallery__rest { display: none; }
   .gallery__main, .gallery--one .gallery__main { aspect-ratio: 4 / 3; }
-  .footer__in { grid-template-columns: minmax(0, 1fr); }
   .rowcard { grid-template-columns: 84px minmax(0, 1fr); }
   .rowcard img, .rowcard__ph { width: 84px; height: 72px; }
   .rowcard > :last-child:not(:nth-child(2)) { grid-column: 2; }
-  .topbar__login { display: none; }
-  .topbar__in { gap: 12px; }
-  .topbar__end .btn { min-height: 42px; padding: 8px 14px; white-space: nowrap; }
   .hero__pass { position: static; width: auto; margin: 0; }
   .hero__photo, .hero__caption { display: none; }
   .hero__pass .seal { position: absolute; left: auto; right: 12px; top: auto; bottom: -74px; width: 84px; height: 84px; z-index: 3; }
