@@ -1,0 +1,32 @@
+import { Link } from 'react-router-dom'
+import type { ListingCard } from '@aterriza/contracts'
+import { Seal } from '../design/brand'
+import { PriceAlertNote } from '../design/ui'
+import { KIND_LABEL, money } from '../lib/format'
+
+export function ListingCardView({ listing: l, onHover }: { listing: ListingCard; onHover?: (id: string | null) => void }) {
+  const nearest = Math.min(l.minutesWalk, l.minutesTransit)
+  return (
+    <Link to={`/viviendas/${l.id}`} className="card" onMouseEnter={() => onHover?.(l.id)} onMouseLeave={() => onHover?.(null)}>
+      <div className="card__media">
+        {l.photo && <img src={l.photo.url} alt={l.photo.alt} loading="lazy" />}
+        <div className="card__seal">
+          <Seal met={l.metCount} size={68} />
+        </div>
+      </div>
+      <p className="card__price">
+        <b>{money(l.monthlyRentMxn)}</b>
+        <span className="muted small">al mes</span>
+      </p>
+      <p className="card__real small">Cerca de {money(l.estimatedMonthlyMxn)} con gastos (estimado)</p>
+      <h3 className="card__title" style={{ fontFamily: 'var(--text)', fontSize: '1.0625rem' }}>
+        {l.title}
+      </h3>
+      <p className="card__meta">
+        {KIND_LABEL[l.kind]} en {l.zoneName}, a {nearest} min del campus
+      </p>
+      {l.reviewCount > 0 && <p className="card__meta">★ {l.rating} de {l.reviewCount} {l.reviewCount === 1 ? 'estancia' : 'estancias'} comprobadas</p>}
+      {l.priceAlert && <PriceAlertNote alert={l.priceAlert} compact />}
+    </Link>
+  )
+}

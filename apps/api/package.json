@@ -1,0 +1,34 @@
+{
+  "name": "@aterriza/api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch --env-file-if-exists=../../.env src/main.ts",
+    "start": "NODE_ENV=production tsx src/main.ts",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "db:migrate": "tsx --env-file-if-exists=../../.env src/scripts/migrate.ts",
+    "db:reset": "tsx --env-file-if-exists=../../.env src/scripts/reset.ts",
+    "demo": "DEMO_MODE=true SERVE_WEB=true PUBLIC_ORIGIN=http://localhost:4000 tsx --env-file-if-exists=../../.env src/main.ts"
+  },
+  "dependencies": {
+    "@aterriza/contracts": "*",
+    "@electric-sql/pglite": "^0.5.15",
+    "@fastify/cookie": "^11.0.0",
+    "@fastify/helmet": "^13.0.0",
+    "@fastify/multipart": "^9.0.0",
+    "@fastify/rate-limit": "^10.0.0",
+    "@fastify/static": "^10.1.10",
+    "@node-rs/argon2": "^2.0.0",
+    "fastify": "^5.0.0",
+    "pg": "^8.13.0",
+    "tsx": "^4.19.0",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "@types/pg": "^8.11.0",
+    "vitest": "^5.1.0"
+  }
+}

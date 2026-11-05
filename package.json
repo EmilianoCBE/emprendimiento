@@ -1,0 +1,31 @@
+{
+  "name": "aterriza",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "concurrently -n api,web -c blue,yellow \"npm run dev -w @aterriza/api\" \"npm run dev -w @aterriza/web\"",
+    "build": "npm run build -w @aterriza/web",
+    "start": "npm run start -w @aterriza/api",
+    "test": "npm run test -w @aterriza/api",
+    "typecheck": "npm run typecheck -w @aterriza/api && npm run typecheck -w @aterriza/web",
+    "lint": "oxlint apps packages",
+    "db:migrate": "npm run db:migrate -w @aterriza/api",
+    "db:reset": "npm run db:reset -w @aterriza/api",
+    "demo": "npm run build && npm run demo -w @aterriza/api",
+    "test:e2e": "node e2e/flow.mjs"
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.0",
+    "oxlint": "^1.0.0",
+    "typescript": "^6.0.2",
+    "playwright-core": "^1.50.0"
+  }
+}
