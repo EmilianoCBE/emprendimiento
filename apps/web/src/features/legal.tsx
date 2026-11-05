@@ -1,3 +1,4 @@
+import './planning.css'
 import { LinkButton, Note, Page } from '../design/ui'
 
 const DRAFT = (
@@ -27,7 +28,7 @@ export function HelpPage() {
           </details>
         ))}
       </div>
-      <div className="btnrow" style={{ marginTop: 28 }}>
+      <div className="btnrow mt-8">
         <LinkButton to="/guias/como-reconocer-una-estafa" variant="secondary">Cómo reconocer una estafa</LinkButton>
         <LinkButton to="/mentores" variant="secondary">Hablar con un mentor</LinkButton>
       </div>

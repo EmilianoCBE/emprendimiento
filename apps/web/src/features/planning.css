@@ -1,0 +1,41 @@
+/* Calculadora, guías y checklist. */
+.budget { display: grid; grid-template-columns: 20rem minmax(0, 1fr); gap: var(--space-6); align-items: start; }
+.split { margin-top: var(--space-5); }
+.split__bar { display: flex; gap: 2px; height: var(--space-4); }
+.split__seg { min-width: var(--space-1); }
+.split__seg--a { background: var(--color-chart-a); border-radius: var(--radius-sm) 0 0 var(--radius-sm); }
+.split__seg--b { background: var(--color-chart-b); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; }
+.split__seg--b:only-child { border-radius: var(--radius-sm); }
+.split__legend { display: flex; flex-wrap: wrap; gap: var(--space-1) var(--space-5); margin-top: var(--space-2); font-size: var(--text-sm); line-height: var(--leading-sm); }
+.swatch { display: inline-block; width: 0.75rem; height: 0.75rem; border-radius: 2px; margin-right: var(--space-1); }
+.swatch--a { background: var(--color-chart-a); }
+.swatch--b { background: var(--color-chart-b); }
+.ledger { margin-top: var(--space-5); }
+.ledger__note { display: block; font-size: var(--text-sm); line-height: var(--leading-sm); color: var(--color-ink-muted); }
+.ledger__tag { font-size: var(--text-sm); color: var(--color-warn); font-weight: 600; margin-left: var(--space-1); }
+.ledger__once { font-size: var(--text-sm); color: var(--color-ink-muted); margin-left: var(--space-1); }
+
+.guides { display: grid; gap: var(--space-8); }
+.guides__cat { display: grid; grid-template-columns: 14rem minmax(0, 1fr); gap: var(--space-5); border-top: 2px solid var(--color-ink); padding-top: var(--space-3); }
+.guideitem { display: block; text-decoration: none; padding: var(--space-3) 0; border-bottom: var(--border); }
+.guideitem:first-child { padding-top: 0; }
+.guideitem:last-child { border-bottom: 0; }
+.guideitem__title { font: 600 var(--text-lg) / var(--leading-lg) var(--font-text); }
+.guideitem:hover .guideitem__title { text-decoration: underline; text-underline-offset: 3px; }
+
+.prose { max-width: 66ch; }
+.prose > p { margin-top: var(--space-4); }
+.prose > p:first-child { margin-top: 0; }
+.prose h2 { margin-top: var(--space-8); }
+.prose ul { list-style: disc; padding-left: var(--space-5); margin-top: var(--space-3); display: grid; gap: var(--space-2); }
+.prose .note { margin-bottom: var(--space-4); }
+
+.faq details { border-bottom: var(--border); padding: var(--space-3) 0; }
+.faq summary { font-weight: 600; cursor: pointer; }
+.faq details p { margin-top: var(--space-2); max-width: 64ch; }
+
+.checklist__head { display: flex; justify-content: space-between; gap: var(--space-3); }
+.checklist__phase h2 { margin-bottom: var(--space-3); }
+
+@media (max-width: 64rem) { .budget { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 47.5rem) { .guides__cat { grid-template-columns: minmax(0, 1fr); gap: var(--space-3); } }

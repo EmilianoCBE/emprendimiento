@@ -1,3 +1,4 @@
+import './planning.css'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Fragment, useEffect, useState, type ReactNode } from 'react'
 import { Link, useParams, useSearchParams } from 'react-router-dom'
@@ -60,11 +61,11 @@ export function BudgetPage() {
               <div className="panel">
                 <div className="totals">
                   <div>
-                    <p className="total__n">{money(e.firstMonthTotalMxn)}</p>
+                    <p className="figure total__n">{money(e.firstMonthTotalMxn)}</p>
                     <p className="total__l">Primer mes, con depósito e instalación</p>
                   </div>
                   <div>
-                    <p className="total__n">{money(e.typicalMonthTotalMxn)}</p>
+                    <p className="figure total__n">{money(e.typicalMonthTotalMxn)}</p>
                     <p className="total__l">Un mes típico después</p>
                   </div>
                 </div>
@@ -74,15 +75,15 @@ export function BudgetPage() {
                     <div className="split__seg split__seg--b" style={{ flexGrow: e.estimatedShareMxn }} />
                   </div>
                   <div className="split__legend">
-                    {fromListing > 0 && <span><i className="swatch" style={{ background: 'var(--chart-a)' }} aria-hidden />Renta y depósito: {money(fromListing)}</span>}
-                    <span><i className="swatch" style={{ background: 'var(--chart-b)' }} aria-hidden />Estimación: {money(e.estimatedShareMxn)}</span>
+                    {fromListing > 0 && <span><i className="swatch swatch--a" aria-hidden />Renta y depósito: {money(fromListing)}</span>}
+                    <span><i className="swatch swatch--b" aria-hidden />Estimación: {money(e.estimatedShareMxn)}</span>
                   </div>
                 </div>
-                <table className="ledger">
+                <table className="table ledger">
                   <thead>
                     <tr>
                       <th scope="col">Concepto</th>
-                      <th scope="col" style={{ textAlign: 'right' }}>Monto</th>
+                      <th scope="col" className="num">Monto</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -90,8 +91,8 @@ export function BudgetPage() {
                       <tr key={l.id}>
                         <td>
                           {l.label}
-                          {l.firstMonthOnly && <span className="muted small"> (solo el primer mes)</span>}
-                          {l.source === 'estimate' && <span className="tag-est"> estimado</span>}
+                          {l.firstMonthOnly && <span className="ledger__once">solo el primer mes</span>}
+                          {l.source === 'estimate' && <span className="ledger__tag">estimado</span>}
                           {l.note && <span className="ledger__note">{l.note}</span>}
                         </td>
                         <td className="num">{money(l.amountMxn)}</td>
@@ -99,7 +100,7 @@ export function BudgetPage() {
                     ))}
                   </tbody>
                 </table>
-                <p className="small muted" style={{ marginTop: 12 }}>Las estimaciones son supuestos de trabajo del equipo, aún sin validar con recibos reales. Tómalas como orientación.</p>
+                <p className="small muted mt-3">Las estimaciones son supuestos de trabajo del equipo, aún sin validar con recibos reales. Tómalas como orientación.</p>
               </div>
               {e.alerts.map((a) => (
                 <Note key={a.id} tone="warning" title={a.title}>{a.detail}</Note>
@@ -131,7 +132,7 @@ export function GuidesPage() {
             <div>
               {data?.filter((g) => g.category === cat).map((g) => (
                 <Link key={g.id} to={`/guias/${g.slug}`} className="guideitem">
-                  <h3>{g.title}</h3>
+                  <h3 className="guideitem__title">{g.title}</h3>
                   <p className="muted">{g.summary}</p>
                 </Link>
               ))}
@@ -172,12 +173,12 @@ export function GuidePage() {
   const { slug } = useParams()
   const { data, isLoading, error } = useQuery({ queryKey: ['guide', slug], queryFn: () => api.get<Guide>(`/guides/${slug}`) })
   if (isLoading) return <div className="page"><Loading /></div>
-  if (error || !data) return <div className="page page--narrow"><Empty title="No encontramos esta guía"><LinkButton to="/guias" variant="secondary">Ver todas las guías</LinkButton></Empty></div>
+  if (error || !data) return <div className="page page--narrow"><Empty as="h1" title="No encontramos esta guía"><LinkButton to="/guias" variant="secondary">Ver todas las guías</LinkButton></Empty></div>
   return (
     <Page narrow title={data.title} lead={data.summary}>
       <Prose text={data.body} />
-      <p className="small muted" style={{ marginTop: 28 }}>Última revisión: {dateOnly(data.reviewedOn)}. Contenido de orientación general.</p>
-      <p style={{ marginTop: 18 }}><Link to="/guias">Volver a las guías</Link></p>
+      <p className="small muted mt-8">Última revisión: {dateOnly(data.reviewedOn)}. Contenido de orientación general.</p>
+      <p className="mt-4"><Link to="/guias">Volver a las guías</Link></p>
     </Page>
   )
 }
@@ -198,7 +199,7 @@ export function ChecklistPage() {
       <ErrorNote error={error ?? toggle.error} />
       {isLoading && <Loading />}
       {total > 0 && (
-        <div className="stack--lg">
+        <div className="stack stack--lg">
           <div>
             <p><b>{done} de {total}</b> listas</p>
             <div className="progress" role="progressbar" aria-valuenow={done} aria-valuemin={0} aria-valuemax={total} aria-label="Avance del checklist">
@@ -207,7 +208,7 @@ export function ChecklistPage() {
           </div>
           {phases.map(([phase, label]) => (
             <Fragment key={phase}>
-              <section>
+              <section className="checklist__phase">
                 <h2>{label}</h2>
                 <div className="tasks">
                   {data?.filter((t) => t.phase === phase).map((t) => (
@@ -215,7 +216,6 @@ export function ChecklistPage() {
                       <input type="checkbox" checked={t.done} onChange={(e) => toggle.mutate({ id: t.id, done: e.target.checked })} />
                       <span>
                         <span className="task__title">{t.title}</span>
-                        <br />
                         <span className="task__hint">{t.hint}</span>
                       </span>
                     </label>
