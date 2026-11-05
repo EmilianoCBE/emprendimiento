@@ -1,0 +1,21 @@
+/* Administración. Primero lo que hay que atender; las cifras generales, después. */
+.tabs { display: flex; gap: var(--space-1); flex-wrap: nowrap; overflow-x: auto; border-bottom: 2px solid var(--color-ink); margin-bottom: var(--space-6); }
+.tabs a { flex: none; padding: var(--space-2) var(--space-3); text-decoration: none; font-weight: 600; border-radius: var(--radius-md) var(--radius-md) 0 0; }
+.tabs a:hover { background: var(--color-sunken); }
+.tabs a.active { background: var(--color-ink); color: var(--color-on-ink); }
+.todo-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); gap: var(--space-3); }
+.todo { display: flex; justify-content: space-between; align-items: center; gap: var(--space-3); padding: var(--space-4) var(--space-5); background: var(--color-surface); border: var(--border); border-radius: var(--radius-md); text-decoration: none; font-weight: 600; }
+a.todo:hover { border-color: var(--color-ink); }
+.todo.has-work { border-left: 4px solid var(--color-accent); }
+.todo__n { font-size: var(--display-md); }
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); gap: var(--space-4) var(--space-6); }
+.stat__n { font-size: var(--display-sm); }
+.stat__l { font-size: var(--text-sm); line-height: var(--leading-sm); color: var(--color-ink-muted); }
+.review-item { display: grid; grid-template-columns: 10rem minmax(0, 1fr) minmax(15rem, 19rem); gap: var(--space-5); padding: var(--space-4); background: var(--color-surface); border: var(--border); border-radius: var(--radius-md); }
+.review-item > img, .review-item > .rowcard__ph { width: 10rem; height: 7.5rem; object-fit: cover; border-radius: var(--radius-sm); }
+@media (max-width: 64rem) {
+  .review-item { grid-template-columns: 7rem minmax(0, 1fr); }
+  .review-item > img, .review-item > .rowcard__ph { width: 7rem; height: 5.25rem; }
+  .review-item > :last-child { grid-column: 1 / -1; }
+}
+@media (max-width: 47.5rem) { .review-item { grid-template-columns: minmax(0, 1fr); } .review-item > img, .review-item > .rowcard__ph { width: 100%; height: 10rem; } }

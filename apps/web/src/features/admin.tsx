@@ -1,3 +1,4 @@
+import './admin.css'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
 import { Link, NavLink, Route, Routes } from 'react-router-dom'
@@ -8,9 +9,9 @@ import { LISTING_STATUS_LABEL, MENTOR_KIND_LABEL, money, shortDateTime } from '.
 
 export function AdminPage() {
   return (
-    <Page title="Operación">
-      <nav className="tabs" aria-label="Secciones de operación">
-        <NavLink end to="/admin">Resumen</NavLink>
+    <Page title="Administración">
+      <nav className="tabs" aria-label="Secciones de administración">
+        <NavLink end to="/admin">Hoy</NavLink>
         <NavLink to="/admin/viviendas">Viviendas</NavLink>
         <NavLink to="/admin/reportes">Reportes</NavLink>
         <NavLink to="/admin/estudiantes">Estudiantes</NavLink>
@@ -31,11 +32,17 @@ export function AdminPage() {
 
 function Summary() {
   const { data, error, isLoading } = useQuery({ queryKey: ['admin-metrics'], queryFn: () => api.get<AdminMetrics>('/admin/metrics') })
+  const students = useQuery({ queryKey: ['admin-students'], queryFn: () => api.get<PendingStudent[]>('/admin/students/pending') })
+  const mentors = useQuery({ queryKey: ['admin-mentors'], queryFn: () => api.get<PendingMentor[]>('/admin/mentors/pending') })
   if (isLoading) return <Loading />
   if (!data) return <ErrorNote error={error} />
-  const items: [string, number][] = [
-    ['Viviendas por revisar', data.pendingListings],
-    ['Reportes abiertos', data.openReports],
+  const todo: [string, string, number][] = [
+    ['Viviendas por revisar', '/admin/viviendas', data.pendingListings],
+    ['Reportes abiertos', '/admin/reportes', data.openReports],
+    ['Matrículas por validar', '/admin/estudiantes', students.data?.length ?? 0],
+    ['Mentores por aprobar', '/admin/mentores', mentors.data?.length ?? 0],
+  ]
+  const activity: [string, number][] = [
     ['Viviendas públicas', data.activeListings],
     ['Con 4 revisiones', data.verifiedListings],
     ['Personas registradas', data.users],
@@ -45,13 +52,29 @@ function Summary() {
     ['Mensajes con señal de riesgo', data.flaggedMessages],
   ]
   return (
-    <div className="stats">
-      {items.map(([label, n]) => (
-        <div key={label}>
-          <p className="stat__n">{n}</p>
-          <p className="stat__l">{label}</p>
+    <div className="stack stack--lg">
+      <section>
+        <h2 className="mb-3">Lo que te toca hoy</h2>
+        <div className="todo-list">
+          {todo.map(([label, to, n]) => (
+            <Link key={to} to={to} className={`todo ${n > 0 ? 'has-work' : ''}`}>
+              <span>{label}</span>
+              <span className="figure todo__n">{n}</span>
+            </Link>
+          ))}
         </div>
-      ))}
+      </section>
+      <section>
+        <h2 className="mb-3">Actividad</h2>
+        <div className="stats">
+          {activity.map(([label, n]) => (
+            <div key={label}>
+              <p className="figure stat__n">{n}</p>
+              <p className="stat__l">{label}</p>
+            </div>
+          ))}
+        </div>
+      </section>
     </div>
   )
 }
@@ -76,7 +99,7 @@ function QueueItem({ item }: { item: AdminQueueItem }) {
   return (
     <article className="review-item">
       {item.photo ? <img src={item.photo.url} alt={item.photo.alt} /> : <div className="rowcard__ph" />}
-      <div className="stack" style={{ gap: 8, alignContent: 'start' }}>
+      <div className="stack stack--tight">
         <h3><Link to={`/viviendas/${item.id}`}>{item.title}</Link></h3>
         <p className="muted small">{item.zoneName}, {money(item.monthlyRentMxn)} al mes, publicada por {item.landlordName}</p>
         <div className="chips">
@@ -86,7 +109,7 @@ function QueueItem({ item }: { item: AdminQueueItem }) {
         {item.priceAlert && <PriceAlertNote alert={item.priceAlert} />}
         <TextInput label="Nota para el arrendador (opcional)" value={note} onChange={(e) => setNote(e.target.value)} maxLength={400} />
       </div>
-      <div className="stack" style={{ gap: 10 }}>
+      <div className="stack stack--tight">
         {CRITERIA.map((c) => (
           <Toggle key={c} label={CRITERION_LABEL[c].title} checked={marks[c]} onChange={(e) => setMarks({ ...marks, [c]: e.target.checked })} />
         ))}
@@ -105,12 +128,13 @@ function Queue() {
   const { data, isLoading, error } = useQuery({ queryKey: ['admin-queue'], queryFn: () => api.get<AdminQueueItem[]>('/admin/listings/queue') })
   return (
     <div className="stack">
+      <h2 className="sr-only">Viviendas en revisión</h2>
       <Note title="Marca solo lo que comprobaste">
         El sello solo vale lo que valga esta revisión. Con menos de 2 criterios no se puede aprobar; con menos de 4 se publica pero no se puede solicitar.
       </Note>
       <ErrorNote error={error} />
       {isLoading && <Loading />}
-      {data?.length === 0 && <Empty title="No hay viviendas por revisar" />}
+      {data?.length === 0 && <Empty title="No hay viviendas por revisar"><p className="empty__body">Las nuevas aparecerán aquí cuando un arrendador las envíe.</p></Empty>}
       {data?.map((i) => <QueueItem key={i.id} item={i} />)}
     </div>
   )
@@ -125,11 +149,12 @@ function Reports() {
   })
   return (
     <div className="stack">
+      <h2 className="sr-only">Reportes abiertos</h2>
       <ErrorNote error={error ?? resolve.error} />
       {isLoading && <Loading />}
-      {data?.length === 0 && <Empty title="No hay reportes abiertos" />}
+      {data?.length === 0 && <Empty title="No hay reportes abiertos"><p className="empty__body">Los reportes de estudiantes aparecerán aquí.</p></Empty>}
       {data?.map((r) => (
-        <article key={r.id} className="panel stack" style={{ gap: 8 }}>
+        <article key={r.id} className="panel stack stack--tight">
           <h3><Link to={`/viviendas/${r.listingId}`}>{r.listingTitle}</Link></h3>
           <p><b>{REPORT_REASON_LABEL[r.reason]}</b></p>
           {r.detail && <p>{r.detail}</p>}
@@ -153,11 +178,12 @@ function Students() {
   })
   return (
     <div className="stack">
+      <h2 className="sr-only">Matrículas por validar</h2>
       <ErrorNote error={error ?? decide.error} />
       {isLoading && <Loading />}
-      {data?.length === 0 && <Empty title="No hay matrículas por revisar" />}
+      {data?.length === 0 && <Empty title="No hay matrículas por revisar"><p className="empty__body">Aquí llegan quienes no tienen correo institucional.</p></Empty>}
       {data?.map((s) => (
-        <article key={s.id} className="panel stack" style={{ gap: 8 }}>
+        <article key={s.id} className="panel stack stack--tight">
           <h3>{s.fullName}</h3>
           <p className="small muted">{s.email}{s.homeCountry ? `, ${s.homeCountry}` : ''}</p>
           <p>Matrícula: <b>{s.matricula}</b></p>
@@ -180,11 +206,12 @@ function Mentors() {
   })
   return (
     <div className="stack">
+      <h2 className="sr-only">Perfiles por aprobar</h2>
       <ErrorNote error={error ?? decide.error} />
       {isLoading && <Loading />}
-      {data?.length === 0 && <Empty title="No hay perfiles por aprobar" />}
+      {data?.length === 0 && <Empty title="No hay perfiles por aprobar"><p className="empty__body">Los perfiles nuevos de mentores aparecerán aquí.</p></Empty>}
       {data?.map((m) => (
-        <article key={m.id} className="panel stack" style={{ gap: 8 }}>
+        <article key={m.id} className="panel stack stack--tight">
           <h3>{m.fullName}</h3>
           <p className="small muted">{MENTOR_KIND_LABEL[m.kind]}, {m.university}. {m.email}</p>
           <p><b>{m.headline}</b></p>
@@ -204,11 +231,12 @@ function Audit() {
   const { data, isLoading, error } = useQuery({ queryKey: ['admin-audit', page], queryFn: () => api.get<Paged<AuditEntry>>(`/admin/audit?page=${page}`) })
   return (
     <div className="stack">
+      <h2 className="sr-only">Bitácora</h2>
       <ErrorNote error={error} />
       {isLoading && <Loading />}
       {data && (
         <div className="tablewrap">
-          <table className="datatable">
+          <table className="table">
             <thead>
               <tr><th scope="col">Cuándo</th><th scope="col">Quién</th><th scope="col">Acción</th><th scope="col">Sobre</th></tr>
             </thead>
