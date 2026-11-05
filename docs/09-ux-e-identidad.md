@@ -1,43 +1,50 @@
 # 09 · UX e identidad visual
 
-## Idea
+## Dirección: Señalética
 
-Aterrizar en una ciudad que no conoces. Dos imágenes propias del tema guían todo:
+Aterrizar en una ciudad que no conoces. Elegida entre dos propuestas el 2026-11-05. Tres ideas guían todo:
 
-1. **El sello de pasaporte.** Es el elemento memorable: un sello circular en tinta añil con cuatro segmentos, uno por criterio de verificación. No decora: **es el dato**. Una vivienda con 2 de 4 muestra un sello con dos segmentos entintados.
-2. **El Cerro de la Silla.** La silueta que identifica a Monterrey es el horizonte de la portada; ubica al producto en este lugar y en ningún otro.
-
-La señalización de aeropuerto aporta el resto: letra alta y condensada, alto contraste, indicaciones directas.
+1. **El sello de pasaporte.** Es el elemento memorable: un sello circular con cuatro segmentos, uno por criterio de verificación. No decora: **es el dato**. Una vivienda con 2 de 4 muestra dos segmentos entintados.
+2. **El Cerro de la Silla.** La silueta de Monterrey es el horizonte de la portada; ubica al producto en este lugar y en ningún otro.
+3. **Señalización de transporte.** Letra alta y condensada para lo grande, contraste alto, indicaciones directas.
 
 ## Tokens
 
-| Nombre | Hex | Uso |
+Definidos en `apps/web/src/design/tokens.css`. Ningún componente escribe colores ni medidas sueltas.
+
+| Nombre | Valor | Uso |
 | --- | --- | --- |
-| Agave | `#E8EEE6` | Fondo general |
-| Papel | `#FBFCF9` | Superficies |
-| Sierra | `#0F2F2E` | Texto, barra de navegación |
-| Cempasúchil | `#FFB400` | Acción principal, con texto Sierra |
-| Añil | `#3A2FC4` | **Solo** verificación y enlaces (la tinta del sello) |
-| Chile | `#B3261E` | Peligro y alertas de estafa |
-| Nopal | `#1F7A4D` | Criterio cumplido, incluido en la renta |
+| `--color-bg` | `#F3F5F1` | Fondo |
+| `--color-surface` | `#FFFFFF` | Paneles y controles |
+| `--color-sunken` | `#E4E9E2` | Etiquetas, esqueletos |
+| `--color-line` | `#D5DCD3` | Separadores |
+| `--color-line-strong` | `#6F827E` | Borde de controles |
+| `--color-ink` | `#0F2F2E` | Texto, sello, barra superior |
+| `--color-ink-muted` | `#4A5F5C` | Texto secundario (6.2:1 sobre fondo) |
+| `--color-accent` | `#FFB400` | **Único acento:** acción principal y estado activo, siempre con texto oscuro (8:1) |
+| `--color-ok`, `--color-warn`, `--color-danger` | `#125233`, `#6B4B00`, `#B3261E` | Solo estados, con ícono o texto |
+| `--color-chart-a`, `--color-chart-b` | `#00917C`, `#E89B00` | Solo la barra de la calculadora; validados con el script de `dataviz` |
+
+**Espaciado:** múltiplos de 4 (`--space-1` a `--space-24`). **Radios:** 4 px en etiquetas y casillas, 6 px en controles, paneles y fotos. **Sombra:** una sola, para lo que flota.
 
 ## Tipografía
 
-| Rol | Fuente | Por qué |
+| Rol | Fuente | Regla |
 | --- | --- | --- |
-| Títulos y cifras | **Big Shoulders Display** (700–800) | Condensada y alta, como un letrero de aeropuerto; permite precios grandes en tarjetas angostas |
-| Texto | **Atkinson Hyperlegible Next** | Diseñada para máxima legibilidad; ayuda a quien lee en su segundo idioma |
+| Títulos grandes y cifras | **Big Shoulders Display** | Solo de 28 px hacia arriba; es condensada y en tamaños chicos cuesta leerla |
+| Todo lo demás | **Source Sans 3** | Escala 13, 15, 17 y 20 px. Nombres, títulos de tarjeta y estados vacíos van aquí |
 
 Se sirven desde el propio dominio (`@fontsource`), sin llamadas a terceros.
 
 ## Maquetación
 
-- **Búsqueda:** resultados a la izquierda y mapa fijo a la derecha; en móvil se alterna lista y mapa.
-- **Ficha:** contenido a la izquierda; a la derecha un panel fijo con precio, sello y acción. Lectura en este orden: ¿es real?, ¿cuánto cuesta de verdad?, ¿quién me puede contar?
-- **Tarjetas de vivienda:** foto + texto sobre el fondo, sin caja ni sombra. La jerarquía la da el precio grande.
-- **Móvil:** barra de pestañas inferior; todo se puede usar con el pulgar.
+- **Búsqueda:** resultados y mapa fijo; en móvil primero las viviendas, con filtros y mapa a pedido.
+- **Ficha:** a la izquierda el contenido, en este orden: ¿es real?, ¿cuánto cuesta?, ¿quién me cuenta? A la derecha, precio, sello y acción; en móvil van arriba.
+- **Tarjetas de vivienda:** foto y texto sobre el fondo, sin caja. **Mentores:** lista, no tarjetas.
+- **Administración:** primero lo que hay que atender.
+- **Móvil:** cinco pestañas inferiores; lo demás, desde Cuenta.
 
-Alineación a la izquierda en todo el producto. Radios por jerarquía: fotos 4 px, botones 6 px, sello circular.
+Alineación a la izquierda en todo el producto.
 
 ## Movimiento
 
@@ -45,11 +52,11 @@ Un único momento no solicitado: el sello cae sobre la portada al cargar la pág
 
 ## Reglas para no caer en lo genérico
 
-- Sin mayúsculas sostenidas en etiquetas, sin subtítulos decorativos sobre cada título.
-- Sin degradados, sin sombra gris uniforme, sin una cuadrícula de tarjetas idénticas para todo.
-- Sin flechas en el texto de los botones; sin fuente monoespaciada.
-- Sin números decorativos: solo se numera lo que es una secuencia (línea de tiempo, checklist).
-- Añil solo donde se comunica verificación o un enlace.
+- Sin mayúsculas sostenidas en etiquetas ni subtítulos decorativos sobre cada título.
+- Sin degradados, sin sombras en las tarjetas, sin una cuadrícula de cajas idénticas para todo.
+- Sin flechas en el texto de los botones; sin fuente monoespaciada; sin emojis como íconos (Phosphor).
+- Sin números decorativos: solo se numera lo que es una secuencia.
+- Una acción que no se puede completar no se muestra como acción principal.
 
 ## Voz
 
@@ -66,7 +73,7 @@ Directa, cálida y en tú. Dice lo que pasa y qué hacer. Nunca promete segurida
 
 | Hallazgo | Decisión |
 | --- | --- |
-| Miedo a transferir sin comprobar | El sello aparece antes que las fotos en importancia; aviso antes de solicitar |
+| Miedo a transferir sin comprobar | El sello va sobre cada foto; aviso antes de solicitar |
 | "Navegación sencilla y visual" | Una acción principal por pantalla; se ve sin iniciar sesión |
 | Consejos que no aplican | Cada mentor muestra universidad y zona |
 | El gasto de la luz sorprende | La ficha muestra el "costo real" además de la renta |
@@ -78,4 +85,4 @@ La calculadora usa dos cifras grandes, una tabla y una barra de dos segmentos co
 
 ## Accesibilidad
 
-Contraste AA, foco visible con contorno de 3 px, navegación por teclado, etiquetas en todos los campos, mensajes en `aria-live`, enlace para saltar al contenido, objetivos táctiles de 44 px. El sello siempre incluye texto equivalente.
+Contraste AA, foco visible con contorno de 3 px, navegación por teclado, etiquetas en todos los campos, mensajes en `aria-live`, enlace para saltar al contenido, controles de 44 px y casillas de 24 px. El sello siempre incluye texto equivalente. Los pines del mapa no dependen solo del color: tienen leyenda, signo y título. Pendiente: lector de pantalla y zoom al 200%.

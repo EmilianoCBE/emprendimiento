@@ -24,7 +24,7 @@ await shot(lucia,'request',true)
 await lucia.getByLabel(/no voy a pagar por fuera/).click(); await lucia.waitForTimeout(100); await lucia.getByRole('button',{name:'Enviar solicitud'}).click(); await lucia.waitForURL(/solicitudes\//); await lucia.getByText('Solicitud enviada').first().waitFor(); step('solicitud creada')
 const bookingUrl=lucia.url()
 assert.equal(await lucia.getByText('Calle Demo').count(),0); step('dirección oculta antes de aceptar')
-await lucia.getByLabel(/Carta de aceptación/).click(); await lucia.waitForFunction(()=>[...document.querySelectorAll('.task--bare input')].some(i=>i.checked)); await lucia.waitForTimeout(500); await shot(lucia,'booking',true); step('lista para mudarte')
+await lucia.getByLabel(/Carta de aceptación/).click(); await lucia.waitForFunction(()=>[...document.querySelectorAll('.task input')].some(i=>i.checked)); await lucia.waitForTimeout(500); await shot(lucia,'booking',true); step('lista para mudarte')
 
 await marcela.goto(base+'/mis-viviendas'); await marcela.locator('.iconbtn').first().waitFor(); await marcela.waitForTimeout(800); await shot(marcela,'landlord')
 await marcela.getByRole('button',{name:/Notificaciones/}).click(); await marcela.getByText('Nueva solicitud').first().waitFor(); step('notificación al arrendador')
@@ -49,7 +49,7 @@ await lucia.goto(base+'/checklist'); await lucia.getByText('Calcula tu presupues
 await lucia.goto(base+'/mentores'); await lucia.getByRole('heading',{name:'Mentores'}).waitFor(); await lucia.waitForTimeout(500); await shot(lucia,'mentors')
 
 // Conectar con mentora
-await lucia.getByRole('article').filter({hasText:'Inés Moreau'}).getByRole('button',{name:'Pedir hablar'}).click(); await lucia.getByLabel('Tu primer mensaje').fill('Hola Inés, ¿cómo manejaste tus tarjetas al llegar?'); await lucia.getByRole('button',{name:'Enviar solicitud'}).click(); await lucia.waitForURL(/mensajes\//); step('solicitud a mentora')
+await lucia.getByRole('article').filter({hasText:'Inés Moreau'}).getByRole('button',{name:'Escribirle'}).click(); await lucia.getByLabel('Tu primer mensaje').fill('Hola Inés, ¿cómo manejaste tus tarjetas al llegar?'); await lucia.getByRole('button',{name:'Enviar solicitud'}).click(); await lucia.waitForURL(/mensajes\//); step('solicitud a mentora')
 const ines=await open('ines'); await ines.goto(base+'/entrar'); await ines.getByLabel('Correo').fill('ines@demo.aterriza.mx'); await ines.getByLabel('Contraseña').fill('Aterriza-Demo-2026'); await ines.getByRole('button',{name:'Entrar',exact:true}).click(); await ines.waitForURL(/mensajes/)
 await ines.goto(lucia.url()); await ines.getByRole('button',{name:'Aceptar'}).click(); await ines.getByLabel('Escribe un mensaje').waitFor(); step('mentora acepta')
 
