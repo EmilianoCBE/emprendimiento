@@ -113,7 +113,7 @@ h3 { font: 600 var(--text-lg) / var(--leading-lg) var(--font-text); }
 
 /* ---------- Criterios del sello ---------- */
 .criteria { display: grid; gap: var(--space-4); }
-.criteria--two { grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); gap: var(--space-4) var(--space-6); }
+.criteria--two { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-4) var(--space-6); }
 .criteria__item { display: flex; gap: var(--space-3); }
 .criteria__icon { flex: none; display: grid; place-items: center; width: 1.5rem; height: 1.5rem; border-radius: var(--radius-full); background: var(--color-sunken); color: var(--color-ink-muted); }
 .is-met .criteria__icon { background: var(--color-ink); color: var(--color-on-ink); }
@@ -135,6 +135,7 @@ h3 { font: 600 var(--text-lg) / var(--leading-lg) var(--font-text); }
 @media (max-width: 47.5rem) {
   .page { padding-top: var(--space-6); padding-bottom: var(--space-12); }
   .page__head { margin-bottom: var(--space-6); }
+  .criteria--two { grid-template-columns: minmax(0, 1fr); }
   .rowcard { grid-template-columns: 5rem minmax(0, 1fr); }
   .rowcard img, .rowcard__ph { width: 5rem; height: 4rem; }
   .rowcard > :nth-child(3) { grid-column: 2; justify-self: start; }

@@ -1,17 +1,18 @@
 /* Mentores y mensajes. */
 .mentors { display: grid; border-bottom: var(--border); }
-.mentor { display: grid; grid-template-columns: 15rem minmax(0, 1fr) 13rem auto; gap: var(--space-2) var(--space-6); align-items: start; padding: var(--space-5) 0; border-top: var(--border); }
+.mentor { display: grid; grid-template-columns: 15rem minmax(0, 1fr) 16rem 8.5rem; gap: var(--space-2) var(--space-6); align-items: start; padding: var(--space-5) 0; border-top: var(--border); }
 .mentor__name { font: 600 var(--text-lg) / var(--leading-lg) var(--font-text); }
 .mentor__where, .mentor__langs { color: var(--color-ink-muted); font-size: var(--text-sm); line-height: var(--leading-sm); }
 .mentor__headline { font-weight: 600; max-width: 56ch; }
 .mentor__more { margin-top: var(--space-1); font-size: var(--text-sm); line-height: var(--leading-sm); max-width: 62ch; }
-.mentor__more summary { cursor: pointer; color: var(--color-ink-muted); text-decoration: underline; text-underline-offset: 3px; width: fit-content; }
+.mentor__more summary { cursor: pointer; color: var(--color-ink-muted); text-decoration: underline; text-underline-offset: 3px; width: fit-content; list-style: none; }
+.mentor__more summary::-webkit-details-marker { display: none; }
 .mentor__more p { margin-top: var(--space-1); }
 .mentor__meta { display: grid; gap: var(--space-1); }
 .mentor__action { justify-self: end; text-align: right; }
 .mentor__form { grid-column: 1 / -1; padding-top: var(--space-3); max-width: 40rem; }
 /* En columnas angostas, como la ficha de vivienda. */
-.mentors--stacked .mentor { grid-template-columns: minmax(0, 1fr) auto; }
+.mentors--stacked .mentor { grid-template-columns: minmax(0, 1fr) 8.5rem; }
 .mentors--stacked .mentor__about, .mentors--stacked .mentor__meta { grid-column: 1 / -1; }
 .mentors--stacked .mentor__action { grid-column: 2; grid-row: 1; }
 
@@ -39,7 +40,7 @@
 .chat__error { padding: 0 var(--space-3) var(--space-3); }
 
 @media (max-width: 64rem) {
-  .mentor { grid-template-columns: minmax(0, 1fr) auto; }
+  .mentor { grid-template-columns: minmax(0, 1fr) 8.5rem; }
   .mentor__about, .mentor__meta { grid-column: 1 / -1; }
   .mentor__action { grid-column: 2; grid-row: 1; }
 }

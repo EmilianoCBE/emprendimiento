@@ -3,7 +3,7 @@ import { useMutation } from '@tanstack/react-query'
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import type { MentorCard } from '@aterriza/contracts'
-import { Button, ErrorNote, LinkButton, TextArea } from '../design/ui'
+import { Button, ErrorNote, TextArea } from '../design/ui'
 import { api } from '../lib/api'
 import { useSession } from '../lib/session'
 
@@ -48,7 +48,7 @@ export function MentorCardView({ mentor: m, headingLevel: Heading = 'h2' }: { me
       </div>
       <div className="mentor__action">
         {!m.accepting && <p className="small muted">No recibe solicitudes por ahora.</p>}
-        {m.accepting && !me && <LinkButton to="/entrar?volver=/mentores" variant="secondary">Inicia sesión para escribirle</LinkButton>}
+        {m.accepting && !me && <Link className="small" to="/entrar?volver=/mentores">Inicia sesión para escribirle</Link>}
         {m.accepting && me?.role === 'student' && !canConnect && (
           <p className="small"><Link to="/cuenta">Valida tu matrícula</Link> para escribirle.</p>
         )}

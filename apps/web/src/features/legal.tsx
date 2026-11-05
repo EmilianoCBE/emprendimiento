@@ -33,7 +33,7 @@ export function HelpPage() {
         <LinkButton to="/guias/como-reconocer-una-estafa" variant="secondary">Cómo reconocer una estafa</LinkButton>
         <LinkButton to="/mentores" variant="secondary">Hablar con un mentor</LinkButton>
       </div>
-      <details className="faq mt-8">
+      <div className="faq mt-8"><details>
         <summary>Créditos de las fotos de demostración</summary>
         <p className="small muted mt-2">No son las viviendas reales. Vienen de Wikimedia Commons; se redimensionaron y se les quitaron los metadatos.</p>
         <ul className="small mt-2">
@@ -43,7 +43,7 @@ export function HelpPage() {
             </li>
           ))}
         </ul>
-      </details>
+      </details></div>
     </Page>
   )
 }

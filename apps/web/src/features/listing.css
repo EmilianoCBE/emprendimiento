@@ -11,7 +11,7 @@
 .detail__kind { color: var(--color-ink-muted); }
 .detail__title { margin-top: var(--space-1); }
 .detail__alert { margin-top: var(--space-4); }
-.detail .facts { margin-top: var(--space-5); }
+.detail .facts { margin-top: var(--space-5); grid-template-columns: repeat(4, minmax(0, 1fr)); }
 .detail__section { padding-top: var(--space-8); margin-top: var(--space-8); border-top: var(--border); }
 .detail__section > h2 { margin-bottom: var(--space-4); }
 
@@ -38,6 +38,7 @@
   .aside { position: static; order: -1; }
 }
 @media (max-width: 47.5rem) {
+  .detail .facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .gallery { grid-template-columns: minmax(0, 1fr); }
   .gallery__rest { display: none; }
   .gallery__main, .gallery--one .gallery__main { aspect-ratio: 16 / 10; }

@@ -51,9 +51,9 @@
 }
 @media (max-width: 47.5rem) {
   .hero__sky { padding-top: var(--space-6); }
-  .hero__title { font-size: 3.25rem; max-width: 11ch; }
-  .hero__sub { font-size: var(--text-base); line-height: var(--leading-base); max-width: 32ch; }
-  .hero__stamp { width: 5.5rem; top: auto; bottom: calc(-1 * var(--space-8)); right: var(--gutter); }
+  .hero__title { font-size: 2.875rem; max-width: 12ch; }
+  .hero__sub { font-size: var(--text-base); line-height: var(--leading-base); max-width: 34ch; }
+  .hero__stamp { width: 4.75rem; top: auto; bottom: calc(-1 * var(--space-16)); right: var(--gutter); }
   .hero__search { grid-template-columns: minmax(0, 1fr); gap: var(--space-3); }
   .explain, .costs, .steps { grid-template-columns: minmax(0, 1fr); }
   .explain__seal .seal { max-width: 11rem; }

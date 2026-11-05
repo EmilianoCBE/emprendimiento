@@ -28,7 +28,7 @@
 .form__row { display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); gap: var(--space-4); }
 .form__section { display: grid; gap: var(--space-4); padding-top: var(--space-6); border-top: var(--border); }
 .form__section:first-child { padding-top: 0; border-top: 0; }
-.form__legend { font: 700 var(--text-lg) / var(--leading-lg) var(--font-text); padding: 0; margin-bottom: var(--space-4); }
+.form__legend { font: 700 var(--text-lg) / var(--leading-lg) var(--font-text); padding: 0; }
 .form__section > .form__legend { float: left; width: 100%; }
 .form__section > .form__legend + * { clear: both; }
 
