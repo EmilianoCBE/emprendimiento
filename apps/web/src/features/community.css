@@ -1,0 +1,55 @@
+/* Mentores y mensajes. */
+.mentors { display: grid; border-bottom: var(--border); }
+.mentor { display: grid; grid-template-columns: 15rem minmax(0, 1fr) 13rem auto; gap: var(--space-2) var(--space-6); align-items: start; padding: var(--space-5) 0; border-top: var(--border); }
+.mentor__name { font: 600 var(--text-lg) / var(--leading-lg) var(--font-text); }
+.mentor__where, .mentor__langs { color: var(--color-ink-muted); font-size: var(--text-sm); line-height: var(--leading-sm); }
+.mentor__headline { font-weight: 600; max-width: 56ch; }
+.mentor__more { margin-top: var(--space-1); font-size: var(--text-sm); line-height: var(--leading-sm); max-width: 62ch; }
+.mentor__more summary { cursor: pointer; color: var(--color-ink-muted); text-decoration: underline; text-underline-offset: 3px; width: fit-content; }
+.mentor__more p { margin-top: var(--space-1); }
+.mentor__meta { display: grid; gap: var(--space-1); }
+.mentor__action { justify-self: end; text-align: right; }
+.mentor__form { grid-column: 1 / -1; padding-top: var(--space-3); max-width: 40rem; }
+/* En columnas angostas, como la ficha de vivienda. */
+.mentors--stacked .mentor { grid-template-columns: minmax(0, 1fr) auto; }
+.mentors--stacked .mentor__about, .mentors--stacked .mentor__meta { grid-column: 1 / -1; }
+.mentors--stacked .mentor__action { grid-column: 2; grid-row: 1; }
+
+.chat { display: grid; grid-template-columns: 19rem minmax(0, 1fr); background: var(--color-surface); border: var(--border); border-radius: var(--radius-md); overflow: hidden; height: calc(100vh - 16rem); min-height: 28rem; }
+.chat__list { border-right: var(--border); overflow: auto; }
+.convo { display: block; padding: var(--space-3) var(--space-4); border-bottom: var(--border); text-decoration: none; }
+.convo:hover { background: var(--color-bg); }
+.convo.active { background: var(--color-sunken); }
+.convo__top { display: flex; justify-content: space-between; gap: var(--space-2); font-weight: 600; }
+.convo__sub, .convo__last { font-size: var(--text-sm); line-height: var(--leading-sm); color: var(--color-ink-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.convo__unread { flex: none; background: var(--color-accent); color: var(--color-on-accent); padding: 0 var(--space-2); border-radius: var(--radius-full); font-size: var(--text-xs); font-weight: 700; line-height: var(--leading-sm); }
+.chat__pane { display: flex; flex-direction: column; min-height: 0; min-width: 0; }
+.chat__head { padding: var(--space-3) var(--space-4); border-bottom: var(--border); }
+.chat__name { font: 600 var(--text-lg) / var(--leading-lg) var(--font-text); }
+.chat__back { display: none; }
+.chat__msgs { flex: 1; overflow: auto; padding: var(--space-4); display: flex; flex-direction: column; gap: var(--space-2); }
+.msg { max-width: min(76%, 35rem); padding: var(--space-2) var(--space-3); border-radius: var(--radius-md); background: var(--color-sunken); align-self: flex-start; overflow-wrap: anywhere; white-space: pre-wrap; }
+.msg--mine { align-self: flex-end; background: var(--color-ink); color: var(--color-on-ink); }
+.msg__time { font-size: var(--text-xs); line-height: var(--leading-xs); opacity: 0.8; margin-top: var(--space-1); }
+.msg__risk { display: flex; gap: var(--space-2); margin-top: var(--space-2); padding: var(--space-2) var(--space-3); background: var(--color-danger-bg); color: var(--color-danger); border-radius: var(--radius-sm); font-size: var(--text-sm); line-height: var(--leading-sm); font-weight: 600; white-space: normal; }
+.msg__risk svg { flex: none; margin-top: 2px; }
+.chat__form { display: flex; gap: var(--space-2); padding: var(--space-3); border-top: var(--border); }
+.chat__form .input { flex: 1; }
+.chat__pad { padding: var(--space-5); }
+.chat__error { padding: 0 var(--space-3) var(--space-3); }
+
+@media (max-width: 64rem) {
+  .mentor { grid-template-columns: minmax(0, 1fr) auto; }
+  .mentor__about, .mentor__meta { grid-column: 1 / -1; }
+  .mentor__action { grid-column: 2; grid-row: 1; }
+}
+@media (max-width: 47.5rem) {
+  .chat { grid-template-columns: minmax(0, 1fr); height: calc(100vh - 13rem); }
+  .chat[data-open='true'] .chat__list { display: none; }
+  .chat[data-open='false'] .chat__pane { display: none; }
+  .chat__back { display: inline; }
+  .msg { max-width: 88%; }
+  /* El botón de escribirle no cabe al lado del nombre en pantallas angostas. */
+  .mentor, .mentors--stacked .mentor { grid-template-columns: minmax(0, 1fr); }
+  .mentor__action, .mentors--stacked .mentor__action { grid-column: 1; grid-row: auto; justify-self: start; text-align: left; }
+}

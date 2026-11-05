@@ -12,7 +12,7 @@ export const shortDateTime = (iso: string) => shortFmt.format(new Date(iso))
 
 export const KIND_LABEL: Record<ListingKind, string> = { room: 'Cuarto', studio: 'Estudio', apartment: 'Departamento', residence: 'Residencia' }
 export const LEVEL_LABEL: Record<VerificationLevel, string> = { verified: 'Verificada', partial: 'Revisión parcial', unverified: 'Sin revisar' }
-export const MENTOR_KIND_LABEL: Record<MentorKind, string> = { local: 'Estudiante local', ex_exchange: 'Ya vivió el cambio' }
+export const MENTOR_KIND_LABEL: Record<MentorKind, string> = { local: 'Estudiante local', ex_exchange: 'Llegó de fuera' }
 
 export const STATUS_LABEL: Record<BookingStatus, string> = {
   requested: 'Solicitud enviada',

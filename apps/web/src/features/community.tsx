@@ -1,3 +1,4 @@
+import { WarningOctagon } from '@phosphor-icons/react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { type FormEvent, useEffect, useRef, useState } from 'react'
 import { Link, NavLink, useParams, useSearchParams } from 'react-router-dom'
@@ -23,12 +24,12 @@ export function MentorsPage() {
     setParams(next, { replace: true })
   }
   return (
-    <Page title="Mentores" lead="Estudiantes de tu universidad que conocen la ciudad o ya vivieron el cambio. Busca a alguien cuya zona y experiencia se parezcan a lo que vas a vivir.">
-      <div className="filters" style={{ marginBottom: 26 }}>
+    <Page title="Mentores" lead="Estudiantes que conocen la ciudad o que ya llegaron de fuera, casi todos del Campus Monterrey. Busca a alguien de tu zona o que hable tu idioma.">
+      <div className="filters mb-6">
         <Select label="Experiencia" value={params.get('kind') ?? ''} onChange={(e) => set('kind', e.target.value)}>
           <option value="">Toda</option>
           <option value="local">Estudiante local</option>
-          <option value="ex_exchange">Ya vivió el cambio</option>
+          <option value="ex_exchange">Llegó de fuera</option>
         </Select>
         <Select label="Tema" value={params.get('topic') ?? ''} onChange={(e) => set('topic', e.target.value)}>
           <option value="">Todos</option>
@@ -47,11 +48,13 @@ export function MentorsPage() {
       {isLoading && <Loading />}
       {data?.length === 0 && (
         <Empty title="Ningún mentor cumple con estos filtros">
+          <p className="empty__body">Prueba con otro tema, idioma o zona.</p>
           <Button variant="secondary" onClick={() => setParams({}, { replace: true })}>Quitar filtros</Button>
         </Empty>
       )}
-      <div className="mentors">
-        {data?.map((m) => <MentorCardView key={m.id} mentor={m} />)}
+      {data && data.length > 0 && <h2 className="sr-only">Resultados</h2>}
+      <div className={data && data.length > 0 ? 'mentors' : undefined}>
+        {data?.map((m) => <MentorCardView key={m.id} mentor={m} headingLevel="h3" />)}
       </div>
     </Page>
   )
@@ -66,7 +69,7 @@ export function MessagesPage() {
       {isLoading && <Loading />}
       {data?.length === 0 && (
         <Empty title="Aún no tienes conversaciones">
-          <p className="muted">Pide hablar con un <Link to="/mentores">mentor</Link> o solicita una <Link to="/viviendas">vivienda</Link> para empezar.</p>
+          <p className="empty__body">Escríbele a un <Link to="/mentores">mentor</Link> o solicita una <Link to="/viviendas">vivienda</Link> para empezar.</p>
         </Empty>
       )}
       {data && data.length > 0 && (
@@ -133,15 +136,15 @@ function ConversationPane({ id }: { id: string }) {
   return (
     <>
       <header className="chat__head">
-        <h2>{c.otherName}</h2>
+        <Link className="small chat__back" to="/mensajes">Volver a conversaciones</Link>
+        <h2 className="chat__name">{c.otherName}</h2>
         <p className="small muted">{c.listingTitle ?? c.otherSubtitle}</p>
-        <Link className="small" to="/mensajes">Volver a conversaciones</Link>
       </header>
       <div className="chat__msgs" aria-live="polite">
         {c.status === 'pending' && !c.iAmStudent && (
           <Note title="Quiere hablar contigo">
             <p>{c.intro}</p>
-            <div className="btnrow" style={{ marginTop: 10 }}>
+            <div className="btnrow mt-3">
               <Button busy={respond.isPending} onClick={() => respond.mutate(true)}>Aceptar</Button>
               <Button variant="secondary" busy={respond.isPending} onClick={() => respond.mutate(false)}>Ahora no puedo</Button>
             </div>
@@ -158,7 +161,10 @@ function ConversationPane({ id }: { id: string }) {
               <p className="msg__time">{shortDateTime(m.createdAt)}</p>
               {m.riskFlags.length > 0 && !mine && (
                 <p className="msg__risk" role="note">
+                  <WarningOctagon size={16} weight="fill" aria-hidden />
+                  <span>
                   Ten cuidado: {m.riskFlags.map((f) => f.label.toLowerCase()).join('; ')}. No transfieras dinero sin ver el lugar y sin contrato. <Link to="/guias/como-reconocer-una-estafa">Cómo reconocer una estafa</Link>
+                  </span>
                 </p>
               )}
             </div>
@@ -175,7 +181,7 @@ function ConversationPane({ id }: { id: string }) {
       ) : (
         c.status === 'closed' && <div className="chat__pad muted small">Esta conversación está cerrada.</div>
       )}
-      {send.error != null && <div style={{ padding: '0 12px 12px' }}><ErrorNote error={send.error} /></div>}
+      {send.error != null && <div className="chat__error"><ErrorNote error={send.error} /></div>}
     </>
   )
 }
