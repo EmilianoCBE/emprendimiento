@@ -1,5 +1,6 @@
 import './planning.css'
 import { LinkButton, Note, Page } from '../design/ui'
+import { PHOTO_CREDITS } from './photo-credits'
 
 const DRAFT = (
   <Note tone="warning" title="Borrador sin validez legal">
@@ -32,6 +33,17 @@ export function HelpPage() {
         <LinkButton to="/guias/como-reconocer-una-estafa" variant="secondary">Cómo reconocer una estafa</LinkButton>
         <LinkButton to="/mentores" variant="secondary">Hablar con un mentor</LinkButton>
       </div>
+      <details className="faq mt-8">
+        <summary>Créditos de las fotos de demostración</summary>
+        <p className="small muted mt-2">No son las viviendas reales. Vienen de Wikimedia Commons; se redimensionaron y se les quitaron los metadatos.</p>
+        <ul className="small mt-2">
+          {PHOTO_CREDITS.map((c) => (
+            <li key={c.source} className="mt-1">
+              <a href={c.source} target="_blank" rel="noreferrer">{c.title}</a>, {c.author}, {c.license}
+            </li>
+          ))}
+        </ul>
+      </details>
     </Page>
   )
 }

@@ -63,7 +63,7 @@ const LISTINGS: DemoListing[] = [
     description: 'Cuarto amueblado en departamento compartido con otras dos estudiantes. Cocina equipada, lavadora y escritorio en el cuarto. Contrato por semestre con recibo mensual.',
     kind: 'room', rent: 9800, deposit: 1, minMonths: 5, semester: true, walk: 8, transit: 6, furnished: true, utilities: true, ac: true,
     address: 'Calle Demo 120, Col. Tecnológico, Monterrey', met: 'all',
-    photos: [['p9', 'Sala luminosa con sillón amarillo'], ['p15', 'Recámara amueblada'], ['p6', 'Cocina equipada']],
+    photos: [['cuarto-escritorio', 'Recámara con escritorio y cama matrimonial'], ['cocina-depa', 'Cocina del departamento'], ['sala-sofa', 'Sala compartida con sofá']],
     costs: [['Agua', true, null], ['Luz', true, null], ['Internet', true, null], ['Limpieza de áreas comunes', true, null], ['Lavandería', false, 200]],
   },
   {
@@ -71,7 +71,7 @@ const LISTINGS: DemoListing[] = [
     description: 'Departamento completo, amueblado, con aire acondicionado en recámara y sala. Ideal para quien prefiere vivir sin roomies. Admite contrato de 5 meses.',
     kind: 'apartment', rent: 14500, deposit: 1, minMonths: 5, semester: true, walk: 12, transit: 8, furnished: true, utilities: false, ac: true,
     address: 'Av. Demo 2450, Col. Tecnológico, Monterrey', met: 'all',
-    photos: [['p1', 'Sala y comedor del departamento'], ['p14', 'Recámara principal']],
+    photos: [['depa-sala-comedor', 'Sala, comedor y cama en un solo espacio'], ['cocina-estufa', 'Cocina con estufa']],
     costs: [['Agua', true, null], ['Mantenimiento', true, null], ['Luz', false, 1200], ['Internet', false, 450]],
   },
   {
@@ -79,7 +79,7 @@ const LISTINGS: DemoListing[] = [
     description: 'Estudio compacto en edificio con acceso controlado. Tiene cama matrimonial, escritorio y cocineta. A diez minutos a pie del campus.',
     kind: 'studio', rent: 11900, deposit: 1, minMonths: 5, semester: true, walk: 10, transit: 7, furnished: true, utilities: false, ac: true,
     address: 'Calle Demo 88, Col. Tecnológico, Monterrey', met: 'all',
-    photos: [['p12', 'Estudio con sillón y cajonera'], ['p6', 'Cocineta']],
+    photos: [['estudio-cocineta', 'Estudio con sofá cama y cocineta'], ['cuarto-cama-escritorio', 'Cama individual junto al escritorio']],
     costs: [['Agua', true, null], ['Internet', true, null], ['Luz', false, 900]],
   },
   {
@@ -87,7 +87,7 @@ const LISTINGS: DemoListing[] = [
     description: 'Departamento amueblado con todos los servicios. Revisión de documentos en proceso; aún no se puede solicitar por la plataforma.',
     kind: 'apartment', rent: 6200, deposit: 2, minMonths: 12, semester: false, walk: 9, transit: 7, furnished: true, utilities: true, ac: true,
     address: 'Calle Demo 15, Col. Tecnológico, Monterrey', met: ['landlord_identity', 'dated_photos'],
-    photos: [['p3', 'Sala con ventanales']],
+    photos: [['depa-comedor', 'Departamento con comedor y cocina integral']],
     costs: [['Servicios', true, null]],
   },
   {
@@ -95,7 +95,7 @@ const LISTINGS: DemoListing[] = [
     description: 'Casa compartida con cuatro estudiantes en zona residencial. Cada quien tiene su cuarto y comparten cocina, sala y patio. Hay comunidad internacional.',
     kind: 'room', rent: 8200, deposit: 1, minMonths: 5, semester: true, walk: 18, transit: 11, furnished: true, utilities: true, ac: false,
     address: 'Privada Demo 33, Col. Altavista, Monterrey', met: 'all',
-    photos: [['p2', 'Sala compartida con plantas'], ['p5', 'Área común']],
+    photos: [['cuarto-dos-camas', 'Cuarto con ventana y dos camas'], ['cocina-compartida', 'Cocina compartida']],
     costs: [['Agua', true, null], ['Luz', true, null], ['Internet', true, null], ['Aire acondicionado', false, 500]],
   },
   {
@@ -103,7 +103,7 @@ const LISTINGS: DemoListing[] = [
     description: 'Dos recámaras y dos baños; puedes rentarlo con una roomie y dividir el costo. Estacionamiento techado y balcón. Sin amueblar la segunda recámara.',
     kind: 'apartment', rent: 17800, deposit: 1, minMonths: 6, semester: true, walk: 22, transit: 14, furnished: false, utilities: false, ac: true,
     address: 'Av. Demo 410, Col. Altavista, Monterrey', met: ['ownership_docs', 'landlord_identity', 'model_contract'],
-    photos: [['p8', 'Sala amplia'], ['p16', 'Cocina integral']],
+    photos: [['depa-vacio', 'Departamento sin amueblar'], ['cocina-oscura', 'Cocina con estufa y horno de microondas']],
     costs: [['Mantenimiento', true, null], ['Luz', false, 1500], ['Internet', false, 450], ['Agua', false, 250]],
   },
   {
@@ -111,7 +111,7 @@ const LISTINGS: DemoListing[] = [
     description: 'Recámara en departamento con otra estudiante. Baño compartido, cocina completa y lavadora. A una cuadra de la ruta de camión al campus.',
     kind: 'room', rent: 7900, deposit: 1, minMonths: 5, semester: true, walk: 20, transit: 12, furnished: true, utilities: false, ac: true,
     address: 'Calle Demo 77, Col. Altavista, Monterrey', met: 'all',
-    photos: [['p4', 'Sala del departamento']],
+    photos: [['cuarto-residencia', 'Recámara con cama y escritorio de madera'], ['cocina-pequena', 'Cocina pequeña']],
     costs: [['Agua', true, null], ['Internet', true, null], ['Luz', false, 700]],
   },
   {
@@ -119,7 +119,7 @@ const LISTINGS: DemoListing[] = [
     description: 'Loft en edificio con gimnasio y seguridad las 24 horas. Más lejos del campus, pero en una zona con supermercados y servicios cerca.',
     kind: 'studio', rent: 19500, deposit: 2, minMonths: 6, semester: true, walk: 45, transit: 22, furnished: true, utilities: false, ac: true,
     address: 'Av. Demo 900, Col. Contry, Monterrey', met: 'all',
-    photos: [['p7', 'Loft con muro de ladrillo'], ['p10', 'Sala con ventanal']],
+    photos: [['loft-ventanales', 'Loft con ventanales']],
     costs: [['Gimnasio', true, null], ['Mantenimiento', true, null], ['Luz', false, 1400], ['Internet', false, 500]],
   },
   {
@@ -127,7 +127,7 @@ const LISTINGS: DemoListing[] = [
     description: 'Dos recámaras en planta baja, con patio trasero. Admite contrato semestral. Hay transporte hacia el Tec en la avenida principal.',
     kind: 'apartment', rent: 16000, deposit: 1, minMonths: 5, semester: true, walk: 50, transit: 25, furnished: true, utilities: false, ac: true,
     address: 'Calle Demo 300, Col. Contry, Monterrey', met: 'all',
-    photos: [['p10', 'Sala con ventanal'], ['p11', 'Sala de techos altos']],
+    photos: [['sala-sencilla', 'Sala con dos sillones'], ['cocina-barra', 'Cocina con barra']],
     costs: [['Agua', true, null], ['Luz', false, 1300], ['Internet', false, 450]],
   },
   {
@@ -135,7 +135,7 @@ const LISTINGS: DemoListing[] = [
     description: 'Cama en cuarto compartido dentro de residencia privada con comedor, sala de estudio y vigilancia. Ideal si llegas por primera vez y prefieres conocer gente desde el inicio.',
     kind: 'residence', rent: 7200, deposit: 1, minMonths: 5, semester: true, walk: 25, transit: 15, furnished: true, utilities: true, ac: true,
     address: 'Av. Demo 55, Col. Roma, Monterrey', met: 'all',
-    photos: [['p13', 'Cuarto compartido con literas']],
+    photos: [['cuarto-literas', 'Cuarto compartido con literas'], ['comedor-residencia', 'Comedor de la residencia']],
     costs: [['Servicios', true, null], ['Comidas entre semana', true, null], ['Lavandería', false, 250]],
   },
   {
@@ -143,7 +143,7 @@ const LISTINGS: DemoListing[] = [
     description: 'Estudio remodelado en 2025, con cama, clóset y cocineta. Calle tranquila; caminas al transporte hacia el campus en cinco minutos.',
     kind: 'studio', rent: 10500, deposit: 1, minMonths: 5, semester: true, walk: 28, transit: 16, furnished: true, utilities: false, ac: true,
     address: 'Calle Demo 201, Col. Roma, Monterrey', met: ['ownership_docs', 'landlord_identity', 'dated_photos'],
-    photos: [['p5', 'Estudio remodelado']],
+    photos: [['estudio-buhardilla', 'Estudio con tragaluz y escritorio']],
     costs: [['Agua', true, null], ['Luz', false, 800], ['Internet', false, 400]],
   },
   {
@@ -151,7 +151,7 @@ const LISTINGS: DemoListing[] = [
     description: 'Cuarto en casa donde vive la dueña, con desayuno opcional. La opción de menor costo si tu presupuesto es ajustado y no te molesta un trayecto más largo.',
     kind: 'room', rent: 6800, deposit: 1, minMonths: 5, semester: true, walk: 35, transit: 18, furnished: true, utilities: true, ac: false,
     address: 'Calle Demo 12, Col. Nuevo Repueblo, Monterrey', met: 'all',
-    photos: [['p2', 'Área común de la casa']],
+    photos: [['cuarto-camas-claro', 'Cuarto claro con cama']],
     costs: [['Servicios', true, null], ['Desayuno', false, 800]],
   },
   {
@@ -159,7 +159,7 @@ const LISTINGS: DemoListing[] = [
     description: 'Cuarto recién publicado por su arrendadora. Sirve en la demostración para probar la revisión del administrador antes de que aparezca en la búsqueda.',
     kind: 'room', rent: 9200, deposit: 1, minMonths: 5, semester: true, walk: 11, transit: 8, furnished: true, utilities: false, ac: true,
     address: 'Calle Demo 45, Col. Tecnológico, Monterrey', met: [], status: 'pending_review',
-    photos: [['p11', 'Sala del departamento']],
+    photos: [['cuarto-doble', 'Cuarto con dos camas individuales']],
     costs: [['Agua', true, null], ['Luz', false, 800]],
   },
 ]

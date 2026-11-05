@@ -63,4 +63,4 @@ React 19, Vite, TanStack Query y Leaflet en la web. Fastify 5, TypeScript y zod 
 
 ## Créditos
 
-Fotos de demostración: [Unsplash](https://unsplash.com/license). Mapa: © colaboradores de [OpenStreetMap](https://www.openstreetmap.org/copyright).
+Fotos de demostración: Wikimedia Commons; autor y licencia de cada una en la página de Ayuda de la app. Mapa: © colaboradores de [OpenStreetMap](https://www.openstreetmap.org/copyright).
