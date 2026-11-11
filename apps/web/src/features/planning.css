@@ -1,5 +1,11 @@
 /* Calculadora, guías y checklist. */
 .budget { display: grid; grid-template-columns: 20rem minmax(0, 1fr); gap: var(--space-6); align-items: start; }
+/* Mientras llega el primer cálculo, el panel ya ocupa su lugar. */
+.budget__ph { min-height: 34rem; }
+.budget__ph-totals { display: grid; grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr)); gap: var(--space-5); margin-bottom: var(--space-5); }
+.budget__ph-totals .skeleton__media { aspect-ratio: auto; height: 4.5rem; }
+.budget__ph .skeleton__line { width: 100%; }
+.budget__ph .skeleton__line:nth-child(even) { width: 72%; }
 .split { margin-top: var(--space-5); }
 .split__bar { display: flex; gap: 2px; height: var(--space-4); }
 .split__seg { min-width: var(--space-1); }

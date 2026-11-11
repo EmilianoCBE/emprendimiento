@@ -57,6 +57,20 @@ export function BudgetPage() {
 
         <div className="stack" aria-live="polite">
           <ErrorNote error={estimate.error} />
+          {!e && !estimate.error && (
+            <div className="panel budget__ph" role="status" aria-busy="true">
+              <span className="sr-only">Calculando tu primer mes…</span>
+              <div className="budget__ph-totals" aria-hidden>
+                <div className="skeleton__media" />
+                <div className="skeleton__media" />
+              </div>
+              <div className="skeleton" aria-hidden>
+                {Array.from({ length: 8 }, (_, i) => (
+                  <div key={i} className="skeleton__line" />
+                ))}
+              </div>
+            </div>
+          )}
           {e && (
             <>
               <div className="panel">
