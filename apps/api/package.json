@@ -18,7 +18,7 @@
     "@electric-sql/pglite": "^0.5.15",
     "@fastify/cookie": "^11.0.0",
     "@fastify/helmet": "^13.0.0",
-    "@fastify/multipart": "^9.0.0",
+    "@fastify/multipart": "^10.1.7",
     "@fastify/rate-limit": "^10.0.0",
     "@fastify/static": "^10.1.10",
     "@node-rs/argon2": "^2.0.0",
