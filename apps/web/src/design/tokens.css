@@ -1,82 +1,75 @@
-/* Solo los dígitos 0-9 de Overpass. El resto del texto cae a Atkinson. */
-@font-face {
-  font-family: 'Aterriza Digits';
-  font-style: normal;
-  font-display: swap;
-  font-weight: 100 900;
-  src: url('../../../../node_modules/@fontsource-variable/overpass/files/overpass-latin-wght-normal.woff2') format('woff2-variations');
-  unicode-range: U+0030-0039;
-}
-
 /*
- * Tokens de Aterriza, dirección "Señalética" (docs/09-ux-e-identidad.md).
+ * Tokens de Aterriza, dirección "Pista" (docs/09-ux-e-identidad.md).
  * Todo color, tamaño, espacio, radio y sombra de la interfaz sale de aquí.
  */
 :root {
   color-scheme: light;
 
-  /* Neutros */
-  --color-bg: #f3f5f1;
+  /* Neutros: fondo blanco, tinta casi negra */
+  --color-bg: #ffffff;
   --color-surface: #ffffff;
-  --color-sunken: #e4e9e2;
-  --color-line: #d5dcd3;
-  --color-line-strong: #6f827e; /* Bordes de controles: 4:1 sobre blanco */
-  --color-ink: #0f2f2e;
-  --color-ink-muted: #4a5f5c;
+  --color-soft: #f5f6f8; /* Paneles y bandas */
+  --color-sunken: #e9ebf0; /* Etiquetas, esqueletos */
+  --color-line: #e3e5ea;
+  --color-line-strong: #8a8fa0; /* Bordes de controles: 3.2:1 sobre blanco */
+  --color-ink: #14161f;
+  --color-ink-muted: #565b6b; /* 6.9:1 sobre blanco */
   --color-on-ink: #ffffff;
-  --color-on-ink-muted: #cfdbce;
+  --color-on-ink-muted: #c4c8d4;
 
-  /* El único acento: acción principal y estado activo */
-  --color-accent: #ffb400;
-  --color-accent-hover: #e9a400;
-  --color-on-accent: #0f2f2e;
+  /* Azul pista: la acción principal y el estado activo, siempre con texto blanco (6.5:1) */
+  --color-accent: #2a45e6;
+  --color-accent-hover: #1f36c4;
+  --color-on-accent: #ffffff;
+  --color-accent-soft: #eef1ff;
+
+  /* Cempasúchil: solo el trazo del logo y detalles sobre fondo oscuro. Nunca como texto sobre blanco. */
+  --color-mark: #ffb400;
+  --color-mark-soft: #fff3d1;
 
   /* Semánticos: siempre acompañados de ícono o texto */
-  --color-ok: #125233;
-  --color-ok-bg: #e3f1e9;
+  --color-ok: #0e7a4d; /* Vivienda verificada: 5.3:1 con texto blanco */
+  --color-ok-bg: #e4f4ec;
   --color-warn: #6b4b00;
   --color-warn-bg: #fff3d6;
   --color-warn-line: #e9a400;
   --color-danger: #b3261e;
   --color-danger-bg: #fbe9e7;
 
-  /* Datos: solo la barra de la calculadora. Ambos ≥ 3:1 sobre blanco (WebAIM) y separables con daltonismo (ΔE 11) */
+  /* Datos: solo la barra de la calculadora. Ambos ≥ 3:1 sobre blanco y separables con daltonismo */
   --color-chart-a: #00917c;
   --color-chart-b: #b87400;
 
   /* Ilustración del Cerro de la Silla */
-  --color-ridge-far: #7b9690;
+  --color-ridge-far: #c4c8d4;
 
   /*
    * Tipografía (Google Fonts, servidas desde el propio sitio):
-   * - Overpass: basada en Highway Gothic, la letra de los señalamientos. Títulos y cifras.
-   * - Atkinson Hyperlegible Next: del Braille Institute, distingue Il1 y 0O. Todo el texto.
-   * Interlineado: texto entre 1.45 y 1.55 (cuerpo largo), títulos entre 1.05 y 1.2; todo en pasos de 2 px.
+   * - Sofia Sans Condensed: condensada y pesada, para títulos y cifras.
+   * - Sofia Sans: la misma familia en ancho normal, para todo el texto.
    */
-  --font-display: 'Overpass Variable', 'Arial', sans-serif;
-  /* "Aterriza Digits" pone los dígitos de Overpass dentro del texto: Atkinson tacha el cero, y en un precio ($12,850) se lee como error. */
-  --font-text: 'Aterriza Digits', 'Atkinson Hyperlegible Next Variable', system-ui, sans-serif;
+  --font-display: 'Sofia Sans Condensed Variable', 'Arial Narrow', sans-serif;
+  --font-text: 'Sofia Sans Variable', system-ui, sans-serif;
 
   --text-xs: 0.8125rem; /* 13 */
   --text-sm: 0.9375rem; /* 15 */
   --text-base: 1.0625rem; /* 17 */
   --text-lg: 1.25rem; /* 20 */
-  --leading-xs: 1.125rem; /* 18: 1.38, etiquetas de una línea */
-  --leading-sm: 1.375rem; /* 22: 1.47 */
-  --leading-base: 1.625rem; /* 26: 1.53 */
-  --leading-lg: 1.75rem; /* 28: 1.4 */
+  --leading-xs: 1.125rem;
+  --leading-sm: 1.375rem;
+  --leading-base: 1.625rem;
+  --leading-lg: 1.75rem;
 
-  /* Solo con la fuente display: títulos de sección, páginas y cifras. Overpass es ancha: tamaños contenidos. */
-  --display-sm: 1.5rem; /* 24 */
-  --display-md: 2rem; /* 32 */
-  --display-lg: clamp(2rem, 3.4vw, 2.625rem); /* 32 a 42 */
-  --display-xl: clamp(2.25rem, 4.4vw, 3.5rem); /* 36 a 56 */
-  --display-hero: clamp(2.5rem, 5.8vw, 4.75rem); /* 40 a 76 */
-  --leading-display: 1.1;
-  --leading-display-tight: 1.02; /* Solo titulares de una o dos líneas muy grandes */
-  /* La letra ancha y pesada pide cerrar el espacio entre letras al crecer. */
-  --tracking-display: -0.015em;
-  --tracking-display-lg: -0.025em;
+  /* Solo con la fuente display. La condensada ocupa poco ancho: los tamaños son generosos. */
+  --display-sm: 1.75rem; /* 28 */
+  --display-md: 2.375rem; /* 38 */
+  --display-lg: clamp(2.375rem, 4.4vw, 3.5rem); /* 38 a 56 */
+  --display-xl: clamp(2.125rem, 3.8vw, 3.125rem); /* 34 a 50: títulos de sección */
+  --display-hero: clamp(2.875rem, 6.8vw, 6rem); /* 46 a 96 */
+  --leading-display: 1;
+  --leading-display-tight: 0.96;
+  --tracking-display: -0.01em;
+  --tracking-display-lg: -0.01em;
 
   /* Espaciado: múltiplos de 4 */
   --space-1: 0.25rem;
@@ -91,19 +84,22 @@
   --space-16: 4rem;
   --space-24: 6rem;
 
-  /* Forma */
-  --radius-sm: 4px; /* Etiquetas, casillas */
-  --radius-md: 6px; /* Controles, paneles, fotos */
+  /* Forma: botones y chips en píldora; campos, paneles y fotos redondeados */
+  --radius-sm: 6px; /* Etiquetas, casillas */
+  --radius-md: 12px; /* Campos, paneles */
+  --radius-lg: 16px; /* Fotos, tarjetas */
+  --radius-xl: 24px; /* Bandas y paneles grandes */
   --radius-full: 999px;
   --border: 1px solid var(--color-line);
-  --shadow-overlay: 0 8px 24px rgb(15 47 46 / 0.18); /* Solo lo que flota */
+  --shadow-overlay: 0 8px 24px rgb(20 22 31 / 0.16); /* Solo lo que flota */
+  --scrim: rgb(20 22 31 / 0.62); /* Velo sobre fotos con texto blanco encima */
 
   /* Controles */
   --control-height: 2.75rem; /* 44 px */
 
   /* Maquetación */
-  --gutter: clamp(1rem, 3vw, 2rem);
-  --content-max: 77.5rem; /* 1240 */
+  --gutter: clamp(1rem, 3vw, 2.5rem);
+  --content-max: 82.5rem; /* 1320 */
   --edge: max(var(--gutter), calc((100vw - var(--content-max)) / 2));
-  --topbar-height: 4rem;
+  --topbar-height: 4.25rem;
 }

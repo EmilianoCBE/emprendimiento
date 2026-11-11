@@ -1,9 +1,9 @@
 /* Ficha de vivienda. El orden responde: ¿es real?, ¿cuánto cuesta?, ¿quién me cuenta? */
 .gallery { display: grid; grid-template-columns: 2fr 1fr; gap: var(--space-1); }
 .gallery img { width: 100%; height: 100%; object-fit: cover; }
-.gallery__main { aspect-ratio: 16 / 9; border-radius: var(--radius-md); }
+.gallery__main { aspect-ratio: 16 / 9; border-radius: var(--radius-lg); }
 .gallery__rest { display: grid; gap: var(--space-1); min-height: 0; }
-.gallery__rest img { min-height: 0; border-radius: var(--radius-md); }
+.gallery__rest img { min-height: 0; border-radius: var(--radius-lg); }
 .gallery--one { grid-template-columns: minmax(0, 1fr); }
 .gallery--one .gallery__main { aspect-ratio: 21 / 8; }
 
@@ -17,12 +17,12 @@
 .detail__section { padding-top: var(--space-8); margin-top: var(--space-8); border-top: var(--border); }
 .detail__section > h2 { margin-bottom: var(--space-4); }
 
-.aside { grid-area: aside; position: sticky; top: calc(var(--topbar-height) + var(--space-4)); background: var(--color-surface); border: var(--border); border-radius: var(--radius-md); padding: var(--space-5); display: grid; gap: var(--space-4); }
+.aside { grid-area: aside; position: sticky; top: calc(var(--topbar-height) + var(--space-4)); background: var(--color-surface); border: var(--border); border-radius: var(--radius-xl); padding: var(--space-6); display: grid; gap: var(--space-4); box-shadow: var(--shadow-overlay); }
 .aside__top { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--space-3); }
 .aside__price { font-size: var(--display-md); }
 .aside__score { display: inline-flex; align-items: center; gap: var(--space-1); font-size: var(--text-sm); line-height: var(--leading-sm); font-weight: 600; }
 
-.costbox { background: var(--color-surface); border: var(--border); border-radius: var(--radius-md); padding: var(--space-5); }
+.costbox { background: var(--color-soft); border-radius: var(--radius-lg); padding: var(--space-5); }
 .includes { display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); gap: var(--space-6); }
 .includes h3 { margin-bottom: var(--space-1); font-size: var(--text-base); line-height: var(--leading-base); }
 .includes li { display: flex; justify-content: space-between; gap: var(--space-3); padding: var(--space-2) 0; border-bottom: var(--border); }

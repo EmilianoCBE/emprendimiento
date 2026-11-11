@@ -1,12 +1,14 @@
 # 09 · UX e identidad visual
 
-## Dirección: Señalética
+## Dirección: Pista
 
-Aterrizar en una ciudad que no conoces. Elegida entre dos propuestas el 2026-11-05. Tres ideas guían todo:
+Elegida el 2026-11-10, después de revisar AmberStudent, HousingAnywhere, Spotahome, Student.com, Uniplaces y Airbnb. Sustituye a "Señalética". Tres ideas guían todo:
 
-1. **El sello de pasaporte.** Es el elemento memorable: un sello circular con cuatro segmentos, uno por criterio de verificación. No decora: **es el dato**. Una vivienda con 2 de 4 muestra dos segmentos entintados.
-2. **El Cerro de la Silla.** La silueta de Monterrey es el horizonte de la portada; ubica al producto en este lugar y en ningún otro.
-3. **Señalización de transporte.** Letra alta y condensada para lo grande, contraste alto, indicaciones directas.
+1. **Buscar es lo primero.** La portada es una foto a todo lo ancho con un solo buscador en forma de píldora. Lo demás (zonas, viviendas, mentores, pasos, costos, ayuda) viene después, cada cosa en su banda.
+2. **Titular de cartel, texto tranquilo.** Títulos condensados y pesados; todo lo demás en una sans neutra de la misma familia.
+3. **Un color para actuar.** Fondo blanco, tinta casi negra y un solo azul para la acción principal. El verde significa una cosa: vivienda con sus cuatro revisiones.
+
+El logo conserva la idea original (la curva es la trayectoria de llegada; la línea, la pista), ahora dentro de un símbolo azul que también sirve de ícono.
 
 ## Tokens
 
@@ -14,66 +16,51 @@ Definidos en `apps/web/src/design/tokens.css`. Ningún componente escribe colore
 
 | Nombre | Valor | Uso |
 | --- | --- | --- |
-| `--color-bg` | `#F3F5F1` | Fondo |
-| `--color-surface` | `#FFFFFF` | Paneles y controles |
-| `--color-sunken` | `#E4E9E2` | Etiquetas, esqueletos |
-| `--color-line` | `#D5DCD3` | Separadores |
-| `--color-line-strong` | `#6F827E` | Borde de controles |
-| `--color-ink` | `#0F2F2E` | Texto, sello, barra superior |
-| `--color-ink-muted` | `#4A5F5C` | Texto secundario (6.2:1 sobre fondo) |
-| `--color-accent` | `#FFB400` | **Único acento:** acción principal y estado activo, siempre con texto oscuro (8:1) |
-| `--color-ok`, `--color-warn`, `--color-danger` | `#125233`, `#6B4B00`, `#B3261E` | Solo estados, con ícono o texto |
-| `--color-chart-a`, `--color-chart-b` | `#00917C`, `#B87400` | Solo la barra de la calculadora; ≥ 3:1 sobre blanco y validados para daltonismo con el script de `dataviz` |
+| `--color-bg`, `--color-surface` | `#FFFFFF` | Fondo y controles |
+| `--color-soft` | `#F5F6F8` | Paneles y bandas |
+| `--color-sunken` | `#E9EBF0` | Etiquetas, esqueletos |
+| `--color-line` | `#E3E5EA` | Separadores |
+| `--color-line-strong` | `#8A8FA0` | Borde de controles |
+| `--color-ink` | `#14161F` | Texto, pie, botones oscuros |
+| `--color-ink-muted` | `#565B6B` | Texto secundario |
+| `--color-accent` | `#2A45E6` | **Azul pista:** acción principal y estado activo, siempre con texto blanco |
+| `--color-accent-soft` | `#EEF1FF` | Etiquetas y estado activo suave |
+| `--color-mark` | `#FFB400` | Cempasúchil: solo el trazo del logo y detalles sobre fondo oscuro. Nunca como texto sobre blanco |
+| `--color-ok`, `--color-warn`, `--color-danger` | `#0E7A4D`, `#6B4B00`, `#B3261E` | Solo estados, con ícono o texto. El verde es "vivienda verificada" |
+| `--color-chart-a`, `--color-chart-b` | `#00917C`, `#B87400` | Solo la barra de la calculadora |
 
-**Espaciado:** múltiplos de 4 (`--space-1` a `--space-24`). **Radios:** 4 px en etiquetas y casillas, 6 px en controles, paneles y fotos. **Sombra:** una sola, para lo que flota.
+**Espaciado:** múltiplos de 4. **Radios:** píldora en botones y chips; 12 px en campos y paneles; 16 px en fotos y tarjetas; 24 px en bandas. **Sombra:** una sola, para lo que flota.
 
 ## Tipografía
 
 | Rol | Fuente | Regla |
 | --- | --- | --- |
-| Títulos y cifras | **Overpass** (800; 900 solo en la portada) | Basada en Highway Gothic, la letra de los señalamientos de carretera. De 20 px hacia arriba. Cifras tabulares |
-| Todo lo demás | **Atkinson Hyperlegible Next** | Del Braille Institute: distingue `Il1` y `0O`, útil para quien lee en su segundo idioma. Escala 13, 15, 17 y 20 px |
+| Títulos y cifras | **Sofia Sans Condensed** (800) | Condensada y pesada, con aire de cartel. De 28 px hacia arriba |
+| Todo lo demás | **Sofia Sans** | La misma familia en ancho normal. Escala 13, 15, 17 y 20 px |
 
-Por qué combinan: las dos vienen de la información pública (señalamiento y lectura accesible). Overpass Black es ancha y pesada, y Atkinson es abierta y tranquila: el contraste es de peso y de papel, no de estilo.
+Por qué: los sitios del sector que se ven con marca propia usan un titular con forma reconocible (condensado en HousingAnywhere, ancho en Spotahome) y un texto neutro. Una sola sans neutra para todo es lo que se ve genérico.
 
-Descartadas por ser el default de páginas generadas: Inter, DM Sans, Space Grotesk, Fraunces, Instrument Serif y Playfair.
+Descartadas por ser el default de páginas generadas o por verse genéricas en pruebas: Inter, DM Sans, Space Grotesk, Fraunces, Instrument Serif, Playfair, Bricolage Grotesque y Radio Canada Big.
 
-**Reglas de texto**
-
-| Estilo | Tamaño / interlineado | Uso |
-| --- | --- | --- |
-| Portada | 40–76 px / 1.02, tracking −0.025em, peso 900 | Solo el titular de la portada |
-| `h1` | 32–42 px / 1.1, tracking −0.025em | Título de cada pantalla |
-| `h2` | 24 px / 1.1, tracking −0.015em | Secciones |
-| `h3` | 20 / 28 px, Atkinson 700 | Títulos de tarjeta y subsección |
-| Cuerpo | 17 / 26 px (1.53) | Párrafos; máximo 60 a 68 caracteres por línea |
-| Pequeño | 15 / 22 px | Ayudas, metadatos, etiquetas |
-| Mínimo | 13 / 18 px | Solo etiquetas de una línea |
-
-Espacio: un título lleva más aire antes que después (40 px antes y 12 px después en guías), para que pertenezca a lo que sigue. Párrafos separados por 16 px. Todo en múltiplos de 4.
-
-Se sirven desde el propio dominio (`@fontsource`), sin llamadas a terceros.
+El titular de la portada va en mayúsculas; es el único lugar. Se sirven desde el propio dominio (`@fontsource-variable`), sin llamadas a terceros.
 
 ## Contraste
 
-Revisado con el verificador de WebAIM (`webaim.org/resources/contrastchecker`). Texto ≥ 4.5:1 (AA); bordes, foco y gráficas ≥ 3:1 (WCAG 1.4.11). El cempasúchil nunca va como texto ni como única señal sobre blanco (1.78:1); sobre tinta da 8.03:1.
+Calculado al elegir la paleta; **pendiente de comprobar par por par** con el verificador de WebAIM.
 
-| Par | Contraste |
+| Par | Contraste aproximado |
 | --- | --- |
-| Tinta sobre fondo / blanco | 13.0 / 14.3 |
-| Tinta secundaria sobre fondo / blanco / hundido | 6.20 / 6.81 / 5.53 |
-| Cempasúchil sobre tinta; tinta sobre cempasúchil | 8.03 |
-| Texto claro del pie sobre tinta | 10.0 |
-| Correcto, espera y peligro sobre su fondo | 7.90 / 7.23 / 5.57 |
-| Peligro sobre blanco; blanco sobre peligro | 6.53 |
-| Bordes de campos sobre blanco / fondo | 4.06 / 3.70 |
-| Barras de la calculadora sobre blanco | 3.93 / 3.79 |
+| Tinta sobre blanco | 18:1 |
+| Tinta secundaria sobre blanco | 6.9:1 |
+| Blanco sobre azul pista | 6.5:1 |
+| Blanco sobre verde | 5.3:1 |
+| Borde de campos sobre blanco | 3.2:1 |
 
 ## Maquetación
 
 - **Búsqueda:** resultados y mapa fijo; en móvil primero las viviendas, con filtros y mapa a pedido.
 - **Ficha:** a la izquierda el contenido, en este orden: ¿es real?, ¿cuánto cuesta?, ¿quién me cuenta? A la derecha, precio, sello y acción; en móvil van arriba.
-- **Tarjetas de vivienda:** foto y texto sobre el fondo, sin caja. **Mentores:** lista, no tarjetas.
+- **Tarjetas de vivienda:** foto y texto sobre el fondo, sin caja, con la insignia de revisiones recortada en la esquina de la foto. En la portada van en carrusel con chips de zona.
 - **Administración:** primero lo que hay que atender.
 - **Móvil:** cinco pestañas inferiores; lo demás, desde Cuenta.
 
@@ -81,11 +68,11 @@ Alineación a la izquierda en todo el producto.
 
 ## Movimiento
 
-Un único momento no solicitado: el sello cae sobre la portada al cargar la página. El resto solo responde a acciones. Todo respeta `prefers-reduced-motion`.
+Ninguno no solicitado: todo responde a acciones. Todo respeta `prefers-reduced-motion`.
 
 ## Reglas para no caer en lo genérico
 
-- Sin mayúsculas sostenidas en etiquetas ni subtítulos decorativos sobre cada título.
+- Sin mayúsculas sostenidas, salvo el titular de la portada. Sin subtítulos decorativos sobre cada título.
 - Sin degradados, sin sombras en las tarjetas, sin una cuadrícula de cajas idénticas para todo.
 - Sin flechas en el texto de los botones; sin fuente monoespaciada; sin emojis como íconos (Phosphor).
 - Sin números decorativos: solo se numera lo que es una secuencia.
@@ -106,7 +93,7 @@ Directa, cálida y en tú. Dice lo que pasa y qué hacer. Nunca promete segurida
 
 | Hallazgo | Decisión |
 | --- | --- |
-| Miedo a transferir sin comprobar | El sello va sobre cada foto; aviso antes de solicitar |
+| Miedo a transferir sin comprobar | La insignia de revisiones va sobre cada foto; aviso antes de solicitar |
 | "Navegación sencilla y visual" | Una acción principal por pantalla; se ve sin iniciar sesión |
 | Consejos que no aplican | Cada mentor muestra universidad y zona |
 | El gasto de la luz sorprende | La ficha muestra el "costo real" además de la renta |

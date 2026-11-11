@@ -1,13 +1,19 @@
 /* Marca: logotipo, sello y Cerro de la Silla. */
-.logo { display: inline-flex; align-items: center; gap: var(--space-2); font-family: var(--font-display); font-weight: 800; line-height: 1; color: inherit; }
-.logo path:first-child { stroke: var(--color-accent); }
+.logo { display: inline-flex; align-items: center; gap: var(--space-2); font-family: var(--font-display); font-weight: 800; line-height: 1; letter-spacing: -0.02em; color: inherit; }
+.logo__tile { fill: var(--color-accent); }
+.logo__path { fill: none; stroke: var(--color-mark); stroke-width: 3.4; stroke-linecap: round; }
+.logo__runway { fill: none; stroke: var(--color-on-accent); stroke-width: 3.4; stroke-linecap: round; }
+
+/* Insignia de revisiones: verde solo cuando están las cuatro. */
+.vbadge { display: inline-flex; align-items: center; gap: var(--space-1); min-height: 1.875rem; padding: 0 var(--space-3) 0 var(--space-2); border-radius: var(--radius-full); background: var(--color-surface); color: var(--color-ink); box-shadow: inset 0 0 0 1.5px var(--color-line-strong); font-size: var(--text-sm); line-height: var(--leading-sm); font-weight: 700; white-space: nowrap; }
+.vbadge--full { background: var(--color-ok); color: var(--color-on-ink); box-shadow: none; }
 
 /* El sello es el dato: cada segmento es una revisión. */
 .seal { flex: none; overflow: visible; }
 .seal__bg { fill: var(--color-surface); }
 .seal__ring { fill: none; stroke: var(--color-ink); stroke-width: 2.4; }
 .seal__ring--thin { stroke-width: 0.8; }
-.seal__seg { fill: none; stroke: var(--color-ink); stroke-width: 8; opacity: 0.14; }
+.seal__seg { fill: none; stroke: var(--color-ink); stroke-width: 8; stroke-linecap: round; opacity: 0.14; }
 .seal__seg.is-on { opacity: 1; }
 .seal__count { font: 800 22px var(--font-display); letter-spacing: -0.02em; fill: var(--color-ink); }
 .seal__word { font: 700 9.5px var(--font-display); fill: var(--color-ink); letter-spacing: 0.04em; }

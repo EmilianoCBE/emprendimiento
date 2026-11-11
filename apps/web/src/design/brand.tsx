@@ -1,14 +1,27 @@
+import { CheckCircle, CircleDashed } from '@phosphor-icons/react'
 import { useId } from 'react'
 
 export function Logo({ size = 30 }: { size?: number }) {
   return (
     <span className="logo" style={{ fontSize: size }}>
-      <svg viewBox="0 0 40 24" width={size * 1.3} height={size * 0.8} aria-hidden>
-        {/* Trayectoria de aterrizaje sobre la pista */}
-        <path d="M2 3 Q 16 5 26 16" fill="none" strokeWidth="3" strokeLinecap="round" />
-        <path d="M18 21h20" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+      <svg viewBox="0 0 40 40" width={size * 1.2} height={size * 1.2} aria-hidden>
+        {/* Trayectoria de llegada sobre la pista */}
+        <rect className="logo__tile" width="40" height="40" rx="11" />
+        <path className="logo__path" d="M9 11 Q 19 12 25 23" />
+        <path className="logo__runway" d="M13 29.5h18" />
       </svg>
       aterriza
+    </span>
+  )
+}
+
+/** Insignia de revisiones para tarjetas: verde solo con las cuatro. El texto siempre dice cuántas van. */
+export function VerifiedBadge({ met, total = 4 }: { met: number; total?: number }) {
+  const full = met >= total
+  return (
+    <span className={`vbadge ${full ? 'vbadge--full' : ''}`}>
+      {full ? <CheckCircle size={16} weight="bold" aria-hidden /> : <CircleDashed size={16} weight="bold" aria-hidden />}
+      {met} de {total} revisiones
     </span>
   )
 }

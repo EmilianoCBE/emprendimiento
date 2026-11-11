@@ -1,5 +1,5 @@
-import '@fontsource-variable/overpass'
-import '@fontsource-variable/atkinson-hyperlegible-next'
+import '@fontsource-variable/sofia-sans-condensed'
+import '@fontsource-variable/sofia-sans'
 import 'leaflet/dist/leaflet.css'
 import './design/tokens.css'
 import './design/base.css'

@@ -63,7 +63,7 @@ npm run build
 
 **Diseño**
 - Seguir `docs/09-ux-e-identidad.md`. Usar la skill `frontend-design` al crear pantallas.
-- Sin mayúsculas sostenidas, degradados ni flechas en botones. Cempasúchil es el único acento.
+- Sin degradados ni flechas en botones. Mayúsculas sostenidas solo en el titular de la portada. El azul `--color-accent` es el único color de acción; el cempasúchil queda en el logo.
 - Todo valor visual sale de `apps/web/src/design/tokens.css`; cada pantalla tiene su `.css`. Estilos en línea solo para valores calculados.
 - Una acción que no se puede completar no se muestra como acción principal.
 

@@ -14,6 +14,7 @@
 | I5 | Referencia AmberStudent: lista para mudarte, ayuda, zonas, cómo funciona | ✅ |
 | I6 | Rediseño de interfaz, dirección Señalética: tokens, controles propios, todas las pantallas, fotos modestas | ✅ |
 | I7 | Evaluación con las 10 heurísticas de Nielsen y correcciones (`12-heuristicas-nielsen.md`) | ✅ Falta revisar a 390 px |
+| I8 | Rediseño, dirección Pista: tokens, tipografía, logo, portada nueva, tarjetas | ✅ Portada rehecha; el resto hereda tokens. Falta revisar contraste par por par y 390 px |
 
 ## Qué está comprobado
 
@@ -47,6 +48,7 @@
 
 | Fecha | Qué pasó |
 | --- | --- |
+| 2026-11-10 | I8. Dirección Pista tras revisar AmberStudent y otros cinco sitios: fondo blanco, azul `#2A45E6`, Sofia Sans Condensed y Sofia Sans, botones en píldora, logo nuevo y portada con foto y buscador al centro. La demo en Vercel deja de pedir la contraseña compartida: la barrera queda opcional con `DEMO_GATE=on`. |
 | 2026-11-05 | Demo en Vercel con base compartida de Neon (Marketplace, plan gratuito). Candado de arranque probado con tres instancias simultáneas, sesiones válidas entre instancias, TLS verificado. Chat y avisos con consulta periódica de respaldo; fotos subidas desactivadas en la demo. |
 | 2026-11-05 | Contraste revisado con WebAIM: todos los pares funcionales pasan AA (texto) o 3:1 (gráficos). Corregidos la barra de la calculadora y las marcas de "sin leer". Tipografía nueva: Overpass (títulos y cifras) y Atkinson Hyperlegible Next (texto), con escala e interlineado documentados en `09-ux-e-identidad.md`. |
 | 2026-11-05 | I7. Avisos flotantes, confirmación en dos pasos para lo que no se deshace, filtros activos visibles, regreso con filtros, errores con salida (reintentar, volver a entrar), ayuda enlazable por pregunta. Recorrido en Chrome y 145 pruebas pasan. |

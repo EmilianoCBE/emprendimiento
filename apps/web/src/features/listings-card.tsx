@@ -2,29 +2,30 @@ import './search.css'
 import { Star } from '@phosphor-icons/react'
 import { Link } from 'react-router-dom'
 import type { ListingCard } from '@aterriza/contracts'
-import { Seal } from '../design/brand'
+import { VerifiedBadge } from '../design/brand'
 import { PriceAlertNote } from '../design/ui'
 import { KIND_LABEL, money } from '../lib/format'
 
 /** `from` guarda la búsqueda con sus filtros para que "Volver a resultados" regrese a ella. */
 export function ListingCardView({ listing: l, onHover, from }: { listing: ListingCard; onHover?: (id: string | null) => void; from?: string }) {
+  const onFoot = l.minutesWalk <= l.minutesTransit
   const nearest = Math.min(l.minutesWalk, l.minutesTransit)
   return (
     <Link to={`/viviendas/${l.id}`} state={from ? { from } : undefined} className="card" onMouseEnter={() => onHover?.(l.id)} onMouseLeave={() => onHover?.(null)}>
       <div className="card__media">
         {l.photo && <img src={l.photo.url} alt={l.photo.alt} loading="lazy" />}
-        <div className="card__seal">
-          <Seal met={l.metCount} size={56} />
+        <div className="card__badge">
+          <VerifiedBadge met={l.metCount} />
         </div>
       </div>
+      <h3 className="card__title">{l.title}</h3>
       <p className="card__price">
         <b className="figure">{money(l.monthlyRentMxn)}</b>
         <span className="muted small">al mes</span>
       </p>
       <p className="card__real">Cerca de {money(l.estimatedMonthlyMxn)} con gastos (estimado)</p>
-      <h3 className="card__title">{l.title}</h3>
-      <p className="card__meta">
-        {KIND_LABEL[l.kind]} en {l.zoneName}, a {nearest} min del campus
+      <p className="card__near">
+        {KIND_LABEL[l.kind]} en {l.zoneName}, a {nearest} min {onFoot ? 'a pie' : 'en transporte'} del campus
       </p>
       {l.reviewCount > 0 && (
         <p className="card__meta">
