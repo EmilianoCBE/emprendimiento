@@ -68,7 +68,14 @@ Alineación a la izquierda en todo el producto.
 
 ## Movimiento
 
-Ninguno no solicitado: todo responde a acciones. Todo respeta `prefers-reduced-motion`.
+Corto y discreto, con tres duraciones en `tokens.css` (140, 240 y 520 ms) y una sola curva de salida.
+
+- **Entrada:** cada pantalla aparece con un fundido corto. En la portada entran el titular, el buscador y los datos de confianza, uno tras otro.
+- **Al desplazarse:** las bandas de la portada aparecen una sola vez al entrar en pantalla (`lib/reveal.ts`); zonas, mentores y pasos lo hacen escalonados.
+- **Respuesta:** los botones se hunden al presionarlos, la foto de una tarjeta se acerca un poco al pasar el cursor, las zonas se elevan y los chips cambian de color sin saltos.
+- **Carga:** zonas, viviendas, mentores y recibo muestran marcadores con la forma de lo que va a llegar.
+
+Nada se mueve en bucle salvo los marcadores de carga. Todo respeta `prefers-reduced-motion`.
 
 ## Reglas para no caer en lo genérico
 

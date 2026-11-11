@@ -94,6 +94,12 @@
   --shadow-overlay: 0 8px 24px rgb(20 22 31 / 0.16); /* Solo lo que flota */
   --scrim: rgb(20 22 31 / 0.62); /* Velo sobre fotos con texto blanco encima */
 
+  /* Movimiento: corto y discreto. Todo se apaga con prefers-reduced-motion (base.css). */
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --dur-fast: 140ms;
+  --dur: 240ms;
+  --dur-slow: 520ms;
+
   /* Controles */
   --control-height: 2.75rem; /* 44 px */
 

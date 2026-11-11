@@ -151,3 +151,20 @@ p, li, dd { text-wrap: pretty; }
 .totals { display: grid; grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr)); gap: var(--space-5); }
 .total__n { font-size: var(--display-lg); }
 .total__l { color: var(--color-ink-muted); font-size: var(--text-sm); line-height: var(--leading-sm); margin-top: var(--space-1); }
+
+/* ---------- Movimiento ---------- */
+/* Cada pantalla entra con un fundido corto; lo que responde a la persona lo hace sin saltos. */
+@keyframes rise { from { opacity: 0; transform: translateY(0.5rem); } }
+@keyframes fade { from { opacity: 0; } }
+.page, .searchview { animation: rise var(--dur) var(--ease-out) both; }
+a, .chip, .panel, .rowcard { transition: color var(--dur-fast), background-color var(--dur-fast), border-color var(--dur-fast), box-shadow var(--dur-fast); }
+.rowcard { transition: border-color var(--dur-fast), transform var(--dur) var(--ease-out); }
+.rowcard:hover { transform: translateX(2px); }
+.progress__fill { transition: width var(--dur-slow) var(--ease-out); }
+.task { transition: background-color var(--dur-fast); }
+details[open] > :not(summary) { animation: rise var(--dur) var(--ease-out) both; }
+/* Aparición al entrar en pantalla (lib/reveal.ts). Sin preferencia de movimiento reducido. */
+@media (prefers-reduced-motion: no-preference) {
+  .reveal { opacity: 0; transform: translateY(1.25rem); transition: opacity var(--dur-slow) var(--ease-out), transform var(--dur-slow) var(--ease-out); }
+  .reveal.is-in { opacity: 1; transform: none; }
+}

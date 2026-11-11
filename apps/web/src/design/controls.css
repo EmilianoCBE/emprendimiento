@@ -4,8 +4,9 @@
   min-height: var(--control-height); padding: var(--space-2) var(--space-5);
   border: 0; border-radius: var(--radius-full);
   font-weight: 700; line-height: var(--leading-sm); text-decoration: none; text-align: center;
-  cursor: pointer; transition: background-color 120ms, color 120ms;
+  cursor: pointer; transition: background-color var(--dur-fast), color var(--dur-fast), box-shadow var(--dur-fast), transform var(--dur-fast) var(--ease-out);
 }
+.btn:active:not(:disabled) { transform: scale(0.97); }
 .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 .btn--primary { background: var(--color-accent); color: var(--color-on-accent); }
 .btn--primary:hover:not(:disabled) { background: var(--color-accent-hover); }
@@ -40,7 +41,7 @@
 .input {
   width: 100%; height: var(--control-height); padding: 0 var(--space-3);
   background: var(--color-surface); border: 1px solid var(--color-line-strong); border-radius: var(--radius-md);
-  transition: border-color 120ms;
+  transition: border-color var(--dur-fast), box-shadow var(--dur-fast);
 }
 .input:hover { border-color: var(--color-ink); }
 .input:focus-visible { border-color: var(--color-accent); outline-offset: 0; border-radius: var(--radius-md); }
@@ -66,6 +67,7 @@ input[type='checkbox'], input[type='radio'] {
 }
 input[type='checkbox'] { border-radius: var(--radius-sm); }
 input[type='radio'] { border-radius: var(--radius-full); }
+input[type='checkbox'], input[type='radio'] { transition: background-color var(--dur-fast), border-color var(--dur-fast); }
 input[type='checkbox']:hover, input[type='radio']:hover { border-color: var(--color-ink); }
 input[type='checkbox']:checked {
   background-color: var(--color-ink); border-color: var(--color-ink);
@@ -99,6 +101,7 @@ input[type='checkbox']:disabled, input[type='radio']:disabled { opacity: 0.5; cu
   border: 1px solid var(--color-line-strong); border-radius: var(--radius-full); background: var(--color-surface);
   font-size: var(--text-sm); font-weight: 600; cursor: pointer;
 }
+.activefilter { transition: border-color var(--dur-fast), background-color var(--dur-fast); animation: fade var(--dur) both; }
 .activefilter:hover { border-color: var(--color-ink); background: var(--color-sunken); }
 
 /* Opciones para marcar (temas, idiomas). */

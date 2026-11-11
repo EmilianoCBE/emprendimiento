@@ -7,6 +7,7 @@ import { CRITERIA, CRITERION_LABEL, type BudgetEstimate, type ListingCard as Car
 import { LinkButton, Select, TextInput } from '../design/ui'
 import { api } from '../lib/api'
 import { money } from '../lib/format'
+import { useReveal } from '../lib/reveal'
 import { ListingCardView } from './listings-card'
 
 const HERO_PHOTO = '/demo/depa-sala-comedor.jpg'
@@ -20,6 +21,7 @@ const initials = (name: string) =>
 
 export function LandingPage() {
   const navigate = useNavigate()
+  useReveal()
   const [zone, setZone] = useState('')
   const [maxRent, setMaxRent] = useState('')
   const [maxMinutes, setMaxMinutes] = useState('')
@@ -114,10 +116,11 @@ export function LandingPage() {
         </dl>
       </section>
 
-      <section className="band">
+      <section className="reveal band">
         <h2 className="band__head">Zonas cerca del campus</h2>
         <p className="band__lead">Elige zona sin haberla pisado: cómo te mueves y cuánto cuesta vivir ahí.</p>
         <ul className="zonetiles">
+          {zones.isPending && Array.from({ length: 5 }, (_, i) => <li key={i} className="zonetiles__ph" aria-hidden />)}
           {zones.data?.map((z) => (
             <li key={z.id}>
               <Link to={`/viviendas?zone=${z.slug}`} className="zonetile">
@@ -135,7 +138,7 @@ export function LandingPage() {
         </ul>
       </section>
 
-      <section className="band band--rail">
+      <section className="reveal band band--rail">
         <h2 className="band__head">Viviendas con sus cuatro revisiones</h2>
         <p className="band__lead">El costo con gastos es una estimación.</p>
         <div className="railbar" role="group" aria-label="Filtrar por zona">
@@ -151,7 +154,15 @@ export function LandingPage() {
             Ver todas las viviendas
           </Link>
         </div>
-        <div className="rail">
+        <div className="rail" key={railZone ?? 'todas'}>
+          {featured.isPending &&
+            Array.from({ length: 5 }, (_, i) => (
+              <div key={i} className="rail__item rail__ph" aria-hidden>
+                <div className="skeleton__media" />
+                <div className="skeleton__line" />
+                <div className="skeleton__line" />
+              </div>
+            ))}
           {shown.map((l) => (
             <div key={l.id} className="rail__item">
               <ListingCardView listing={l} />
@@ -160,7 +171,7 @@ export function LandingPage() {
         </div>
       </section>
 
-      <section className="band band--soft" id="mentores">
+      <section className="reveal band band--soft" id="mentores">
         <div className="band__row">
           <div>
             <h2 className="band__head">Pregúntale a quien ya vivió ahí</h2>
@@ -171,6 +182,14 @@ export function LandingPage() {
           </Link>
         </div>
         <ul className="voices">
+          {mentors.isPending &&
+            Array.from({ length: 4 }, (_, i) => (
+              <li key={i} className="voice voice--ph" aria-hidden>
+                <div className="skeleton__line" />
+                <div className="skeleton__line" />
+                <div className="skeleton__line" />
+              </li>
+            ))}
           {mentors.data?.slice(0, 4).map((m) => (
             <li key={m.id} className="voice">
               {m.zoneName && <span className="voice__zone">Conoce {m.zoneName}</span>}
@@ -189,7 +208,7 @@ export function LandingPage() {
         </ul>
       </section>
 
-      <section className="band">
+      <section className="reveal band">
         <h2 className="band__head">De tu ciudad a tu cuarto en 3 pasos</h2>
         <ol className="steps">
           <li>
@@ -272,7 +291,7 @@ export function LandingPage() {
         </ol>
       </section>
 
-      <section className="band" id="costos">
+      <section className="reveal band" id="costos">
         <div className="costs">
           <div>
             <h2 className="costs__head">La renta no es lo que vas a pagar</h2>
@@ -287,14 +306,22 @@ export function LandingPage() {
           <div className="receipt">
             <p className="receipt__title">Tu primer mes, estimado</p>
             <p className="receipt__sub">Un estudio a 8 minutos del campus, llegando en agosto</p>
-            <dl className="receipt__lines">
-              {example.data?.lines.map((line) => (
-                <div key={line.id}>
-                  <dt>{line.label}</dt>
-                  <dd>{money(line.amountMxn)}</dd>
-                </div>
-              ))}
-            </dl>
+            {example.data ? (
+              <dl className="receipt__lines">
+                {example.data.lines.map((line) => (
+                  <div key={line.id}>
+                    <dt>{line.label}</dt>
+                    <dd>{money(line.amountMxn)}</dd>
+                  </div>
+                ))}
+              </dl>
+            ) : (
+              <div className="receipt__ph" aria-hidden>
+                {Array.from({ length: 6 }, (_, i) => (
+                  <div key={i} className="skeleton__line" />
+                ))}
+              </div>
+            )}
             <p className="receipt__total">
               <span>Total</span>
               <b className="figure">{example.data ? money(example.data.firstMonthTotalMxn) : ' '}</b>
@@ -304,7 +331,7 @@ export function LandingPage() {
         </div>
       </section>
 
-      <section className="band help" id="ayuda">
+      <section className="reveal band help" id="ayuda">
         <div>
           <h2 className="band__head">Lo que casi todos preguntan</h2>
           <p className="band__lead">Respuestas cortas. Si la tuya no está, escríbele a un mentor.</p>

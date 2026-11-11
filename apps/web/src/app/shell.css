@@ -9,6 +9,7 @@
 .topbar__brand { text-decoration: none; }
 .nav { display: flex; gap: var(--space-1); flex: 1; }
 .nav a { padding: var(--space-2) var(--space-3); border-radius: var(--radius-full); font-weight: 600; text-decoration: none; color: var(--color-ink); }
+.nav a, .iconbtn, .tabbar a { transition: background-color var(--dur-fast), color var(--dur-fast); }
 .nav a:hover { background: var(--color-soft); }
 .nav a.active { background: var(--color-accent-soft); color: var(--color-accent); }
 .topbar__end { display: flex; align-items: center; gap: var(--space-2); margin-left: auto; }
@@ -18,6 +19,8 @@
 .badge { position: absolute; top: 2px; right: 0; min-width: 1.125rem; height: 1.125rem; padding: 0 var(--space-1); border-radius: var(--radius-full); background: var(--color-accent); color: var(--color-on-accent); font-size: var(--text-xs); font-weight: 700; line-height: 1.125rem; text-align: center; }
 
 .popover { position: absolute; right: var(--edge); top: calc(var(--topbar-height) - var(--space-1)); width: min(23.75rem, calc(100vw - 2rem)); background: var(--color-surface); color: var(--color-ink); border-radius: var(--radius-lg); border: var(--border); box-shadow: var(--shadow-overlay); z-index: 1100; overflow: hidden; }
+.popover { animation: rise var(--dur-fast) var(--ease-out) both; }
+.badge { animation: fade var(--dur) both; }
 .popover__head { display: flex; justify-content: space-between; align-items: center; min-height: var(--control-height); padding: var(--space-1) var(--space-4); border-bottom: var(--border); }
 .popover__list { max-height: 26rem; overflow: auto; }
 .popover__empty { padding: var(--space-4); color: var(--color-ink-muted); }

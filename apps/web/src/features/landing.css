@@ -139,3 +139,42 @@
   .rail__item { flex-basis: 15.5rem; }
   .mock { height: auto; min-height: 15rem; padding: var(--space-5); }
 }
+
+/* ---------- Movimiento de la portada ---------- */
+/* Entrada: título, buscador y datos de confianza, uno tras otro. */
+.hero__photo { animation: fade var(--dur-slow) both; }
+.hero__title, .hero__search, .hero__trust { animation: rise var(--dur-slow) var(--ease-out) both; }
+.hero__search { animation-delay: 90ms; }
+.hero__trust { animation-delay: 180ms; }
+.hero__search { transition: box-shadow var(--dur); }
+.zonetile { transition: transform var(--dur) var(--ease-out); }
+.zonetile:hover { transform: translateY(-4px); }
+.pill { transition: background-color var(--dur-fast), border-color var(--dur-fast), color var(--dur-fast); }
+.rail__item { animation: rise var(--dur) var(--ease-out) both; }
+.rail__item:nth-child(2) { animation-delay: 40ms; }
+.rail__item:nth-child(3) { animation-delay: 80ms; }
+.rail__item:nth-child(4) { animation-delay: 120ms; }
+.rail__item:nth-child(n + 5) { animation-delay: 160ms; }
+.voice { transition: border-color var(--dur-fast), transform var(--dur) var(--ease-out); }
+.voice:hover { border-color: var(--color-line-strong); transform: translateY(-2px); }
+.steps li .mock { transition: background-color var(--dur); }
+.steps li:hover .mock { background: var(--color-sunken); }
+.help__list details { transition: background-color var(--dur-fast); }
+.help__list details:hover { background: var(--color-sunken); }
+.costs__cta svg { transition: transform var(--dur) var(--ease-out); }
+.costs__cta:hover svg { transform: rotate(-8deg); }
+/* Los pasos aparecen escalonados cuando su banda entra en pantalla. */
+@media (prefers-reduced-motion: no-preference) {
+  .reveal .steps > li, .reveal .zonetiles > li, .reveal .voices > li { opacity: 0; transform: translateY(1rem); transition: opacity var(--dur-slow) var(--ease-out), transform var(--dur-slow) var(--ease-out); }
+  .reveal.is-in .steps > li, .reveal.is-in .zonetiles > li, .reveal.is-in .voices > li { opacity: 1; transform: none; }
+  .reveal .steps > li:nth-child(2), .reveal .zonetiles > li:nth-child(2), .reveal .voices > li:nth-child(2) { transition-delay: 70ms; }
+  .reveal .steps > li:nth-child(3), .reveal .zonetiles > li:nth-child(3), .reveal .voices > li:nth-child(3) { transition-delay: 140ms; }
+  .reveal .zonetiles > li:nth-child(4), .reveal .voices > li:nth-child(4) { transition-delay: 210ms; }
+  .reveal .zonetiles > li:nth-child(n + 5) { transition-delay: 280ms; }
+}
+
+/* Marcadores de carga: conservan la forma de lo que va a llegar. */
+.zonetiles__ph { min-height: 13.5rem; border-radius: var(--radius-xl); background: var(--color-sunken); animation: shimmer 1.4s ease-in-out infinite; }
+.rail__ph { display: grid; gap: var(--space-3); }
+.voice--ph { min-height: 13rem; justify-content: center; gap: var(--space-3); }
+.receipt__ph { display: grid; gap: var(--space-3); padding: var(--space-4) 0; min-height: 12rem; align-content: start; }
