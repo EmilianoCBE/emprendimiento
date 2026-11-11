@@ -184,14 +184,19 @@ describe('configuración', () => {
   it('rechaza secreto corto', () => expect(() => loadConfig({ ...secure, APP_SECRET: 'corto' })).toThrow(/APP_SECRET/))
   describe('demo pública', () => {
     const demo = { NODE_ENV: 'production', PUBLIC_DEMO: 'true', DEMO_ACCESS_PASSWORD: 'una-clave-larga-1', VERCEL_URL: 'a.vercel.app' }
-    it('arranca con base en memoria y barrera', () => {
+    it('arranca con base en memoria', () => {
       const c = loadConfig(demo)
       expect(c.publicDemo && c.demoMode).toBe(true)
       expect(c.allowedOrigins).toContain('https://a.vercel.app')
     })
-    it('exige contraseña de al menos 12 caracteres', () => {
-      expect(() => loadConfig({ ...demo, DEMO_ACCESS_PASSWORD: undefined })).toThrow(/DEMO_ACCESS_PASSWORD/)
-      expect(() => loadConfig({ ...demo, DEMO_ACCESS_PASSWORD: 'corta' })).toThrow(/DEMO_ACCESS_PASSWORD/)
+    it('es abierta salvo que se pida la barrera', () => {
+      expect(loadConfig(demo).demoAccessPassword).toBeNull()
+      expect(loadConfig({ ...demo, DEMO_ACCESS_PASSWORD: undefined }).demoAccessPassword).toBeNull()
+      expect(loadConfig({ ...demo, DEMO_GATE: 'on' }).demoAccessPassword).toBe('una-clave-larga-1')
+    })
+    it('con barrera exige contraseña de al menos 12 caracteres', () => {
+      expect(() => loadConfig({ ...demo, DEMO_GATE: 'on', DEMO_ACCESS_PASSWORD: undefined })).toThrow(/DEMO_ACCESS_PASSWORD/)
+      expect(() => loadConfig({ ...demo, DEMO_GATE: 'on', DEMO_ACCESS_PASSWORD: 'corta' })).toThrow(/DEMO_ACCESS_PASSWORD/)
     })
     it('no acepta una base sin declararla exclusiva de la demo', () => {
       expect(() => loadConfig({ ...demo, DATABASE_URL: 'postgres://h/db', APP_SECRET: 'x'.repeat(32) })).toThrow(/DEMO_DATABASE/)

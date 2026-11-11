@@ -15,6 +15,7 @@ const envSchema = z.object({
   DEMO_MODE: z.string().optional(),
   PUBLIC_DEMO: z.string().optional(),
   DEMO_ACCESS_PASSWORD: z.string().optional(),
+  DEMO_GATE: z.string().optional(),
   VERCEL: z.string().optional(),
   VERCEL_URL: z.string().optional(),
   VERCEL_BRANCH_URL: z.string().optional(),
@@ -52,17 +53,19 @@ export function loadConfig(source: Record<string, string | undefined> = process.
   const publicDemo = e.PUBLIC_DEMO === 'true'
   const demoMode = publicDemo || e.DEMO_MODE === 'true'
   const accessPassword = e.DEMO_ACCESS_PASSWORD || null
+  // La barrera con contraseña compartida es opcional: la demo es abierta salvo que se pida con DEMO_GATE=on.
+  const gate = publicDemo && e.DEMO_GATE === 'on'
   const problems: string[] = []
 
   if (publicDemo) {
-    // Las cuentas de demo tienen contraseña conocida: nunca junto a una base real, y nunca sin barrera.
+    // Las cuentas de demo tienen contraseña conocida: nunca junto a una base real.
     // Una base compartida solo se acepta si se declara exclusiva de la demo.
     if (e.DATABASE_URL && e.DEMO_DATABASE !== 'dedicated') {
       problems.push('PUBLIC_DEMO con DATABASE_URL exige DEMO_DATABASE=dedicated: la base debe ser exclusiva de la demo, solo con datos ficticios.')
     }
     // Con varias instancias, cada una inventaría su propio secreto y los códigos de una no valdrían en otra.
     if (e.DATABASE_URL && (!e.APP_SECRET || e.APP_SECRET.length < 32)) problems.push('APP_SECRET debe tener al menos 32 caracteres cuando la demo usa una base compartida.')
-    if (!accessPassword || accessPassword.length < 12) problems.push('DEMO_ACCESS_PASSWORD debe tener al menos 12 caracteres.')
+    if (gate && (!accessPassword || accessPassword.length < 12)) problems.push('DEMO_ACCESS_PASSWORD debe tener al menos 12 caracteres cuando DEMO_GATE=on.')
   } else if (isProduction) {
     if (demoMode) problems.push('DEMO_MODE no se permite en producción: crea cuentas con contraseña conocida.')
     if (!e.APP_SECRET || e.APP_SECRET.length < 32) problems.push('APP_SECRET debe tener al menos 32 caracteres.')
@@ -89,7 +92,7 @@ export function loadConfig(source: Record<string, string | undefined> = process.
     allowedOrigins,
     demoMode,
     publicDemo,
-    demoAccessPassword: publicDemo ? accessPassword : null,
+    demoAccessPassword: gate ? accessPassword : null,
     uploadsEnabled: !publicDemo,
     serveWeb: isProduction || e.SERVE_WEB === 'true',
     // Detrás del proxy de Vercel, la IP real viene en una cabecera que él mismo fija.

@@ -71,7 +71,7 @@ Los documentos de propiedad e identidad **no se suben** en el MVP. El administra
 
 ## Demo pública
 
-La demo en Vercel tiene cuentas con contraseña conocida, incluida la de administración. Por eso la protege una contraseña compartida en toda la API, y usa una base de Neon exclusiva de la demo, solo con datos ficticios. La app no arranca con esa base si no se declara `DEMO_DATABASE=dedicated` y no hay un `APP_SECRET` común. Las fotos subidas están desactivadas ahí. **Nadie debe escribir datos personales reales ahí.** La portada y las fotos de demostración son estáticas y se ven sin contraseña; no contienen datos.
+La demo en Vercel tiene cuentas con contraseña conocida, incluida la de administración. Desde el 2026-11-10 es **abierta**: cualquiera con el enlace puede entrar con esas cuentas, incluida la de administración, y cambiar los datos de demostración. Es un riesgo aceptado por decisión del equipo para poder mostrarla sin fricción; la contraseña compartida en toda la API sigue disponible con `DEMO_GATE=on` y `DEMO_ACCESS_PASSWORD`. Usa una base de Neon exclusiva de la demo, solo con datos ficticios, que se puede reiniciar con `db:reset-demo`. La app no arranca con esa base si no se declara `DEMO_DATABASE=dedicated` y no hay un `APP_SECRET` común. Las fotos subidas están desactivadas ahí. **Nadie debe escribir datos personales reales ahí.**
 
 ## Riesgos aceptados por ahora
 

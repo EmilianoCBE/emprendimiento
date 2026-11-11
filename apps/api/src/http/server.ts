@@ -112,7 +112,7 @@ export async function buildServer(opts: ServerOptions): Promise<FastifyInstance>
 
   app.decorateRequest('actor', null)
 
-  // Barrera de la demo pública: sin la contraseña compartida no se llega a ninguna parte de la API.
+  // Barrera opcional de la demo pública (DEMO_GATE=on): sin la contraseña compartida no se llega a ninguna parte de la API.
   if (config.demoAccessPassword) {
     const expected = createHash('sha256').update(`equipo:${config.demoAccessPassword}`).digest()
     app.addHook('onRequest', async (req, reply) => {

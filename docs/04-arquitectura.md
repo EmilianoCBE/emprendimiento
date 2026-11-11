@@ -213,7 +213,7 @@ Para compartir el avance con el equipo. `vercel.json` despliega web y API juntas
 | Variable | Valor |
 | --- | --- |
 | `PUBLIC_DEMO` | `true` |
-| `DEMO_ACCESS_PASSWORD` | Contraseña compartida, 12 caracteres o más. El usuario es `equipo` |
+| `DEMO_GATE`, `DEMO_ACCESS_PASSWORD` | Opcionales. Con `DEMO_GATE=on` la demo pide contraseña compartida (12 caracteres o más, usuario `equipo`). Sin eso, la demo es abierta |
 | `DATABASE_URL`, `DATABASE_URL_UNPOOLED` | Las inyecta la integración de Neon (con pooler y directa) |
 | `DEMO_DATABASE` | `dedicated`: declara que la base solo tiene datos ficticios |
 | `APP_SECRET` | 64 caracteres aleatorios, común a todas las instancias (firma los códigos de verificación) |
@@ -223,7 +223,7 @@ Para compartir el avance con el equipo. `vercel.json` despliega web y API juntas
 - **Sin `DEMO_DATABASE=dedicated` y `APP_SECRET`, la app no arranca:** las cuentas de demo, con contraseña conocida, jamás conviven con una base real.
 - **Tiempo real:** el aviso por SSE solo llega si quien escribe cayó en la misma instancia. Mensajes, solicitudes y notificaciones también se consultan cada 4 a 15 segundos mientras la pestaña está visible.
 - **Fotos:** no se aceptan fotos nuevas (`uploadsEnabled: false`), porque las instancias no comparten disco. Las fotos de demostración son estáticas.
-- **Límite de frecuencia:** cuenta por instancia, así que en la demo es más laxo que en un solo proceso. Aceptable con la barrera de contraseña.
+- **Límite de frecuencia:** cuenta por instancia, así que en la demo es más laxo que en un solo proceso. Con la demo abierta es la única defensa contra abuso, junto con los límites por cuenta.
 - **Reiniciar datos:** `npx vercel env run -e production -- npm run db:reset-demo -w @aterriza/api -- --confirmar`, desde una carpeta vinculada al proyecto. Solo actúa si la base tiene la cuenta de administración de demostración.
 
 **No es el despliegue de producción.** Para eso, ver la siguiente sección y los bloqueantes de `08-seguridad.md`.

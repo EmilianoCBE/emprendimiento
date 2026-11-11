@@ -14,7 +14,7 @@ beforeAll(async () => {
   await migrate(db)
   await seedBase(db)
   await seedDemo(db)
-  const config = loadConfig({ NODE_ENV: 'production', PUBLIC_DEMO: 'true', DEMO_ACCESS_PASSWORD: PASSWORD, VERCEL_URL: 'demo.vercel.app' })
+  const config = loadConfig({ NODE_ENV: 'production', PUBLIC_DEMO: 'true', DEMO_GATE: 'on', DEMO_ACCESS_PASSWORD: PASSWORD, VERCEL_URL: 'demo.vercel.app' })
   handle = await createApp(config, db, { logger: false, rateLimit: false })
 }, 60_000)
 afterAll(async () => {
@@ -22,7 +22,7 @@ afterAll(async () => {
   await db.close()
 })
 
-describe('barrera de la demo pública', () => {
+describe('barrera de la demo pública (DEMO_GATE=on)', () => {
   const get = (authorization?: string) => handle.app.inject({ method: 'GET', url: '/api/v1/listings', headers: authorization ? { authorization } : {} })
 
   it('sin contraseña no entrega datos y pide credenciales', async () => {

@@ -37,7 +37,7 @@ Para volver a los datos iniciales, detén el servidor y corre `npm run db:reset`
 
 ## Demo en Vercel
 
-Usa una base de Neon exclusiva de la demo, instalada desde el Marketplace de Vercel. Variables: `PUBLIC_DEMO=true`, `DEMO_ACCESS_PASSWORD` (12 caracteres o más), `DEMO_DATABASE=dedicated` y `APP_SECRET` (32 o más). Al abrir el sitio, el navegador pide usuario `equipo` y esa contraseña. Para volver a los datos iniciales: `npx vercel env run -e production -- npm run db:reset-demo -w @aterriza/api -- --confirmar`. Detalles en [Arquitectura](docs/04-arquitectura.md).
+Usa una base de Neon exclusiva de la demo, instalada desde el Marketplace de Vercel. Variables: `PUBLIC_DEMO=true`, `DEMO_DATABASE=dedicated` y `APP_SECRET` (32 o más). La demo es abierta: cualquiera con el enlace entra con las cuentas de demostración. Para volver a pedir una contraseña compartida (usuario `equipo`), agrega `DEMO_GATE=on` y `DEMO_ACCESS_PASSWORD` (12 caracteres o más). Para volver a los datos iniciales: `npx vercel env run -e production -- npm run db:reset-demo -w @aterriza/api -- --confirmar`. Detalles en [Arquitectura](docs/04-arquitectura.md).
 
 ## Desarrollo
 
