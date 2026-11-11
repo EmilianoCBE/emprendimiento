@@ -23,7 +23,7 @@
     "test:e2e": "node e2e/flow.mjs"
   },
   "devDependencies": {
-    "concurrently": "^9.0.0",
+    "concurrently": "^10.0.6",
     "oxlint": "^1.0.0",
     "typescript": "^6.0.2",
     "playwright-core": "^1.50.0"
