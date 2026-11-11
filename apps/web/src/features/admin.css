@@ -6,7 +6,7 @@
 .todo-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); gap: var(--space-3); }
 .todo { display: flex; justify-content: space-between; align-items: center; gap: var(--space-3); padding: var(--space-4) var(--space-5); background: var(--color-surface); border: var(--border); border-radius: var(--radius-md); text-decoration: none; font-weight: 600; }
 a.todo:hover { border-color: var(--color-ink); }
-.todo.has-work { border-left: 4px solid var(--color-ink); }
+.todo.has-work { border-color: var(--color-ink); }
 .todo__n { font-size: var(--display-md); }
 .stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-4) var(--space-6); }
 .stat__n { font-size: var(--display-sm); }

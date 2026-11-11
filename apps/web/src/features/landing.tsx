@@ -192,7 +192,6 @@ export function LandingPage() {
             ))}
           {mentors.data?.slice(0, 4).map((m) => (
             <li key={m.id} className="voice">
-              {m.zoneName && <span className="voice__zone">Conoce {m.zoneName}</span>}
               <p className="voice__quote">{m.headline}</p>
               <div className="voice__who">
                 <span className="voice__avatar" aria-hidden>
@@ -200,7 +199,7 @@ export function LandingPage() {
                 </span>
                 <p>
                   <b>{m.fullName}</b>
-                  {m.homeCountry && <span className="muted small">De {m.homeCountry}</span>}
+                  <span className="muted small">{[m.homeCountry && `De ${m.homeCountry}`, m.zoneName && `conoce ${m.zoneName}`].filter(Boolean).join(', ')}</span>
                 </p>
               </div>
             </li>

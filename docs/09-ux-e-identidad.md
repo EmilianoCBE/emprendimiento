@@ -83,6 +83,8 @@ Nada se mueve en bucle salvo los marcadores de carga. Todo respeta `prefers-redu
 - Sin degradados, sin sombras en las tarjetas, sin una cuadrícula de cajas idénticas para todo.
 - Sin flechas en el texto de los botones; sin fuente monoespaciada; sin emojis como íconos (Phosphor).
 - Sin números decorativos: solo se numera lo que es una secuencia.
+- Sin borde de color a la izquierda en avisos ni tarjetas: un aviso es un panel con fondo de su tono y nada más.
+- Sin etiquetas en píldora encima de cada tarjeta, sin mosaicos de colores distintos porque sí, y sin efectos al pasar el cursor en lo que no se puede pulsar.
 - Una acción que no se puede completar no se muestra como acción principal.
 
 ## Voz

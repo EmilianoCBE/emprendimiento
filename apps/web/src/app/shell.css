@@ -26,8 +26,8 @@
 .popover__empty { padding: var(--space-4); color: var(--color-ink-muted); }
 .notif { display: block; padding: var(--space-3) var(--space-4); border-bottom: var(--border); text-decoration: none; }
 a.notif:hover { background: var(--color-soft); }
-/* Sin leer: barra azul (6.5:1) y título en negrita. */
-.notif.is-unread { box-shadow: inset 4px 0 0 var(--color-accent); }
+/* Sin leer: punto azul y título en negrita. */
+.notif.is-unread .notif__title::before { content: ''; display: inline-block; width: var(--space-2); height: var(--space-2); margin-right: var(--space-2); border-radius: var(--radius-full); background: var(--color-accent); vertical-align: middle; }
 .notif.is-unread .notif__title { font-weight: 700; }
 .notif__title { font-weight: 500; }
 .notif__body { font-size: var(--text-sm); line-height: var(--leading-sm); color: var(--color-ink-muted); }

@@ -70,17 +70,19 @@ p, li, dd { text-wrap: pretty; }
 .chip--stop { background: var(--color-danger-bg); color: var(--color-danger); }
 
 /* ---------- Avisos ---------- */
-.note { display: flex; gap: var(--space-3); padding: var(--space-3) var(--space-4); border-radius: var(--radius-md); border: var(--border); border-left: 4px solid var(--color-ink); background: var(--color-surface); }
+.note { display: flex; gap: var(--space-3); padding: var(--space-4) var(--space-5); border-radius: var(--radius-md); background: var(--color-soft); }
 .note > svg { flex: none; margin-top: 1px; }
 .note__title { font-weight: 700; }
 .note__title--plain { font-weight: 400; }
 .note__body { margin-top: var(--space-1); }
 .note__list { list-style: disc; padding-left: var(--space-5); margin-top: var(--space-1); }
-.note--danger { background: var(--color-danger-bg); border-color: var(--color-danger-bg); border-left-color: var(--color-danger); }
+.note--danger { background: var(--color-danger-bg); }
+.note--danger .note__title { color: var(--color-danger); }
 .note--danger > svg { color: var(--color-danger); }
-.note--warning { background: var(--color-warn-bg); border-color: var(--color-warn-bg); border-left-color: var(--color-warn-line); }
+.note--warning { background: var(--color-warn-bg); }
+.note--warning .note__title { color: var(--color-warn); }
 .note--warning > svg { color: var(--color-warn); }
-.note--ok { background: var(--color-ok-bg); border-color: var(--color-ok-bg); border-left-color: var(--color-ok); }
+.note--ok { background: var(--color-ok-bg); }
 
 /* ---------- Estados ---------- */
 .empty { padding: var(--space-8) 0; border-top: 2px solid var(--color-ink); }
@@ -159,8 +161,6 @@ p, li, dd { text-wrap: pretty; }
 @keyframes fade { from { opacity: 0; } }
 .page, .searchview { animation: rise var(--dur) var(--ease-out) both; }
 a, .chip, .panel, .rowcard { transition: color var(--dur-fast), background-color var(--dur-fast), border-color var(--dur-fast), box-shadow var(--dur-fast); }
-.rowcard { transition: border-color var(--dur-fast), transform var(--dur) var(--ease-out); }
-.rowcard:hover { transform: translateX(2px); }
 .progress__fill { transition: width var(--dur-slow) var(--ease-out); }
 .task { transition: background-color var(--dur-fast); }
 details[open] > :not(summary) { animation: rise var(--dur) var(--ease-out) both; }
