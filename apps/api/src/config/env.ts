@@ -65,6 +65,8 @@ export function loadConfig(source: Record<string, string | undefined> = process.
     }
     // Con varias instancias, cada una inventaría su propio secreto y los códigos de una no valdrían en otra.
     if (e.DATABASE_URL && (!e.APP_SECRET || e.APP_SECRET.length < 32)) problems.push('APP_SECRET debe tener al menos 32 caracteres cuando la demo usa una base compartida.')
+    // Un valor mal escrito ("On", "true") dejaría la demo abierta sin que nadie lo note.
+    if (e.DEMO_GATE !== undefined && e.DEMO_GATE !== 'on' && e.DEMO_GATE !== 'off') problems.push('DEMO_GATE solo acepta "on" u "off".')
     if (gate && (!accessPassword || accessPassword.length < 12)) problems.push('DEMO_ACCESS_PASSWORD debe tener al menos 12 caracteres cuando DEMO_GATE=on.')
   } else if (isProduction) {
     if (demoMode) problems.push('DEMO_MODE no se permite en producción: crea cuentas con contraseña conocida.')

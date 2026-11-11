@@ -194,6 +194,11 @@ describe('configuración', () => {
       expect(loadConfig({ ...demo, DEMO_ACCESS_PASSWORD: undefined }).demoAccessPassword).toBeNull()
       expect(loadConfig({ ...demo, DEMO_GATE: 'on' }).demoAccessPassword).toBe('una-clave-larga-1')
     })
+    it('rechaza un valor de DEMO_GATE mal escrito en vez de abrir la demo', () => {
+      expect(() => loadConfig({ ...demo, DEMO_GATE: 'On' })).toThrow(/DEMO_GATE/)
+      expect(() => loadConfig({ ...demo, DEMO_GATE: 'true' })).toThrow(/DEMO_GATE/)
+      expect(loadConfig({ ...demo, DEMO_GATE: 'off' }).demoAccessPassword).toBeNull()
+    })
     it('con barrera exige contraseña de al menos 12 caracteres', () => {
       expect(() => loadConfig({ ...demo, DEMO_GATE: 'on', DEMO_ACCESS_PASSWORD: undefined })).toThrow(/DEMO_ACCESS_PASSWORD/)
       expect(() => loadConfig({ ...demo, DEMO_GATE: 'on', DEMO_ACCESS_PASSWORD: 'corta' })).toThrow(/DEMO_ACCESS_PASSWORD/)
